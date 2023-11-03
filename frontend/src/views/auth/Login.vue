@@ -28,7 +28,7 @@ const login = async () => {
 
         if (response.data.token) {
         localStorage.setItem('jwtToken', response.data.token)
-        router.push({ name: 'Home' })
+        router.push({ name: 'Dashboard' })
         } 
     } catch (error) {
         console.error(error)
