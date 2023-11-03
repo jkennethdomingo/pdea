@@ -35,6 +35,20 @@ const login = async () => {
         if (response.data.token) {
             const decodedToken = jwtDecode(response.data.token);
             store.commit('setAuth', { token: response.data.token, role: decodedToken.role });
+            const authData = {
+                token: response.data.token,
+                role: decodedToken.role
+            };
+
+            // Convert the object to a string to store in localStorage or sessionStorage
+            const authDataString = JSON.stringify(authData);
+
+            // Check if the remember me is checked and store the token and role in localStorage
+            if (loginForm.remember) {
+                localStorage.setItem('authData', authDataString);
+            } else {
+                sessionStorage.setItem('authData', authDataString);
+            }
             router.push({ name: 'Dashboard' });
         }
     } catch (error) {

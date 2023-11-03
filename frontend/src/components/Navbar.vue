@@ -13,7 +13,22 @@ import Button from '@/components/Button.vue'
 import Logo from '@/components/Logo.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownLink from '@/components/DropdownLink.vue'
+import DropdownButton from '@/components/DropdownButton.vue'
 import userAvatar from '@/assets/images/avatar.jpg'
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
+const store = useStore();
+const router = useRouter();
+
+const logout = () => {
+  // Clear user's auth token from Vuex store and localStorage
+  store.commit('clearAuth');
+  localStorage.removeItem('authData');
+
+  // Redirect to the login page
+  router.push({ name: 'Login' });
+};
 
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
 
@@ -118,7 +133,7 @@ onUnmounted(() => {
                     </button>
                 </template>
                 <template #content>
-                    <DropdownLink to="#">Log Out</DropdownLink>
+                    <DropdownButton @click="logout">Log Out</DropdownButton>
                     <DropdownLink to="#">Settings</DropdownLink>
                 </template>
             </Dropdown>
