@@ -44,13 +44,58 @@ class AuthController extends ResourceController
 
     public function loginUser($email, $password)
     {
-        $user = $this->model->where('email', $email)->first();
+        $user = $this->model->where('Email', $email)->first();
         
-        if (!$user || !password_verify($password, $user['Password'])) {
+        if (!$user) {
+            throw new \Exception('Invalid login');
+        }
+
+        if (!password_verify($password, $user['Password'])) {
             throw new \Exception('Invalid login');
         }
 
         return $user;
+    }
+
+    public function create()
+    {
+        $json = $this->request->getJSON();
+
+        $data = [
+            'EmployeeID' => $json->EmployeeID,
+            'Name' => $json->Name,
+            'Email' => $json->Email,
+            'Password' => password_hash($json->Password, PASSWORD_DEFAULT), 
+            'PhoneNumber' => $json->PhoneNumber,
+            'Address' => $json->Address,
+            'DateOfBirth' => $json->DateOfBirth,
+            'Department' => $json->Department,
+            'Role' => $json->Role,
+            'LeaveBalance' => $json->LeaveBalance,
+        ];
+
+        // Set validation rules
+        $validationRules = [
+            'EmployeeID' => 'required|alpha_numeric',
+            'Name' => 'required|alpha_space',
+            'Email' => 'required|valid_email',
+            'Password' => 'required', // Password validation can be added here if needed
+            'PhoneNumber' => 'required|numeric',
+            'Address' => 'required',
+            'DateOfBirth' => 'required|valid_date',
+            'Department' => 'required',
+            'Role' => 'required',
+            'LeaveBalance' => 'required|numeric',
+        ];
+
+        if (!$this->validate($validationRules)) {
+            return $this->fail($this->validator->getErrors(), 400);
+        }
+
+        $this->model->insert($data);
+
+        $response = ['message' => 'Data inserted successfully'];
+        return $this->respondCreated($response, 201);
     }
 
 }
