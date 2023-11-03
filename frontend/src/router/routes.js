@@ -9,6 +9,11 @@ export default [
             component: () => import('@/views/Index.vue'),
           },
           {
+            path: '/pages/company',
+            name: 'Company',
+            component: () => import('@/views/pages/Company.vue'),
+          },
+          {
             path: '/pages/blank',
             name: 'Blank',
             component: () => import('@/views/pages/Blank.vue'),

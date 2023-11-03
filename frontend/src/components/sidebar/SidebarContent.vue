@@ -27,16 +27,20 @@ const isCurrentPath = (path) => {
             icon="mdi:view-dashboard"
         />
 
-        <SidebarCollapsible
+        <SidebarLink
             icon="mdi:note-outline"
+            :to="{ name: 'Company' }"
             title="Company"
-            :active="isCurrentPath('/pages')"
+            :active="isCurrentRoute('Company')"
         >
-            <SidebarCollapsibleItem
-                :to="{ name: 'Blank' }"
-                title="Blank"
-                :active="isCurrentRoute('Blank')"
-            />
-        </SidebarCollapsible>
+        </SidebarLink>
+
+        <SidebarLink
+            icon="mdi:note-outline"
+            :to="{ name: 'Blank' }"
+            title="Blank"
+            :active="isCurrentRoute('Blank')"
+        >
+        </SidebarLink>
     </PerfrectScrollbar>
 </template>
