@@ -38,6 +38,24 @@ onUnmounted(() => {
         ]"
     >
         <div class="flex items-center gap-2">
+            <!-- Notif -->
+                <Button
+                iconOnly
+                variant="secondary"
+                @click=""
+                v-slot="{ iconSizeClasses }"
+                class="hidden md:inline-flex"
+                srText="Toggle dark mode"
+            >
+                <Icon
+                    icon="mingcute:notification-fill"
+                    v-show="!isFullscreen"
+                    aria-hidden="true"
+                    :class="iconSizeClasses"
+                />
+                <Icon icon="mdi:arrow-collapse-all" v-show="isFullscreen" aria-hidden="true" :class="iconSizeClasses" />
+            </Button>
+
             <Button
                 icon-only
                 variant="secondary"

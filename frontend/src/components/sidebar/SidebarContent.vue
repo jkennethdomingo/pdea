@@ -29,7 +29,7 @@ const isCurrentPath = (path) => {
 
         <SidebarCollapsible
             icon="mdi:note-outline"
-            title="Pages"
+            title="Company"
             :active="isCurrentPath('/pages')"
         >
             <SidebarCollapsibleItem
