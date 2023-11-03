@@ -1,25 +1,28 @@
 export default [
-    {
+  {
+    path: '/',
+    component: () => import('@/layouts/DashboardLayout.vue'),
+    children: [
+      {
         path: '/',
-        component: () => import('@/layouts/DashboardLayout.vue'),
-        children: [
-          {
-            path: '/',
-            name: 'Dashboard',
-            component: () => import('@/views/Index.vue'),
-          },
-          {
-            path: '/pages/company',
-            name: 'Company',
-            component: () => import('@/views/pages/Company.vue'),
-          },
-          {
-            path: '/pages/blank',
-            name: 'Blank',
-            component: () => import('@/views/pages/Blank.vue'),
-          },
-        ],
+        name: 'Dashboard',
+        component: () => import('@/views/Index.vue'),
+        meta: { requiresRole: 'HR_ADMIN' }, 
       },
+      {
+        path: '/pages/company',
+        name: 'Company',
+        component: () => import('@/views/pages/Company.vue'),
+        meta: { requiresRole: 'HR_ADMIN' }, // Protect this route
+      },
+      {
+        path: '/pages/blank',
+        name: 'Blank',
+        component: () => import('@/views/pages/Blank.vue'),
+        meta: { requiresRole: 'HR_ADMIN' }, 
+      },
+    ],
+},
     {
     path: '/auth',
     name: 'Auth',
