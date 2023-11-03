@@ -29,16 +29,27 @@ class AuthController extends ResourceController
             return $this->failUnauthorized('Invalid credentials');
         }
 
+        // JWT payload
         $payload = [
-            'iss' => 'example.com',
-            'sub' => $user['id'],
-            'exp' => time() + 60*60
+            'iss' => 'example.com', // Issuer
+            'sub' => $user['id'], // Subject, typically the user ID
+            'role' => $user['Role'], // User's role
+            'exp' => time() + 60*15, // Shorter expiration time (e.g., 15 minutes)
+            'iat' => time(), // Issued at
+            'jti' => base64_encode(random_bytes(16)) // JWT ID
         ];
 
-        $token = JWT::encode($payload, env('JWT_SECRET'), 'HS256');
+        // Generate JWT using HS256 (HMAC with SHA-256)
+        $secretKey = getenv('JWT_SECRET'); // Get the secret key from your .env file or environment variable
+        $token = JWT::encode($payload, $secretKey, 'HS256');
 
+        // You can return the token in the response body or set it as a cookie
+        // If setting as a cookie, ensure to use HttpOnly and Secure flags for production
+
+        // Return success response (without sending the role in the payload)
         return $this->respond([
-            'token' => $token
+            'message' => 'Login successful',
+            'token' => $token // Optionally send the token in the response
         ]);
     }
 
