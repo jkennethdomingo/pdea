@@ -1,11 +1,20 @@
-import AboutView from '../views/AboutView.vue'
-
 export default [
     {
         path: '/',
-        name: 'about',
-        component: AboutView
-    },
+        component: () => import('@/layouts/DashboardLayout.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'Dashboard',
+            component: () => import('@/views/Index.vue'),
+          },
+          {
+            path: '/pages/blank',
+            name: 'Blank',
+            component: () => import('@/views/pages/Blank.vue'),
+          },
+        ],
+      },
     {
     path: '/auth',
     name: 'Auth',
