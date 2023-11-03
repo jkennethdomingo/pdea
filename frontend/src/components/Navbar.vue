@@ -41,7 +41,7 @@ onUnmounted(() => {
             <Button
                 icon-only
                 variant="secondary"
-                @click="toggleDarkMode"
+                @click="toggleDarkMode()"
                 v-slot="{ iconSizeClasses }"
                 class="md:hidden"
                 srText="Toggle dark mode"
