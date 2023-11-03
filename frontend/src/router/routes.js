@@ -1,4 +1,11 @@
+import AboutView from '../views/AboutView.vue'
+
 export default [
+    {
+        path: '/',
+        name: 'about',
+        component: AboutView
+    },
     {
     path: '/auth',
     name: 'Auth',

@@ -5,6 +5,10 @@ import Label from '@/components/Label.vue'
 import Input from '@/components/Input.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import Button from '@/components/Button.vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const loginForm = reactive({
     email: '',
@@ -13,7 +17,25 @@ const loginForm = reactive({
     processing: false,
 })
 
-const login = () => {}
+const login = async () => {
+    loginForm.processing = true
+
+    try {
+        const response = await axios.post('/login', {
+        email: loginForm.email,
+        password: loginForm.password
+        })
+
+        if (response.data.token) {
+        localStorage.setItem('jwtToken', response.data.token)
+        router.push({ name: 'Home' })
+        } 
+    } catch (error) {
+        console.error(error)
+    } finally {
+        loginForm.processing = false
+    }
+}
 </script>
 
 <template>
