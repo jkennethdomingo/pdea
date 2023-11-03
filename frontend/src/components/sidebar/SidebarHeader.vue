@@ -24,21 +24,21 @@ import { sidebarState } from '@/composables'
             :sr-text="sidebarState.isOpen ? 'Close sidebar' : 'Open sidebar'"
         >
             <Icon
-                icon="mdi:menu-open"
+                icon="material-symbols:left-panel-open"
                 aria-hidden="true"
                 v-show="sidebarState.isOpen"
                 :class="['hidden lg:block', iconSizeClasses]"
             />
 
             <Icon
-                icon="mdi:menu-close"
+                icon="material-symbols:left-panel-close"
                 aria-hidden="true"
                 v-show="!sidebarState.isOpen"
                 :class="['hidden lg:block', iconSizeClasses]"
             />
 
             <Icon
-                icon="mdi:window-close"
+                icon="material-symbols:left-panel-close"
                 aria-hidden="true"
                 :class="['lg:hidden', iconSizeClasses]"
             />

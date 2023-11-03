@@ -2,8 +2,6 @@
 import { useRouter } from 'vue-router'
 import PerfrectScrollbar from '@/components/PerfectScrollbar.vue'
 import SidebarLink from '@/components/sidebar/SidebarLink.vue'
-import SidebarCollapsible from '@/components/sidebar/SidebarCollapsible.vue'
-import SidebarCollapsibleItem from '@/components/sidebar/SidebarCollapsibleItem.vue'
 
 const isCurrentRoute = (routeName) => {
     return useRouter().currentRoute.value.name == routeName
@@ -28,7 +26,7 @@ const isCurrentPath = (path) => {
         />
 
         <SidebarLink
-            icon="mdi:note-outline"
+            icon="ic:round-people"
             :to="{ name: 'Company' }"
             title="Company"
             :active="isCurrentRoute('Company')"
@@ -36,9 +34,9 @@ const isCurrentPath = (path) => {
         </SidebarLink>
 
         <SidebarLink
-            icon="mdi:note-outline"
+            icon="clarity:assign-user-solid"
             :to="{ name: 'Blank' }"
-            title="Blank"
+            title="Assign"
             :active="isCurrentRoute('Blank')"
         >
         </SidebarLink>

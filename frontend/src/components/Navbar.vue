@@ -30,15 +30,15 @@ onUnmounted(() => {
     <nav
         aria-label="secondary"
         :class="[
-            'sticky top-0 z-10 px-6 py-4 bg-white flex items-center justify-between transition-transform duration-500 dark:bg-dark-eval-1',
+            ' sticky top-0 z-10 px-6 py-4 flex items-center justify-between transition-transform duration-500',
             {
                 '-translate-y-full': scrolling.down,
                 'translate-y-0': scrolling.up,
             },
         ]"
     >
-        <div class="flex items-center gap-2">
-
+    <div class="flex items-center">
+            <!-- Dark Mode Toggle for Mobile -->
             <Button
                 icon-only
                 variant="secondary"
@@ -50,6 +50,9 @@ onUnmounted(() => {
                 <Icon icon="mdi:weather-night" v-show="!isDark" aria-hidden="true" :class="iconSizeClasses" />
                 <Icon icon="mdi:white-balance-sunny" v-show="isDark" aria-hidden="true" :class="iconSizeClasses" />
             </Button>
+
+            <!-- Human Resource Label -->
+            <span class="rounded-md text-xl font-bold bg-white dark:bg-dark-eval-2 px-2 py-2">Human Resource</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -99,6 +102,7 @@ onUnmounted(() => {
                 />
                 <Icon icon="mdi:arrow-collapse-all" v-show="isFullscreen" aria-hidden="true" :class="iconSizeClasses" />
             </Button>
+            
 
             <!-- Dropdwon -->
             <Dropdown align="right" width="48">
@@ -115,10 +119,12 @@ onUnmounted(() => {
                 </template>
                 <template #content>
                     <DropdownLink to="#">Log Out</DropdownLink>
+                    <DropdownLink to="#">Settings</DropdownLink>
                 </template>
             </Dropdown>
         </div>
     </nav>
+    
 
     <!-- Mobile bottom bar -->
     <div
