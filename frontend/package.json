@@ -13,6 +13,7 @@
     "apexcharts": "^3.44.0",
     "axios": "^1.6.0",
     "core-js": "^3.8.3",
+    "flowbite": "^2.0.0",
     "gsap": "^3.12.2",
     "jwt-decode": "^4.0.0",
     "nprogress": "^0.2.0",

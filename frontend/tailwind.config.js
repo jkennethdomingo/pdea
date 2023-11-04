@@ -2,7 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   darkMode: 'class',
-  content: ['./index.html', './src/**/*.{js,jsx,vue}'],
+  content: ['./index.html', './src/**/*.{js,jsx,vue}', './node_modules/flowbite/**/*.js'],
   theme: {
     extend: {
 
@@ -26,5 +26,6 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
+    require('flowbite/plugin'),
   ],
 }
