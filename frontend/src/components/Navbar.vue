@@ -17,9 +17,38 @@ import DropdownButton from '@/components/DropdownButton.vue'
 import userAvatar from '@/assets/images/avatar.jpg'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { computed } from 'vue';
 
 const store = useStore();
 const router = useRouter();
+
+store.dispatch('initializeAuth');
+const authState = computed(() => ({
+  token: store.state.token,
+  role: store.state.userRole
+}));
+
+const spanClasses = computed(() => ({
+  'rounded-md': true,
+  'text-xl': true,
+  'font-bold': true,
+  'bg-white': authState.value.role !== 'HR_ADMIN',
+  'dark:bg-dark-eval-2': authState.value.role === 'HR_ADMIN',
+  'px-2': true,
+  'py-2': true
+}));
+
+const roleDisplayName = computed(() => {
+  switch (authState.value.role) {
+    case 'HR_ADMIN':
+      return 'Human Resource';
+    case 'LOGISTICS_ADMIN':
+      return 'Logistics';
+    // You can add more cases as necessary
+    default:
+      return 'Unauthorized User';
+  }
+});
 
 const logout = () => {
   // Clear user's auth token from Vuex store and localStorage
@@ -46,7 +75,7 @@ onUnmounted(() => {
     <nav
         aria-label="secondary"
         :class="[
-            ' top-0 z-10 px-6 py-4 flex items-center justify-between transition-transform duration-500',
+            ' sticky top-0 z-10 px-6 py-4 flex items-center justify-between transition-transform duration-500',
             {
                 '-translate-y-full': scrolling.down,
                 'translate-y-0': scrolling.up,
@@ -68,7 +97,7 @@ onUnmounted(() => {
             </Button>
 
             <!-- Human Resource Label -->
-            <span class="rounded-md text-xl font-bold bg-white dark:bg-dark-eval-2 px-2 py-2">Human Resource</span>
+            <span :class="spanClasses">{{ roleDisplayName }}</span>
         </div>
 
         <div class="flex items-center gap-2">
