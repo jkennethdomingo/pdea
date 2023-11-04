@@ -25,17 +25,17 @@ const isCurrentPath = (path) => {
             icon="mdi:view-dashboard"
         />
         <SidebarLink
-            icon="ic:round-people"
+            icon="material-symbols:inventory"
             :to="{ name: 'Company' }"
-            title="Company"
+            title="Inventory"
             :active="isCurrentRoute('Company')"
         >
         </SidebarLink>
 
         <SidebarLink
-            icon="clarity:assign-user-solid"
+            icon="carbon:report"
             :to="{ name: 'Blank' }"
-            title="Assign"
+            title="Reports"
             :active="isCurrentRoute('Blank')"
         >
         </SidebarLink>
