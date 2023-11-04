@@ -14,6 +14,7 @@ import LatestSection from '@/components/pages/dashboard/LatestSection.vue'
                 
             </div>
                     <!-- Statistics section -->
+                </template>
         <StatisticsSection />
 
         <!-- Sales section -->
@@ -21,6 +22,5 @@ import LatestSection from '@/components/pages/dashboard/LatestSection.vue'
 
         <!-- Latest users & transaction section -->
         <LatestSection />
-        </template>
     </PageWrapper>
 </template>

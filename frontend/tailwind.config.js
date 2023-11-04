@@ -5,6 +5,8 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,jsx,vue}'],
   theme: {
     extend: {
+
+      
       fontFamily: {
         sans: ['Inter', ...defaultTheme.fontFamily.sans],
       },
