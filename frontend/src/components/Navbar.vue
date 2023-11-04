@@ -30,7 +30,7 @@ onUnmounted(() => {
     <nav
         aria-label="secondary"
         :class="[
-            ' sticky top-0 z-10 px-6 py-4 flex items-center justify-between transition-transform duration-500',
+            ' top-0 z-10 px-6 py-4 flex items-center justify-between transition-transform duration-500',
             {
                 '-translate-y-full': scrolling.down,
                 'translate-y-0': scrolling.up,
