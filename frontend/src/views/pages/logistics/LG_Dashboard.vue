@@ -1,5 +1,8 @@
 <script setup>
 import PageWrapper from '@/components/PageWrapper.vue'
+import StatisticsSection from '@/components/pages/dashboard/StatisticsSection.vue'
+import SalesSection from '@/components/pages/dashboard/SalesSection.vue'
+import LatestSection from '@/components/pages/dashboard/LatestSection.vue'
 </script>
 
 <template>
@@ -10,7 +13,14 @@ import PageWrapper from '@/components/PageWrapper.vue'
 
                 
             </div>
+                    <!-- Statistics section -->
+        <StatisticsSection />
+
+        <!-- Sales section -->
+        <SalesSection />
+
+        <!-- Latest users & transaction section -->
+        <LatestSection />
         </template>
-        <h6>Logistics</h6>
     </PageWrapper>
 </template>

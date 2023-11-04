@@ -24,6 +24,21 @@ const isCurrentPath = (path) => {
             :active="isCurrentRoute('LG_Dashboard')"
             icon="mdi:view-dashboard"
         />
+        <SidebarLink
+            icon="ic:round-people"
+            :to="{ name: 'Company' }"
+            title="Company"
+            :active="isCurrentRoute('Company')"
+        >
+        </SidebarLink>
+
+        <SidebarLink
+            icon="clarity:assign-user-solid"
+            :to="{ name: 'Blank' }"
+            title="Assign"
+            :active="isCurrentRoute('Blank')"
+        >
+        </SidebarLink>
         
     </PerfrectScrollbar>
 </template>
