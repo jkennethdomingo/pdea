@@ -26,17 +26,17 @@ const isCurrentPath = (path) => {
         />
         <SidebarLink
             icon="material-symbols:inventory"
-            :to="{ name: 'Company' }"
+            :to="{ name: 'LG_Inventory' }"
             title="Inventory"
-            :active="isCurrentRoute('Company')"
+            :active="isCurrentRoute('LG_Inventory')"
         >
         </SidebarLink>
 
         <SidebarLink
             icon="carbon:report"
-            :to="{ name: 'Blank' }"
+            :to="{ name: 'LG_Reports' }"
             title="Reports"
-            :active="isCurrentRoute('Blank')"
+            :active="isCurrentRoute('LG_Reports')"
         >
         </SidebarLink>
         

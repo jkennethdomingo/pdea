@@ -39,6 +39,18 @@ export default [
         component: () => import('@/views/pages/logistics/LG_Dashboard.vue'),
         meta: { requiresRole: 'LOGISTICS_ADMIN' }, 
       },
+      {
+        path: '/logistics-inventory',
+        name: 'LG_Inventory',
+        component: () => import('@/views/pages/logistics/LG_Inventory.vue'),
+        meta: { requiresRole: 'LOGISTICS_ADMIN' }, 
+      },
+      {
+        path: '/logistics-reports',
+        name: 'LG_Reports',
+        component: () => import('@/views/pages/logistics/LG_Reports.vue'),
+        meta: { requiresRole: 'LOGISTICS_ADMIN' }, 
+      },
     ],
 },
     {
