@@ -1,10 +1,16 @@
 export default [
   {
     path: '/',
+    name: 'LandingPage',
+    component: () => import('@/views/LandingPage.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/',
     component: () => import('@/layouts/DashboardLayout.vue'),
     children: [
       {
-        path: '/',
+        path: '/hr-dashboard',
         name: 'Dashboard',
         component: () => import('@/views/Index.vue'),
         meta: { requiresRole: 'HR_ADMIN' }, 
@@ -13,7 +19,7 @@ export default [
         path: '/pages/company',
         name: 'Company',
         component: () => import('@/views/pages/Company.vue'),
-        meta: { requiresRole: 'HR_ADMIN' }, // Protect this route
+        meta: { requiresRole: 'HR_ADMIN' }, 
       },
       {
         path: '/pages/blank',
