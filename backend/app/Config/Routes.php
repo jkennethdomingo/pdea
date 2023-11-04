@@ -9,6 +9,13 @@ $routes->get('/', 'Home::index');
 
 $routes->group('api', function($routes) 
 {
-    $routes->post('login', 'AuthController::login');
-    $routes->post('insert', 'AuthController::create');
+    $routes->group('auth', function($routes) {
+        $routes->post('login', 'AuthController::login');
+    });
+
+    $routes->group('employee', function($routes) {
+        $routes->post('insert', 'EmployeeController::create', ['filter' => 'RoleFilter:role=HR_ADMIN']);
+    });
+
 });
+

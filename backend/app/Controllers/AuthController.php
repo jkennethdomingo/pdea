@@ -11,11 +11,15 @@ class AuthController extends ResourceController
 {
     use ResponseTrait;
 
-    protected $model;
+    protected $employeeModel;
+    protected $employeeAuthRoleModel;
+    protected $authRoleModel;
 
     public function __construct()
     {
-        $this->model = new \App\Models\EmployeeModel();
+        $this->employeeModel = new \App\Models\EmployeeModel();
+        $this->employeeAuthRoleModel = new \App\Models\EmployeeAuthRoleModel();
+        $this->authRoleModel = new \App\Models\AuthRoleModel();
     }
 
     public function login()
@@ -32,9 +36,9 @@ class AuthController extends ResourceController
         // JWT payload
         $payload = [
             'iss' => 'example.com', // Issuer
-            'sub' => $user['id'], // Subject, typically the user ID
+            'sub' => $user['EmployeeID'], // Subject, typically the user ID
             'role' => $user['Role'], // User's role
-            'exp' => time() + 60*15, // Shorter expiration time (e.g., 15 minutes)
+            'exp' => time() + 60*60, // Expiration time (e.g., 60 minutes)
             'iat' => time(), // Issued at
             'jti' => base64_encode(random_bytes(16)) // JWT ID
         ];
@@ -55,7 +59,7 @@ class AuthController extends ResourceController
 
     public function loginUser($email, $password)
     {
-        $user = $this->model->where('Email', $email)->first();
+        $user = $employeeModel->where('Email', $email)->first();
         
         if (!$user) {
             throw new \Exception('Invalid login');
@@ -65,48 +69,23 @@ class AuthController extends ResourceController
             throw new \Exception('Invalid login');
         }
 
+        // Get the AuthRoleID from EmployeeAuthRole where EmployeeID matches
+        $empAuth = $this->employeeAuthRoleModel->where('EmployeeID', $user['EmployeeID'])->first();
+        if (!$empAuth) {
+            throw new \Exception('User has no role assigned');
+        }
+
+        // Get the role name from AuthRole based on AuthRoleID
+        $role = $authRoleModel->find($empAuth['AuthRoleID']);
+        if (!$role) {
+            throw new \Exception('Role does not exist');
+        }
+
+        // Add the role name to the user array to be included in the JWT payload
+        $user['Role'] = $role['AuthRoleName'];
+
         return $user;
     }
 
-    public function create()
-    {
-        $json = $this->request->getJSON();
-
-        $data = [
-            'EmployeeID' => $json->EmployeeID,
-            'Name' => $json->Name,
-            'Email' => $json->Email,
-            'Password' => password_hash($json->Password, PASSWORD_DEFAULT), 
-            'PhoneNumber' => $json->PhoneNumber,
-            'Address' => $json->Address,
-            'DateOfBirth' => $json->DateOfBirth,
-            'Department' => $json->Department,
-            'Role' => $json->Role,
-            'LeaveBalance' => $json->LeaveBalance,
-        ];
-
-        // Set validation rules
-        $validationRules = [
-            'EmployeeID' => 'required|alpha_numeric',
-            'Name' => 'required|alpha_space',
-            'Email' => 'required|valid_email',
-            'Password' => 'required', // Password validation can be added here if needed
-            'PhoneNumber' => 'required|numeric',
-            'Address' => 'required',
-            'DateOfBirth' => 'required|valid_date',
-            'Department' => 'required',
-            'Role' => 'required',
-            'LeaveBalance' => 'required|numeric',
-        ];
-
-        if (!$this->validate($validationRules)) {
-            return $this->fail($this->validator->getErrors(), 400);
-        }
-
-        $this->model->insert($data);
-
-        $response = ['message' => 'Data inserted successfully'];
-        return $this->respondCreated($response, 201);
-    }
 
 }
