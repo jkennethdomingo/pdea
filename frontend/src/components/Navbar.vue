@@ -28,16 +28,6 @@ const authState = computed(() => ({
   role: store.state.userRole
 }));
 
-const spanClasses = computed(() => ({
-  'rounded-md': true,
-  'text-xl': true,
-  'font-bold': true,
-  'bg-white': authState.value.role !== 'HR_ADMIN',
-  'dark:bg-dark-eval-2': authState.value.role === 'HR_ADMIN',
-  'px-2': true,
-  'py-2': true
-}));
-
 const roleDisplayName = computed(() => {
   switch (authState.value.role) {
     case 'HR_ADMIN':
@@ -97,7 +87,7 @@ onUnmounted(() => {
             </Button>
 
             <!-- Human Resource Label -->
-            <span :class="spanClasses">{{ roleDisplayName }}</span>
+            <span class="rounded-md text-xl font-bold bg-white dark:bg-dark-eval-2 px-2 py-2">{{ roleDisplayName }}</span>
         </div>
 
         <div class="flex items-center gap-2">
