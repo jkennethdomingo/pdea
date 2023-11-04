@@ -23,6 +23,24 @@ const loginForm = reactive({
     // Removed errorMessage since we're using toasts now
 });
 
+const redirectToDashboard = (role) => {
+  // Define the routes for each role
+  const roleToRoute = {
+    'HR_ADMIN': { name: 'Dashboard' }, // assuming this is the route name for the HR dashboard
+    'LOGISTICS_ADMIN': { name: 'LG_Dashboard' }, // route name for the Logistics dashboard
+  };
+
+  // Find the route for the current role
+  const route = roleToRoute[role];
+
+  // Redirect to the found route, or default to a general dashboard if role not found
+  if (route) {
+    router.push(route);
+  } else {
+    router.push({ name: 'Login' });
+  }
+};
+
 const login = async () => {
     loginForm.processing = true;
 
@@ -35,7 +53,21 @@ const login = async () => {
         if (response.data.token) {
             const decodedToken = jwtDecode(response.data.token);
             store.commit('setAuth', { token: response.data.token, role: decodedToken.role });
-            router.push({ name: 'Dashboard' });
+            const authData = {
+                token: response.data.token,
+                role: decodedToken.role
+            };
+
+            // Convert the object to a string to store in localStorage or sessionStorage
+            const authDataString = JSON.stringify(authData);
+
+            // Check if the remember me is checked and store the token and role in localStorage
+            if (loginForm.remember) {
+                localStorage.setItem('authData', authDataString);
+            } else {
+                sessionStorage.setItem('authData', authDataString);
+            }
+            redirectToDashboard(decodedToken.role);
         }
     } catch (error) {
         // Handle errors using toast

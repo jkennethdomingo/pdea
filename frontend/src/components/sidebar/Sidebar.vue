@@ -1,18 +1,31 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useStore } from 'vuex'
 import { sidebarState } from '@/composables'
 import SidebarHeader from '@/components/sidebar/SidebarHeader.vue'
 import SidebarContent from '@/components/sidebar/SidebarContent.vue'
+import LG_SidebarContent from '@/components/sidebar/logistics/LG_SidebarContent.vue'
 import SidebarFooter from '@/components/sidebar/SidebarFooter.vue'
 
-onMounted(() => {
-    window.addEventListener('resize', sidebarState.handleWindowResize)
+const store = useStore()
 
-    onUnmounted(() => {
-        window.removeEventListener('resize', sidebarState.handleWindowResize)
-    })
+// Reactive reference for userRole
+const userRole = ref(null)
+
+// Lifecycle hook for onMounted
+onMounted(() => {
+  window.addEventListener('resize', sidebarState.handleWindowResize)
+
+  // Load the user's role from the Vuex store
+  userRole.value = store.state.userRole
+})
+
+// Lifecycle hook for onUnmounted
+onUnmounted(() => {
+  window.removeEventListener('resize', sidebarState.handleWindowResize)
 })
 </script>
+
 
 <template>
     <transition
@@ -48,7 +61,8 @@ onMounted(() => {
         @mouseleave="sidebarState.handleHover(false)"
     >
         <SidebarHeader />
-        <SidebarContent />
+        <SidebarContent v-if="userRole === 'HR_ADMIN'" sidebar-type="hr" />
+        <LG_SidebarContent v-else-if="userRole === 'LOGISTICS_ADMIN'" sidebar-type="logistics" />
         <SidebarFooter />
     </aside>
 </template>
