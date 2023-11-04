@@ -11,34 +11,38 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   NProgress.start();
-
-  // Try to get the user role from the Vuex store
   let userRole = store.state.userRole;
 
-  // If there's nothing in Vuex, check localStorage
+  // Check if the userRole is not set in the store, then try retrieving from localStorage or sessionStorage
   if (!userRole) {
-    const storedData = localStorage.getItem('authData');
+    let storedData = localStorage.getItem('authData') || sessionStorage.getItem('authData');
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       userRole = parsedData.role;
-
-      // Optionally, update the Vuex store with the new auth data
+      // Commit the authentication data to the store
       store.commit('setAuth', { token: parsedData.token, role: parsedData.role });
     }
   }
 
-  // Check if the route requires a specific role
+  // Check if the route to be accessed has a role requirement
   const requiresRole = to.matched.some(record => record.meta.requiresRole);
 
-  // If the route has a role requirement and the user does not meet it, redirect
-  if (requiresRole && userRole !== 'HR_ADMIN') {
-    // Redirect to login or any other route
-    next({ name: 'Login' });
+  // If the route requires a specific role and the user does not have this role, redirect to login
+  if (requiresRole) {
+    const routeRole = to.matched.find(record => record.meta.requiresRole).meta.requiresRole;
+    // If user role does not match the route's required role, redirect to the login page
+    if (userRole !== routeRole) {
+      next({ name: 'Login' });
+    } else {
+      // User role matches, proceed to the route
+      next();
+    }
   } else {
-    // Proceed to the route
+    // No specific role required for the route, proceed
     next();
   }
 });
+
 
 router.afterEach(() => {
   if (window.innerWidth <= 1024) {

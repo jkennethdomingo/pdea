@@ -23,6 +23,18 @@ export default [
       },
     ],
 },
+  {
+    path: '/',
+    component: () => import('@/layouts/DashboardLayout.vue'),
+    children: [
+      {
+        path: '/logistics-dashboard',
+        name: 'LG_Dashboard',
+        component: () => import('@/views/pages/logistics/LG_Dashboard.vue'),
+        meta: { requiresRole: 'LOGISTICS_ADMIN' }, 
+      },
+    ],
+},
     {
     path: '/auth',
     name: 'Auth',

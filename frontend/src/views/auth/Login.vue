@@ -23,6 +23,24 @@ const loginForm = reactive({
     // Removed errorMessage since we're using toasts now
 });
 
+const redirectToDashboard = (role) => {
+  // Define the routes for each role
+  const roleToRoute = {
+    'HR_ADMIN': { name: 'Dashboard' }, // assuming this is the route name for the HR dashboard
+    'LOGISTICS_ADMIN': { name: 'LG_Dashboard' }, // route name for the Logistics dashboard
+  };
+
+  // Find the route for the current role
+  const route = roleToRoute[role];
+
+  // Redirect to the found route, or default to a general dashboard if role not found
+  if (route) {
+    router.push(route);
+  } else {
+    router.push({ name: 'Login' });
+  }
+};
+
 const login = async () => {
     loginForm.processing = true;
 
@@ -49,7 +67,7 @@ const login = async () => {
             } else {
                 sessionStorage.setItem('authData', authDataString);
             }
-            router.push({ name: 'Dashboard' });
+            redirectToDashboard(decodedToken.role);
         }
     } catch (error) {
         // Handle errors using toast

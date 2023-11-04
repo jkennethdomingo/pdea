@@ -25,6 +25,7 @@ const logout = () => {
   // Clear user's auth token from Vuex store and localStorage
   store.commit('clearAuth');
   localStorage.removeItem('authData');
+  sessionStorage.removeItem('authData');
 
   // Redirect to the login page
   router.push({ name: 'Login' });
@@ -155,7 +156,7 @@ onUnmounted(() => {
 
         <router-link :to="{ name: 'Dashboard' }">
             <Logo class="w-10 h-10" />
-            <span class="sr-only">K UI</span>
+            <span class="sr-only"></span>
         </router-link>
 
         <Button

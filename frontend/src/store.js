@@ -10,12 +10,12 @@ const state = {
 // Mutations
 const mutations = {
     setAuth(state, payload) {
-    state.token = payload.token;
-    state.userRole = payload.role;
+        state.token = payload.token;
+        state.userRole = payload.role;
     },
     clearAuth(state) {
-    state.token = null;
-    state.userRole = null;
+        state.token = null;
+        state.userRole = null;
     },
 };
 
@@ -25,16 +25,25 @@ const actions = {
         commit('setAuth', payload);
     },
     logout({ commit }) {
-        localStorage.removeItem('jwtToken');
-        sessionStorage.removeItem('jwtToken');
+        // Ensure to remove 'authData' which is the key we're using to store token and role
+        localStorage.removeItem('authData');
+        sessionStorage.removeItem('authData');
         commit('clearAuth');
     },
     initializeAuth({ commit }) {
-        const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
-        if (token) {
-        // Decode the token to get the user's role
-        const userRole = jwtDecode(token).role; // Now jwtDecode should be available
-        commit('setAuth', { token, role: userRole });
+        // Retrieve the authData from storage
+        const authDataString = localStorage.getItem('authData') || sessionStorage.getItem('authData');
+        
+        if (authDataString) {
+            // Parse the JSON string back into an object
+            const authData = JSON.parse(authDataString);
+            const token = authData.token;
+            const userRole = authData.role;
+
+            // Make sure both token and role exist before setting them to the state
+            if (token && userRole) {
+                commit('setAuth', { token, role: userRole });
+            }
         }
     },
 };
