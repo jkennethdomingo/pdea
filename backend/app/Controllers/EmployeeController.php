@@ -14,6 +14,8 @@ use App\Models\SectionModel;
 use App\Models\EmployeeSectionModel;
 use App\Models\LeaveBalanceModel;
 use App\Models\LeavetypeModel;
+use App\Models\EmployeePositionModel;
+use App\Models\PositionModel;
 
 class EmployeeController extends ResourceController
 {
@@ -28,6 +30,8 @@ class EmployeeController extends ResourceController
     protected $employeeSectionModel;
     protected $leaveBalanceModel;
     protected $leavetypeModel;
+    protected $employeePositionModel;
+    protected $positionModel;
 
     public function __construct()
     {
@@ -40,6 +44,8 @@ class EmployeeController extends ResourceController
         $this->employeeSectionModel = new EmployeeSectionModel();
         $this->leaveBalanceModel = new LeaveBalanceModel();
         $this->leavetypeModel = new LeavetypeModel();
+        $this->employeePositionModel = new EmployeePositionModel();
+        $this->positionModel = new PositionModel();
     }
 
     public function create()
@@ -62,6 +68,7 @@ class EmployeeController extends ResourceController
             'AuthRoleID' => esc($json->AuthRoleID ?? ''),
             'DesignationID' => esc($json->DesignationID ?? ''),
             'SectionID' => esc($json->SectionID ?? ''),
+            'PositionID' => esc($json->PositionID ?? ''),
         ];
         
         // Validation rules
@@ -119,6 +126,16 @@ class EmployeeController extends ResourceController
         if (!$this->employeeSectionModel->insert($sectionData)) {
             $this->employeeModel->transRollback();
             return $this->fail($this->employeeSectionModel->errors(), 400);
+        }
+
+        $positionData = [
+            'EmployeeID' => $employeeID,
+            'PositionID' => $data['PositionID'],
+        ];
+
+        if (!$this->employeePositionModel->insert($positionData)) {
+            $this->employeeModel->transRollback();
+            return $this->fail($this->employeePositionModel->errors(), 400);
         }
 
         // Initialize leave balance
@@ -225,7 +242,7 @@ class EmployeeController extends ResourceController
                 ]
             ],
             'AuthRoleID' => [
-                'rules' => 'required|is_natural_no_zero|is_not_unique[auth_roles.id]',
+                'rules' => 'required|is_natural_no_zero|is_not_unique[authentication_role.AuthRoleID]',
                 'errors' => [
                     'required' => 'Auth Role ID is required.',
                     'is_natural_no_zero' => 'Auth Role ID must be a natural number and not zero.',
@@ -233,7 +250,7 @@ class EmployeeController extends ResourceController
                 ]
             ],
             'DesignationID' => [
-                'rules' => 'required|is_natural_no_zero|is_not_unique[designations.id]',
+                'rules' => 'required|is_natural_no_zero|is_not_unique[designation.DesignationID]',
                 'errors' => [
                     'required' => 'Designation ID is required.',
                     'is_natural_no_zero' => 'Designation ID must be a natural number and not zero.',
@@ -241,11 +258,19 @@ class EmployeeController extends ResourceController
                 ]
             ],
             'SectionID' => [
-                'rules' => 'required|is_natural_no_zero|is_not_unique[sections.id]',
+                'rules' => 'required|is_natural_no_zero|is_not_unique[section.SectionID]',
                 'errors' => [
                     'required' => 'Section ID is required.',
                     'is_natural_no_zero' => 'Section ID must be a natural number and not zero.',
                     'is_not_unique' => 'Invalid Section ID provided.'
+                ]
+            ],
+            'PositionID' => [
+                'rules' => 'required|is_natural_no_zero|is_not_unique[position.PositionID]',
+                'errors' => [
+                    'required' => 'Position ID is required.',
+                    'is_natural_no_zero' => 'Position ID must be a natural number and not zero.',
+                    'is_not_unique' => 'Invalid Position ID provided.'
                 ]
             ],
         ];
