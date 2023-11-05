@@ -45,7 +45,7 @@ const login = async () => {
     loginForm.processing = true;
 
     try {
-        const response = await axios.post('/auth/login', {
+        const response = await axios.post('/login', {
             email: loginForm.email,
             password: loginForm.password
         });
