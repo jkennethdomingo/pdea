@@ -65,7 +65,13 @@ class AuthController extends ResourceController
             throw new \Exception('Invalid login');
         }
 
-        if (!password_verify($password, $user['Password'])) {
+        // Retrieve the pepper from your secure storage (e.g., environment variable).
+        $pepper = getenv('PASSWORD_PEPPER');
+        // Pepper the input password before verification.
+        $pepperedPassword = hash_hmac('sha256', $password, $pepper);
+
+        // Now verify the peppered password against the hashed password from the database.
+        if (!password_verify($pepperedPassword, $user['Password'])) {
             throw new \Exception('Invalid login');
         }
 
