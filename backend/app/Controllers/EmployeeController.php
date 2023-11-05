@@ -13,6 +13,7 @@ use App\Models\EmployeeDesignationModel;
 use App\Models\SectionModel;
 use App\Models\EmployeeSectionModel;
 use App\Models\LeaveBalanceModel;
+use App\Models\LeavetypeModel;
 
 class EmployeeController extends ResourceController
 {
@@ -26,6 +27,7 @@ class EmployeeController extends ResourceController
     protected $sectionModel;
     protected $employeeSectionModel;
     protected $leaveBalanceModel;
+    protected $leavetypeModel;
 
     public function __construct()
     {
@@ -37,6 +39,7 @@ class EmployeeController extends ResourceController
         $this->sectionModel = new SectionModel();
         $this->employeeSectionModel = new EmployeeSectionModel();
         $this->leaveBalanceModel = new LeaveBalanceModel();
+        $this->leavetypeModel = new LeavetypeModel();
     }
 
     public function create()
@@ -45,21 +48,22 @@ class EmployeeController extends ResourceController
 
         // Prepare data for validation
         $data = [
-            'EmployeeID' => $json->EmployeeID ?? '',
-            'Name' => $json->Name ?? '',
-            'Email' => $json->Email ?? '',
+            'EmployeeID' => esc($json->EmployeeID ?? ''),
+            'Name' => esc($json->Name ?? ''),
+            'Email' => filter_var($json->Email ?? '', FILTER_SANITIZE_EMAIL),
             'Password' => $json->Password ?? '',
-            'PhoneNumber' => $json->PhoneNumber ?? '',
-            'Address' => $json->Address ?? '',
-            'DateOfBirth' => $json->DateOfBirth ?? '',
-            'EducationalAttainment' => $json->EducationalAttainment ?? '',
-            'Eligibility' => $json->Eligibility ?? '',
-            'IPCR' => $json->IPCR ?? '',
-            'AuthRoleID' => $json->AuthRoleID ?? '',
-            'DesignationID' => $json->DesignationID ?? '',
-            'SectionID' => $json->SectionID ?? '',
+            'PhoneNumber' => filter_var($json->PhoneNumber ?? '', FILTER_SANITIZE_NUMBER_INT),
+            'Address' => esc($json->Address ?? ''),
+            'DateOfBirth' => esc($json->DateOfBirth ?? ''),
+            'DateOfEntry' => esc($json->DateOfEntry ?? date("Y-m-d")),
+            'EducationalAttainment' => esc($json->EducationalAttainment ?? ''),
+            'Eligibility' => esc($json->Eligibility ?? ''),
+            'IPCR' => esc($json->IPCR ?? ''),
+            'AuthRoleID' => esc($json->AuthRoleID ?? ''),
+            'DesignationID' => esc($json->DesignationID ?? ''),
+            'SectionID' => esc($json->SectionID ?? ''),
         ];
-
+        
         // Validation rules
         $validationRules = $this->getValidationRules();
 
@@ -73,9 +77,6 @@ class EmployeeController extends ResourceController
         // Apply the pepper and hash the password
         $pepperedPassword = hash_hmac('sha256', $data['Password'], $pepper);
         $data['Password'] = password_hash($pepperedPassword, PASSWORD_ARGON2ID);
-
-        // Add non-validated data
-        $data['DateOfEntry'] = date("Y-m-d");
 
         // Start transaction
         $this->employeeModel->transStart();
@@ -121,7 +122,7 @@ class EmployeeController extends ResourceController
         }
 
         // Initialize leave balance
-        $leaveTypes = $leaveTypeModel->findAll();
+        $leaveTypes = $this->leavetypeModel->findAll();
 
         foreach ($leaveTypes as $leaveType) {
             $leaveBalanceData = [
@@ -129,7 +130,7 @@ class EmployeeController extends ResourceController
                 'LeaveTypeID' => $leaveType['LeaveTypeID'],
                 'NumberOfLeaves' => $leaveType['DefaultLeaveCount']
             ];
-
+        
             if (!$this->leaveBalanceModel->insert($leaveBalanceData)) {
                 $this->employeeModel->transRollback();
                 return $this->fail($this->leaveBalanceModel->errors(), 400);
@@ -199,6 +200,12 @@ class EmployeeController extends ResourceController
                     'valid_date' => 'Date of birth is not a valid date.'
                 ]
             ],
+            'DateOfEntry' => [
+                'rules' => 'valid_date',
+                'errors' => [
+                    'valid_date' => 'Date of entry is not a valid date.'
+                ]
+            ],            
             'EducationalAttainment' => [
                 'rules' => 'required',
                 'errors' => [

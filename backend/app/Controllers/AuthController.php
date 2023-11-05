@@ -59,7 +59,7 @@ class AuthController extends ResourceController
 
     public function loginUser($email, $password)
     {
-        $user = $employeeModel->where('Email', $email)->first();
+        $user = $this->employeeModel->where('Email', $email)->first();
         
         if (!$user) {
             throw new \Exception('Invalid login');
@@ -82,7 +82,7 @@ class AuthController extends ResourceController
         }
 
         // Get the role name from AuthRole based on AuthRoleID
-        $role = $authRoleModel->find($empAuth['AuthRoleID']);
+        $role = $this->authRoleModel->find($empAuth['AuthRoleID']);
         if (!$role) {
             throw new \Exception('Role does not exist');
         }

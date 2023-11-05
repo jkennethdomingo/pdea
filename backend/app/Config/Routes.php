@@ -14,7 +14,7 @@ $routes->group('api', function($routes)
     });
 
     $routes->group('employee', function($routes) {
-        $routes->post('insert', 'EmployeeController::create');
+        $routes->post('insert', 'EmployeeController::create', ['filter' => 'role:role=HR_ADMIN']);
     });
 
 });
