@@ -50,7 +50,7 @@
             <!-- Right column container with background and description-->
             <div
               class="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
-              style="background: linear-gradient(to right, #006E4E, #006E4E, #006346, #006346)">
+              style="background: linear-gradient(to top, #001a00, #003300, #004d00, #006600)">
               <div class="px-4 py-6 text-white md:mx-6 md:p-12">   
                 <figure class="max-w-screen-md mx-auto text-center">
                     <svg class="w-7 h-7 mx-auto mb-3 text-gray-400 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 14">
