@@ -1,14 +1,15 @@
 <script setup>
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '@/composables/useAuth'; // A new composable for auth logic
+import { ROLE_ROUTE_MAP } from '@/constants/roleRoutes'; // Route names as constants
 import { useToast } from 'vue-toastification'; 
-import InputIconWrapper from '@/components/InputIconWrapper.vue';
 import PageFooter from '@/components/PageFooter.vue';
+
 const router = useRouter();
 const store = useStore();
+const { login: performLogin, redirectToDashboard } = useAuth(router, store);
 const toast = useToast();
 
 const loginForm = reactive({
@@ -18,60 +19,21 @@ const loginForm = reactive({
     processing: false,
 });
 
-const redirectToDashboard = (role) => {
-  // Define the routes for each role
-  const roleToRoute = {
-    'HR_ADMIN': { name: 'Dashboard' }, 
-    'LOGISTICS_ADMIN': { name: 'LG_Dashboard' }, 
-  };
-
-  // Find the route for the current role
-  const route = roleToRoute[role];
-
-  // Redirect to the found route, or default to a general dashboard if role not found
-  if (route) {
-    router.push(route);
-  } else {
-    router.push({ name: 'Login' });
-  }
-};
-
 const login = async () => {
     loginForm.processing = true;
-
     try {
-        const response = await axios.post('/login', {
-            email: loginForm.email,
-            password: loginForm.password
-        });
-
-        if (response.data.token) {
-            const decodedToken = jwtDecode(response.data.token);
-            store.commit('setAuth', { token: response.data.token, role: decodedToken.role });
-            const authData = {
-                token: response.data.token,
-                role: decodedToken.role
-            };
-
-            // Convert the object to a string to store in localStorage or sessionStorage
-            const authDataString = JSON.stringify(authData);
-
-            // Check if the remember me is checked and store the token and role in localStorage
-            if (loginForm.remember) {
-                localStorage.setItem('authData', authDataString);
-            } else {
-                sessionStorage.setItem('authData', authDataString);
-            }
-            redirectToDashboard(decodedToken.role);
-        }
+        const { role, shouldRemember } = await performLogin(loginForm.email, loginForm.password, loginForm.remember);
+        redirectToDashboard(role, ROLE_ROUTE_MAP);
     } catch (error) {
-        // Handle errors using toast
-        const message = error.response?.data?.message || 'An error occurred during login.';
-        toast.error(message);
+        toast.error(error.message);
     } finally {
         loginForm.processing = false;
     }
 };
+
+onMounted(() => {
+    // Any logic that needs to happen right after the component mounts
+});
 </script>
 
 <template>
