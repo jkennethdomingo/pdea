@@ -6,6 +6,7 @@ import axios from 'axios';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import '@/assets/css/main.css';
+import 'flowbite';
 
 // Set axios defaults
 axios.defaults.baseURL = "http://backend.test/api/";

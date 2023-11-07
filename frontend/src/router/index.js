@@ -12,28 +12,24 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   NProgress.start();
 
-  // Initialize authentication state from storage if it hasn't been already
-  if (!store.state.userRole) {
-    store.dispatch('initializeAuth');
-  }
+  // Initialize once and store the result
+  let userRole = store.state.userRole || store.dispatch('initializeAuth');
 
-  let userRole = store.state.userRole;
+  // Combine both role checks in a single iteration
+  const routeRoleRecord = to.matched.find(record => record.meta.requiresRole);
 
-  const requiresRole = to.matched.some(record => record.meta.requiresRole);
-
-  if (requiresRole) {
-    const routeRole = to.matched.find(record => record.meta.requiresRole).meta.requiresRole;
+  if (routeRoleRecord) {
+    const routeRole = routeRoleRecord.meta.requiresRole;
     if (userRole !== routeRole) {
-      next({ name: 'Login' });
-    } else {
-      next();
+      return next({ name: 'Login' }); // Redirect if user role doesn't match
     }
-  } else {
-    next();
   }
+
+  next(); // Proceed if no role is required or if it matches
 });
 
 router.afterEach(() => {
+  // Move the window width check to a more appropriate place if possible
   if (window.innerWidth <= 1024) {
     sidebarState.isOpen = false;
   }
