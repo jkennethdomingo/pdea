@@ -3,13 +3,24 @@ import { useRouter } from 'vue-router'
 import PerfrectScrollbar from '@/components/PerfectScrollbar.vue'
 import SidebarLink from '@/components/sidebar/SidebarLink.vue'
 
+const router = useRouter();
+
 const isCurrentRoute = (routeName) => {
-    return useRouter().currentRoute.value.name == routeName
+    return router.currentRoute.value.name === routeName;
 }
 
 const isCurrentPath = (path) => {
-    return useRouter().currentRoute.value.path.startsWith(path)
+    return router.currentRoute.value.path.startsWith(path);
 }
+
+const isAssignRouteActive = () => {
+    // Checks if the current route is "Assign Training Overview" or one of its children
+    return router.currentRoute.value.matched.some(route => {
+        // Ensure route.name is defined before calling startsWith
+        return route.name && (route.name === 'Assign Training' || route.name.startsWith('Assign Training '));
+    });
+}
+
 </script>
 
 <template>
@@ -35,9 +46,9 @@ const isCurrentPath = (path) => {
 
         <SidebarLink
             icon="clarity:assign-user-solid"
-            :to="{ name: 'Assign Training' }"
+            :to="{ name: 'Assign Training Overview' }"
             title="Assign"
-            :active="isCurrentRoute('Assign Training')"
+            :active="isAssignRouteActive()"
         >
         </SidebarLink>
     </PerfrectScrollbar>

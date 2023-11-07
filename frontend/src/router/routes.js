@@ -30,7 +30,14 @@ export default [
           {
             path: '/pages/assign',
             name: 'Assign Training Overview',
-            component: () => import('@/views/pages/assign/Blank.vue'),
+            component: () => import('@/views/pages/assign/AssignTable.vue'),
+            meta: { requiresRole: 'HR_ADMIN' }, 
+          },
+          {
+            path: '/pages/assign/add',
+            name: 'Assign Training Add',
+            component: () => import('@/views/pages/assign/Add.vue'),
+            meta: { requiresRole: 'HR_ADMIN' }, 
           },
           // ... potentially more child routes ...
         ],
