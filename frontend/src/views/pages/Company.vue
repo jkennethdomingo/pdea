@@ -1,9 +1,10 @@
-<script setup>
-import PageWrapper from '@/components/PageWrapper.vue'
-</script>
+    <script setup>
+    import PageWrapper from '@/components/PageWrapper.vue'
 
-<template>
-    <PageWrapper title="Company">
-        <!--  -->
-    </PageWrapper>
-</template>
+    </script>
+
+    <template>
+        <PageWrapper title="Company Structure">
+            
+        </PageWrapper>
+    </template>

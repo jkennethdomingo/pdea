@@ -35,9 +35,9 @@ const isCurrentPath = (path) => {
 
         <SidebarLink
             icon="clarity:assign-user-solid"
-            :to="{ name: 'Blank' }"
+            :to="{ name: 'Assign Training' }"
             title="Assign"
-            :active="isCurrentRoute('Blank')"
+            :active="isCurrentRoute('Assign Training')"
         >
         </SidebarLink>
     </PerfrectScrollbar>

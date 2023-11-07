@@ -22,13 +22,21 @@ export default [
         meta: { requiresRole: 'HR_ADMIN' }, 
       },
       {
-        path: '/pages/blank',
-        name: 'Blank',
-        component: () => import('@/views/pages/Blank.vue'),
+        path: '/pages/assign',
+        name: 'Assign Training',
+        component: () => import('@/layouts/AssignTrainingLayout.vue'),
         meta: { requiresRole: 'HR_ADMIN' }, 
+        children: [
+          {
+            path: '/pages/assign',
+            name: 'Assign Training Overview',
+            component: () => import('@/views/pages/assign/Blank.vue'),
+          },
+          // ... potentially more child routes ...
+        ],
       },
     ],
-},
+  },
   {
     path: '/',
     component: () => import('@/layouts/DashboardLayout.vue'),
@@ -52,7 +60,7 @@ export default [
         meta: { requiresRole: 'LOGISTICS_ADMIN' }, 
       },
     ],
-},
+    },
     {
     path: '/auth',
     name: 'Auth',
