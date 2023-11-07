@@ -2,12 +2,16 @@
  <header>
     <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
         <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto">
-            <a href="https://flowbite.com" class="flex items-center">
-                <img :src="require('@/assets/logo.png')" class="h-6 mr-3 sm:h-9" alt="Flowbite Logo" />
+            <a href="" class="flex items-center">
+                <img :src="require('@/assets/logo.png')" class="h-6 mr-3 sm:h-9" alt="PDEA logo" />
                 <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">PDEA</span>
             </a>
             <div class="flex items-center lg:order-2">
-                <a href="#" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-green-700 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-blue-800">Login</a>
+                <router-link
+                :to="{ name: 'Login' }"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-green-700 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-blue-800">
+                Login
+                </router-link>
                 <button data-collapse-toggle="mobile-menu-2" type="button" class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
@@ -29,10 +33,14 @@
             a drug-free MIMAROPA through rigorous enforcement 
             and prevention efforts in the region.</p>
         <div class="flex flex-col mb-8 space-y-4 lg:mb-16 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-            <a href="#" class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-green-700 rounded-lg hover:bg-gray-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
+            <router-link
+                :to="{ name: 'Login' }"
+                class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-green-700 rounded-lg hover:bg-gray-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
                 Login
-                <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-            </a>
+                <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </router-link>
         </div>
         <div class="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
             <span class="font-semibold text-[#F5F7F8] uppercase">Available in</span>
