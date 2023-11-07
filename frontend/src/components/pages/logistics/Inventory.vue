@@ -24,10 +24,6 @@ const tableRows = ref([
   { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
   { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
   { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
   // ... other rows
 ]);
 

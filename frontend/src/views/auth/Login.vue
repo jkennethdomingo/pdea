@@ -129,7 +129,7 @@ onMounted(() => {
                                     variant="secondary"
                                     @click="toggleDarkMode()"
                                     v-slot="{ iconSizeClasses }"
-                                    class="hidden md:inline-flex absolute top-0 right-0 mt-12 mr-12"
+                                    class="md:inline-flex absolute top-0 right-0 mt-12 mr-12"
                                     srText="Toggle dark mode"
                                 >
                                 <Icon icon="mdi:white-balance-sunny" v-show="!isDark" aria-hidden="true" :class="iconSizeClasses" />

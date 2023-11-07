@@ -72,14 +72,13 @@ onUnmounted(() => {
             },
         ]"
     >
-    <div class="flex items-center">
             <!-- Dark Mode Toggle for Mobile -->
             <Button
                 icon-only
                 variant="secondary"
                 @click="toggleDarkMode()"
                 v-slot="{ iconSizeClasses }"
-                class="md:hidden"
+                class="flex md:hidden"
                 srText="Toggle dark mode"
             >
                 <Icon icon="mdi:weather-night" v-show="!isDark" aria-hidden="true" :class="iconSizeClasses" />
@@ -88,7 +87,7 @@ onUnmounted(() => {
 
             <!-- Human Resource Label -->
             <span class="rounded-md text-xl font-bold bg-white dark:bg-dark-eval-2 px-2 py-2">{{ roleDisplayName }}</span>
-        </div>
+
 
         <div class="flex items-center gap-2">
 
