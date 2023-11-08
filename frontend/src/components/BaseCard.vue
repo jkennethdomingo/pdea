@@ -23,7 +23,7 @@ defineProps({
 </script>
 
 <template>
-    <div :class="['p-4 rounded-md shadow-md', bgClasses]">
+    <div :class="['p-4 rounded-md shadow-md overflow-hidden', bgClasses]">
         <!-- Card header -->
         <div class="flex items-center justify-between" v-if="!noHeader">
             <slot name="header">

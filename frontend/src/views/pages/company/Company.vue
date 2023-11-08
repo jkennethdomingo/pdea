@@ -26,7 +26,7 @@ onMounted(() => {
         </div>
         <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
             <router-link
-            :to="{ name: 'Assign Training Add' }"
+            :to="{ name: 'Add Account' }"
             tag="button"
             type="button"
             class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:bg-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
