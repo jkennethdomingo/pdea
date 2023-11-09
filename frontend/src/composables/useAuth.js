@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export function useAuth(router, store) {
     const performLogin = async (email, password, remember) => {
-        const response = await axios.post('/login', { email, password });
+        const response = await axios.post('/auth/login', { email, password });
         const decodedToken = jwtDecode(response.data.token);
 
         store.commit('setAuth', { token: response.data.token, role: decodedToken.role });
