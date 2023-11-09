@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class EmployeeSectionModel extends Model
 {
-    protected $table            = 'employeesections';
+    protected $table            = 'employee_section';
     protected $primaryKey       = 'EmpSecID';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';

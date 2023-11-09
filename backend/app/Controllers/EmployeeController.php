@@ -169,12 +169,14 @@ class EmployeeController extends ResourceController
     {
         return [
             'EmployeeID' => [
-                'rules' => 'required|alpha_numeric_space',
+                'rules' => 'required|alpha_numeric_space|is_unique[employee.EmployeeID]',
                 'errors' => [
                     'required' => 'Employee ID is required.',
-                    'alpha_numeric_space' => 'Employee ID must be alphanumeric and may contain spaces.'
+                    'alpha_numeric_space' => 'Employee ID must be alphanumeric and may contain spaces.',
+                    'is_unique' => 'This Employee ID already exists.'
                 ]
             ],
+            
             'Name' => [
                 'rules' => 'required|alpha_space',
                 'errors' => [
