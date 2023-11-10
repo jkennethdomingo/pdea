@@ -2,22 +2,20 @@
 import { reactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { useAuth } from '@/composables/useAuth'; // A new composable for auth logic
-import { ROLE_ROUTE_MAP } from '@/constants/roleRoutes'; // Route names as constants
-import { useToast } from 'vue-toastification'; 
+import { useAuth } from '@/composables/useAuth';
+import { ROLE_ROUTE_MAP } from '@/constants/roleRoutes';
+import { errorToast } from '@/toast/index'; // Import your custom toast utility
 import PageFooter from '@/components/PageFooter.vue';
 import Button from '@/components/Button.vue';
-import { Icon } from '@iconify/vue'
+import { Icon } from '@iconify/vue';
 import {
     isDark,
     toggleDarkMode,
-} from '@/composables'
-
+} from '@/composables';
 
 const router = useRouter();
 const store = useStore();
 const { login: performLogin, redirectToDashboard } = useAuth(router, store);
-const toast = useToast();
 
 const loginForm = reactive({
     email: '',
@@ -31,8 +29,10 @@ const login = async () => {
     try {
         const { role, shouldRemember } = await performLogin(loginForm.email, loginForm.password, loginForm.remember);
         redirectToDashboard(role, ROLE_ROUTE_MAP);
+        // If login is successful, you can use successToast here if needed
     } catch (error) {
-        toast.error(error.message);
+        // Here we use the custom errorToast utility function
+        errorToast({ title: 'Login Error', text: error.message });
     } finally {
         loginForm.processing = false;
     }
@@ -42,6 +42,7 @@ onMounted(() => {
     // Any logic that needs to happen right after the component mounts
 });
 </script>
+
 
 <template>
 <section class="gradient-form h-full bg-[#D8D9DA] dark:bg-neutral-700">
