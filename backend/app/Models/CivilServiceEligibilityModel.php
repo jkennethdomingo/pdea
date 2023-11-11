@@ -12,7 +12,7 @@ class CivilServiceEligibilityModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'career_service', 'rating', 'date_of_examination', 'place_of_examination', 'license_number', 'license_date_of_validity'];
+    protected $allowedFields    = ['EmployeeID', 'career_service', 'rating', 'date_of_examination', 'place_of_examination', 'license_number', 'license_date_of_validity'];
 
     // Dates
     protected $useTimestamps = false;

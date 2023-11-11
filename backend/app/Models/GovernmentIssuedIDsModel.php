@@ -12,7 +12,7 @@ class GovernmentIssuedIDsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'id_type', 'id_number', 'date_of_issuance', 'place_of_issuance'];
+    protected $allowedFields    = ['EmployeeID', 'id_type', 'id_number', 'date_of_issuance', 'place_of_issuance'];
 
     // Dates
     protected $useTimestamps = false;

@@ -12,7 +12,7 @@ class VoluntaryWorkModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'organization_name', 'position', 'period_from', 'period_to', 'number_of_hours'];
+    protected $allowedFields    = ['EmployeeID', 'organization_name', 'position', 'period_from', 'period_to', 'number_of_hours'];
 
     // Dates
     protected $useTimestamps = false;

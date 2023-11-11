@@ -12,7 +12,7 @@ class ReferencesTblModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'name', 'address', 'telephone_no'];
+    protected $allowedFields    = ['EmployeeID', 'name', 'address', 'telephone_no'];
 
     // Dates
     protected $useTimestamps = false;

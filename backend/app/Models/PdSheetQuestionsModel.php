@@ -12,7 +12,7 @@ class PdSheetQuestionsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'question_code', 'question_text', 'answer', 'details', 'date_of_event', 'status_or_remarks'];
+    protected $allowedFields    = ['EmployeeID', 'question_code', 'question_text', 'answer', 'details', 'date_of_event', 'status_or_remarks'];
 
     // Dates
     protected $useTimestamps = false;

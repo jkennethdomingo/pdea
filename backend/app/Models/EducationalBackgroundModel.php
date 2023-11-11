@@ -12,7 +12,7 @@ class EducationalBackgroundModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'level', 'name_of_school', 'degree_course', 'period_of_attendance_from', 'period_of_attendance_to', 'highest_level_units_earned', 'year_graduated', 'scholarship_academic_honors_received'];
+    protected $allowedFields    = ['EmployeeID', 'level', 'name_of_school', 'degree_course', 'period_of_attendance_from', 'period_of_attendance_to', 'highest_level_units_earned', 'year_graduated', 'scholarship_academic_honors_received'];
 
     // Dates
     protected $useTimestamps = false;

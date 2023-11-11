@@ -12,7 +12,7 @@ class OtherInformationModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'special_skills_hobbies', 'non_academic_distinctions_recognition', 'membership_association_organization'];
+    protected $allowedFields    = ['EmployeeID', 'special_skills_hobbies', 'non_academic_distinctions_recognition', 'membership_association_organization'];
 
     // Dates
     protected $useTimestamps = false;

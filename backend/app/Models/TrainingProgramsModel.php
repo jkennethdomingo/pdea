@@ -12,7 +12,7 @@ class TrainingProgramsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'title', 'period_from', 'period_to', 'number_of_hours', 'conducted_by'];
+    protected $allowedFields    = ['EmployeeID', 'title', 'period_from', 'period_to', 'number_of_hours', 'conducted_by'];
 
     // Dates
     protected $useTimestamps = false;

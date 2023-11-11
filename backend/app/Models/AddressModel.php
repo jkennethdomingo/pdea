@@ -12,7 +12,7 @@ class AddressModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cs_id_no', 'address_type', 'address', 'zip_code'];
+    protected $allowedFields    = ['EmployeeID', 'address_type', 'address', 'zip_code'];
 
     // Dates
     protected $useTimestamps = false;
