@@ -46,16 +46,16 @@ const isAssignRouteActive = () => {
 
         <SidebarLink
             icon="clarity:assign-user-solid"
-            :to="{ name: 'Assign Training Overview' }"
+            :to="{ name: 'Personal Information' }"
             title="Registration"
-            :active="isAssignRouteActive()"
+            :active="isCurrentPath('/human-resources/register')"
         >
         </SidebarLink>
         <SidebarLink
             icon="clarity:assign-user-solid"
             :to="{ name: 'Calendar' }"
             title="Calendar"
-            :active="isAssignRouteActive()"
+            :active="isCurrentRoute('Calendar')"
         >
         </SidebarLink>
     </PerfrectScrollbar>

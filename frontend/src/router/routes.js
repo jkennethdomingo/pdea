@@ -34,28 +34,72 @@ export default [
         ],
       },
       {
-        path: 'assign',
+        path: 'register',
+        component: () => import('@/layouts/AssignTrainingLayout.vue'),
+        meta: { requiresRole: 'HR_ADMIN' },
+        children: [
+          {
+            path: 'page1',
+            name: 'Personal Information',
+            component: () => import('@/views/pages/assign/PersonalInformation.vue'),
+          },
+          {
+            path: 'page2',
+            name: 'Family Background',
+            component: () => import('@/views/pages/assign/FamilyBackground.vue'),
+          },
+          {
+            path: 'page3',
+            name: 'Educational Background',
+            component: () => import('@/views/pages/assign/EducationalBackground.vue'),
+          },
+          {
+            path: 'page4',
+            name: 'Civil Service Eligibility',
+            component: () => import('@/views/pages/assign/CivilServiceEligibility.vue'),
+          },
+          {
+            path: 'page5',
+            name: 'Work Experience',
+            component: () => import('@/views/pages/assign/WorkExperience.vue'),
+          },
+          {
+            path: 'page6',
+            name: 'Voluntary Work',
+            component: () => import('@/views/pages/assign/VoluntaryWork.vue'),
+          },
+          {
+            path: 'page7',
+            name: 'Learning And Development',
+            component: () => import('@/views/pages/assign/LearningAndDevelopment.vue'),
+          },
+          {
+            path: 'page8',
+            name: 'Other Information',
+            component: () => import('@/views/pages/assign/OtherInformation.vue'),
+          },
+          {
+            path: 'page9',
+            name: 'Questions And Others',
+            component: () => import('@/views/pages/assign/QuestionsAndOthers.vue'),
+          },
+          // ... other assign routes if needed ...
+        ],
+      },
+      {
+        path: 'calendar',
         component: () => import('@/layouts/AssignTrainingLayout.vue'),
         meta: { requiresRole: 'HR_ADMIN' },
         children: [
           {
             path: '',
-            name: 'Assign Training Overview',
-            component: () => import('@/views/pages/assign/AssignTable.vue'),
-          },
-          {
-            path: 'add',
-            name: 'Assign Training Add',
-            component: () => import('@/views/pages/assign/Add.vue'),
-          },
-          {
-            path: 'Calendar',
             name: 'Calendar',
             component: () => import('@/views/pages/assign/Calendar.vue'),
           },
-          // ... other assign routes if needed ...
         ],
-      },
+      }
+
+
       // ... other HR routes if needed ...
     ],
   },
@@ -78,6 +122,26 @@ export default [
         path: 'reports',
         name: 'LG_Reports',
         component: () => import('@/views/pages/logistics/LG_Reports.vue'),
+      },
+      {
+        path: 'material_requisition',
+        children: [
+          {
+            path: 'agent',
+            name: 'LG_Agent',
+            component: () => import('@/views/pages/logistics/LG_Agent.vue'),
+          },
+          {
+            path: 'Department',
+            name: 'LG_Department',
+            component: () => import('@/views/pages/logistics/LG_Department.vue'),
+          },
+          {
+            path: 'ProvincialOffice',
+            name: 'LG_Provincial_Office',
+            component: () => import('@/views/pages/logistics/LG_Province.vue'),
+          },
+        ],
       },
       // ... other logistics routes if needed ...
     ],

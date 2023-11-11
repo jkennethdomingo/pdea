@@ -2,6 +2,8 @@
 import { useRouter } from 'vue-router'
 import PerfrectScrollbar from '@/components/PerfectScrollbar.vue'
 import SidebarLink from '@/components/sidebar/SidebarLink.vue'
+import SidebarCollapsible from '@/components/sidebar/SidebarCollapsible.vue'
+import SidebarCollapsibleItem from '@/components/sidebar/SidebarCollapsibleItem.vue'
 
 const isCurrentRoute = (routeName) => {
     return useRouter().currentRoute.value.name == routeName
@@ -39,6 +41,24 @@ const isCurrentPath = (path) => {
             :active="isCurrentRoute('LG_Reports')"
         >
         </SidebarLink>
+
+        <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/material_requisition')">
+            <SidebarCollapsibleItem
+                :to="{ name: 'LG_Agent' }"
+                title="Agent"
+                :active="isCurrentRoute('LG_Agent')"
+            />
+            <SidebarCollapsibleItem
+                :to="{ name: 'LG_Department' }"
+                title="Department"
+                :active="isCurrentRoute('LG_Department')"
+            />
+            <SidebarCollapsibleItem
+                :to="{ name: 'LG_Provincial_Office' }"
+                title="Provincial Office "
+                :active="isCurrentRoute('LG_Provincial_Office')"
+            />
+        </SidebarCollapsible>
         
     </PerfrectScrollbar>
 </template>

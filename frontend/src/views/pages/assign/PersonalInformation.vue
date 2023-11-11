@@ -306,12 +306,11 @@ onMounted(() => {
   </div>
 </div>
 
- <!-- Next Button -->
-<div class="flex items-center justify-end">
-  <button class="bg-green-700 hover:bg-green-800 text-white py-2 px-4 rounded focus:outline-none  focus:shadow-outline" type="submit">
-    Next
-  </button>
-</div>
+<Button :to="{ name: 'Family Background' }">
+  Next
+</Button>
+
+
 
 </form>
 
