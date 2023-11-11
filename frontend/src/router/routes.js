@@ -48,6 +48,11 @@ export default [
             name: 'Assign Training Add',
             component: () => import('@/views/pages/assign/Add.vue'),
           },
+          {
+            path: 'Calendar',
+            name: 'Calendar',
+            component: () => import('@/views/pages/assign/Calendar.vue'),
+          },
           // ... other assign routes if needed ...
         ],
       },

@@ -47,7 +47,14 @@ const isAssignRouteActive = () => {
         <SidebarLink
             icon="clarity:assign-user-solid"
             :to="{ name: 'Assign Training Overview' }"
-            title="Assign"
+            title="Registration"
+            :active="isAssignRouteActive()"
+        >
+        </SidebarLink>
+        <SidebarLink
+            icon="clarity:assign-user-solid"
+            :to="{ name: 'Calendar' }"
+            title="Calendar"
             :active="isAssignRouteActive()"
         >
         </SidebarLink>
