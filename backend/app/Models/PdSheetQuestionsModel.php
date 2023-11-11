@@ -4,18 +4,18 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EmployeeModel extends Model
+class PdSheetQuestionsModel extends Model
 {
-    protected $table            = 'employee';
-    protected $primaryKey       = 'EmployeeID';
-    protected $useAutoIncrement = false;
+    protected $table            = 'pd_sheet_questions';
+    protected $primaryKey       = 'question_id';
+    protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'cs_id_no', 'Email', 'Password', 'DateOfEntry', 'Eligibility', 'IPCR'];
+    protected $allowedFields    = ['cs_id_no', 'question_code', 'question_text', 'answer', 'details', 'date_of_event', 'status_or_remarks'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -37,5 +37,4 @@ class EmployeeModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
 }

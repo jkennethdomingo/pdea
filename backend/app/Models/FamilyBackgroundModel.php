@@ -4,18 +4,18 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EmployeeModel extends Model
+class FamilyBackgroundModel extends Model
 {
-    protected $table            = 'employee';
-    protected $primaryKey       = 'EmployeeID';
-    protected $useAutoIncrement = false;
+    protected $table            = 'family_background';
+    protected $primaryKey       = 'family_id';
+    protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'cs_id_no', 'Email', 'Password', 'DateOfEntry', 'Eligibility', 'IPCR'];
+    protected $allowedFields    = ['cs_id_no', 'spouse_surname', 'spouse_first_name', 'spouse_middle_name', 'spouse_occupation', 'spouse_employer_business_name', 'spouse_business_address', 'spouse_telephone_no', 'father_surname', 'father_first_name', 'father_middle_name', 'mother_maiden_name', 'mother_first_name', 'mother_middle_name'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -37,5 +37,4 @@ class EmployeeModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
 }

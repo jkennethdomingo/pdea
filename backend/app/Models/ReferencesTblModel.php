@@ -4,18 +4,18 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EmployeeModel extends Model
+class ReferencesTblModel extends Model
 {
-    protected $table            = 'employee';
-    protected $primaryKey       = 'EmployeeID';
-    protected $useAutoIncrement = false;
+    protected $table            = 'references_tbl';
+    protected $primaryKey       = 'reference_id';
+    protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'cs_id_no', 'Email', 'Password', 'DateOfEntry', 'Eligibility', 'IPCR'];
+    protected $allowedFields    = ['cs_id_no', 'name', 'address', 'telephone_no'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -37,5 +37,4 @@ class EmployeeModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
 }
