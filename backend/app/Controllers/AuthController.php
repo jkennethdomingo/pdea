@@ -11,13 +11,13 @@ class AuthController extends ResourceController
 {
     use ResponseTrait;
 
-    protected $employeeModel;
+    protected $personalInformationModel;
     protected $employeeAuthRoleModel;
     protected $authRoleModel;
 
     public function __construct()
     {
-        $this->employeeModel = new \App\Models\EmployeeModel();
+        $this->personalInformationModel = new \App\Models\PersonalInformationModel();
         $this->employeeAuthRoleModel = new \App\Models\EmployeeAuthRoleModel();
         $this->authRoleModel = new \App\Models\AuthRoleModel();
     }
@@ -59,7 +59,7 @@ class AuthController extends ResourceController
 
     public function loginUser($email, $password)
     {
-        $user = $this->employeeModel->where('Email', $email)->first();
+        $user = $this->personalInformationModel->where('Email', $email)->first();
         
         if (!$user) {
             throw new \Exception('Invalid login');

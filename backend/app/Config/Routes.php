@@ -14,7 +14,7 @@ $routes->group('api', function($routes)
     });
 
     $routes->group('employee', function($routes) {
-        $routes->post('insert', 'EmployeeController::create', ['filter' => 'role:role=HR_ADMIN']);
+        $routes->post('insert', 'AccountInformationController::create', ['filter' => 'role:role=HR_ADMIN']);
         $routes->post('getDataforDropdown', 'EmployeeController::getDataForDropdowns', ['filter' => 'role:role=HR_ADMIN']);
     });
 

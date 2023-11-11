@@ -29,4 +29,13 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+    public static function personalInformationModel($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('personalInformationModel');
+        }
+
+        return new \App\Models\PersonalInformationModel();
+    }
+
 }
