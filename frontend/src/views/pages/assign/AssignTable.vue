@@ -10,120 +10,258 @@ onMounted(() => {
 </script>
 
 <template>
-    
-<!-- component -->
-<div class="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
-  <div class="container max-w-screen-lg mx-auto">
-    <div>
-      <h2 class="font-semibold text-xl text-gray-600">Responsive Form</h2>
-      <p class="text-gray-500 mb-6">Form is mobile responsive. Give it a try.</p>
+    <form>
+  <!-- Name and Date of Birth Section -->
+<div class="mb-4 grid grid-cols-4 gap-4">
+  <!-- Surname -->
+  <div>
+    <label for="surname" class="block text-gray-700 text-sm font-bold mb-2">Surname:</label>
+    <input type="text" id="surname" name="surname" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  
+  <!-- First Name -->
+  <div>
+    <label for="firstname" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
+    <input type="text" id="firstname" name="firstname" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  
+  <!-- Middle Name -->
+  <div>
+    <label for="middlename" class="block text-gray-700 text-sm font-bold mb-2">Middle Name:</label>
+    <input type="text" id="middlename" name="middlename" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  
+  <!-- Name Extension -->
+  <div>
+    <label for="name_extension" class="block text-gray-700 text-sm font-bold mb-2">Name Extension:</label>
+    <input type="text" id="name_extension" name="name_extension" placeholder="e.g., Jr, Sr" class="shadow border rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+</div>
 
-      <div class="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
-        <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
-          <div class="text-gray-600">
-            <p class="font-medium text-lg">Personal Details</p>
-            <p>Please fill out all the fields.</p>
-          </div>
+</div>
 
-          <div class="lg:col-span-2">
-            <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-              <div class="md:col-span-5">
-                <label for="full_name">Full Name</label>
-                <input type="text" name="full_name" id="full_name" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" />
-              </div>
-
-              <div class="md:col-span-5">
-                <label for="email">Email Address</label>
-                <input type="text" name="email" id="email" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="email@domain.com" />
-              </div>
-
-              <div class="md:col-span-3">
-                <label for="address">Address / Street</label>
-                <input type="text" name="address" id="address" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="" />
-              </div>
-
-              <div class="md:col-span-2">
-                <label for="city">City</label>
-                <input type="text" name="city" id="city" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="" />
-              </div>
-
-              <div class="md:col-span-2">
-                <label for="country">Country / region</label>
-                <div class="h-10 bg-gray-50 flex border border-gray-200 rounded items-center mt-1">
-                  <input name="country" id="country" placeholder="Country" class="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent" value="" />
-                  <button tabindex="-1" class="cursor-pointer outline-none focus:outline-none transition-all text-gray-300 hover:text-red-600">
-                    <svg class="w-4 h-4 mx-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                  <button tabindex="-1" for="show_more" class="cursor-pointer outline-none focus:outline-none border-l border-gray-200 transition-all text-gray-300 hover:text-blue-600">
-                    <svg class="w-4 h-4 mx-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                  </button>
-                </div>
-              </div>
-
-              <div class="md:col-span-2">
-                <label for="state">State / province</label>
-                <div class="h-10 bg-gray-50 flex border border-gray-200 rounded items-center mt-1">
-                  <input name="state" id="state" placeholder="State" class="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent" value="" />
-                  <button tabindex="-1" class="cursor-pointer outline-none focus:outline-none transition-all text-gray-300 hover:text-red-600">
-                    <svg class="w-4 h-4 mx-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                  <button tabindex="-1" for="show_more" class="cursor-pointer outline-none focus:outline-none border-l border-gray-200 transition-all text-gray-300 hover:text-blue-600">
-                    <svg class="w-4 h-4 mx-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                  </button>
-                </div>
-              </div>
-
-              <div class="md:col-span-1">
-                <label for="zipcode">Zipcode</label>
-                <input type="text" name="zipcode" id="zipcode" class="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50" placeholder="" value="" />
-              </div>
-
-              <div class="md:col-span-5">
-                <div class="inline-flex items-center">
-                  <input type="checkbox" name="billing_same" id="billing_same" class="form-checkbox" />
-                  <label for="billing_same" class="ml-2">My billing address is different than above.</label>
-                </div>
-              </div>
-
-              <div class="md:col-span-2">
-                <label for="soda">How many soda pops?</label>
-                <div class="h-10 w-28 bg-gray-50 flex border border-gray-200 rounded items-center mt-1">
-                  <button tabindex="-1" for="show_more" class="cursor-pointer outline-none focus:outline-none border-r border-gray-200 transition-all text-gray-500 hover:text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                  </button>
-                  <input name="soda" id="soda" placeholder="0" class="px-2 text-center appearance-none outline-none text-gray-800 w-full bg-transparent" value="0" />
-                  <button tabindex="-1" for="show_more" class="cursor-pointer outline-none focus:outline-none border-l border-gray-200 transition-all text-gray-500 hover:text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2 fill-current" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-      
-              <div class="md:col-span-5 text-right">
-                <div class="inline-flex items-end">
-                  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <a href="https://www.buymeacoffee.com/dgauderman" target="_blank" class="md:absolute bottom-0 right-0 p-4 float-right">
-      <img src="https://www.buymeacoffee.com/assets/img/guidelines/logo-mark-3.svg" alt="Buy Me A Coffee" class="transition-all rounded-full w-14 -rotate-45 hover:shadow-sm shadow-lg ring hover:ring-4 ring-white">
-    </a>
+<!-- Date of Birth and Place of Birth Section -->
+<div class="mb-4 grid grid-cols-4 gap-4 items-center">
+  <!-- Date of Birth -->
+  <div class="col-span-1">
+    <label for="dob" class="block text-gray-700 text-sm font-bold mb-2">
+      Date of Birth (mm/dd/yyyy):
+    </label>
+    <input type="date" id="dob" name="dob" class="shadow border rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  
+  <!-- Place of Birth -->
+  <div class="col-span-2">
+    <label for="placeofbirth" class="block text-gray-700 text-sm font-bold mb-2">
+      Place of Birth:
+    </label>
+    <input type="text" id="placeofbirth" name="placeofbirth" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
   </div>
 </div>
+
+
+<div class="mb-4 flex justify-between items-center gap-28">
+  
+  <!-- Sex Section -->
+  <div>
+    <span class="block text-gray-700 text-sm font-bold mb-2">Sex:</span>
+    <label class="inline-flex items-center">
+      <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="sex" value="male"><span class="ml-2 text-gray-700">Male</span>
+    </label>
+    <label class="inline-flex items-center ml-4">
+      <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="sex" value="female"><span class="ml-2 text-gray-700">Female</span>
+    </label>
+  </div>
+
+  <!-- Civil Status Section -->
+  <div class="flex-grow">
+    <span class="block text-gray-700 text-sm font-bold mb-2">Civil Status:</span>
+    <div class="flex items-center">
+      <label class="inline-flex items-center">
+        <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="civilstatus" value="single"><span class="ml-2 text-gray-700">Single</span>
+      </label>
+      <label class="inline-flex items-center ml-4">
+        <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="civilstatus" value="married"><span class="ml-2 text-gray-700">Married</span>
+      </label>
+      <label class="inline-flex items-center ml-4">
+        <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="civilstatus" value="widowed"><span class="ml-2 text-gray-700">Widowed</span>
+      </label>
+      <label class="inline-flex items-center ml-4">
+        <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="civilstatus" value="separated"><span class="ml-2 text-gray-700">Separated</span>
+      </label>
+      <label class="inline-flex items-center ml-4">
+        <input type="radio" class="form-radio h-5 w-5 text-gray-600" name="civilstatus" value="other"><span class="ml-2 text-gray-700">Other/s:</span>
+      </label>
+      <input type="text" id="other_civilstatus" name="other_civilstatus" class="ml-2 shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Please specify">
+    </div>
+  </div>
+
+</div>
+
+<!-- Height, Weight, and Blood Type in one line with shorter input boxes -->
+<div class="mb-4 grid grid-cols-3 gap-4 items-center">
+  <!-- Height -->
+  <div>
+    <label for="height" class="block text-gray-700 text-sm font-bold mb-2">Height (m):</label>
+    <input type="text" id="height" name="height" class="shadow appearance-none border rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  <!-- Weight -->
+  <div>
+    <label for="weight" class="block text-gray-700 text-sm font-bold mb-2">Weight (kg):</label>
+    <input type="text" id="weight" name="weight" class="shadow appearance-none border rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  <!-- Blood Type -->
+  <div>
+    <label for="bloodtype" class="block text-gray-700 text-sm font-bold mb-2">Blood Type:</label>
+    <input type="text" id="bloodtype" name="bloodtype" class="shadow appearance-none border rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+</div>
+
+
+  <!-- GSIS, PAG-IBIG, PHILHEALTH IDs -->
+  <div class="mb-4 md:grid md:grid-cols-3 md:gap-4">
+    <div class="mb-4 md:mr-2">
+      <label for="gsis" class="block text-gray-700 text-sm font-bold mb-2">GSIS ID No.:</label>
+      <input type="text" id="gsis" name="gsis" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div class="mb-4 md:mx-2">
+      <label for="pagibig" class="block text-gray-700 text-sm font-bold mb-2">PAG-IBIG ID No.:</label>
+      <input type="text" id="pagibig" name="pagibig" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div class="mb-4 md:ml-2">
+      <label for="philhealth" class="block text-gray-700 text-sm font-bold mb-2">PHILHEALTH No.:</label>
+      <input type="text" id="philhealth" name="philhealth" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div class="mb-4 md:mr-2">
+      <label for="gsis" class="block text-gray-700 text-sm font-bold mb-2">SSS No.:</label>
+      <input type="text" id="sss" name="sss" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div class="mb-4 md:mx-2">
+      <label for="pagibig" class="block text-gray-700 text-sm font-bold mb-2">TIN No.:</label>
+      <input type="text" id="tin" name="tin" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div class="mb-4 md:ml-2">
+      <label for="philhealth" class="block text-gray-700 text-sm font-bold mb-2">AGENCY EMPLOYEE No.:</label>
+      <input type="text" id="agency" name="agency" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+  </div>
+
+<!-- Address Section -->
+<div class="mb-4">
+  <span class="block text-gray-700 text-sm font-bold mb-2">Residential Address:</span>
+  <div class="grid grid-cols-6 gap-4">
+    <!-- House/Block/Lot No. -->
+    <div class="col-span-2">
+      <input type="text" placeholder="House/Block/Lot No." name="house_block_lot_no" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <!-- Street -->
+    <div class="col-span-3">
+      <input type="text" placeholder="Street" name="street" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <!-- Subdivision/Village -->
+    <div class="col-span-1">
+      <input type="text" placeholder="Subdivision/Village" name="subdivision_village" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <!-- Barangay Address Picker -->
+    <div class="col-span-1">
+      <select id="barangay" name="barangay" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <option value="">Select Barangay</option>
+        <!-- Additional options will be populated by the API -->
+      </select>
+    </div>
+    <!-- City/Municipality Address Picker -->
+    <div class="col-span-2">
+      <select id="city_municipality" name="city_municipality" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <option value="">Select City/Municipality</option>
+        <!-- Additional options will be populated by the API -->
+      </select>
+    </div>
+    <!-- Province Address Picker -->
+    <div class="col-span-2">
+      <select id="province" name="province" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <option value="">Select Province</option>
+        <!-- Additional options will be populated by the API -->
+      </select>
+    </div>
+    <!-- ZIP Code -->
+    <div class="col-span-1">
+      <input type="text" placeholder="ZIP Code" name="zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+  </div>
+</div>
+
+
+<div class="mb-4">
+  <span class="block text-gray-700 text-sm font-bold mb-2">Permanent Address:</span>
+  <div class="grid grid-cols-6 gap-4">
+    <!-- House/Block/Lot No. -->
+    <div class="col-span-2">
+      <input type="text" placeholder="House/Block/Lot No." name="house_block_lot_no" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <!-- Street -->
+    <div class="col-span-3">
+      <input type="text" placeholder="Street" name="street" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <!-- Subdivision/Village -->
+    <div class="col-span-1">
+      <input type="text" placeholder="Subdivision/Village" name="subdivision_village" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <!-- Barangay Address Picker -->
+    <div class="col-span-1">
+      <select id="barangay" name="barangay" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <option value="">Select Barangay</option>
+        <!-- Additional options will be populated by the API -->
+      </select>
+    </div>
+    <!-- City/Municipality Address Picker -->
+    <div class="col-span-2">
+      <select id="city_municipality" name="city_municipality" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <option value="">Select City/Municipality</option>
+        <!-- Additional options will be populated by the API -->
+      </select>
+    </div>
+    <!-- Province Address Picker -->
+    <div class="col-span-2">
+      <select id="province" name="province" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <option value="">Select Province</option>
+        <!-- Additional options will be populated by the API -->
+      </select>
+    </div>
+    <!-- ZIP Code -->
+    <div class="col-span-1">
+      <input type="text" placeholder="ZIP Code" name="zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+  </div>
+</div>
+
+  <!-- Repeat the same pattern for Residential and Permanent Address -->
+<!-- Contact Information Section -->
+<div class="mb-4 grid grid-cols-3 gap-4 items-center">
+  <!-- Telephone No. -->
+  <div>
+    <label for="telephone" class="block text-gray-700 text-sm font-bold mb-2">Telephone No.:</label>
+    <input type="tel" id="telephone" name="telephone" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="(555) 123-4567">
+  </div>
+  <!-- Mobile No. -->
+  <div>
+    <label for="mobile" class="block text-gray-700 text-sm font-bold mb-2">Mobile No.:</label>
+    <input type="tel" id="mobile" name="mobile" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="123-456-7890">
+  </div>
+  <!-- E-mail Address -->
+  <div>
+    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">E-mail Address (if any):</label>
+    <input type="email" id="email" name="email" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="example@domain.com">
+  </div>
+</div>
+
+ <!-- Next Button -->
+<div class="flex items-center justify-end">
+  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+    Next
+  </button>
+</div>
+
+</form>
+
+
   </template>
   
