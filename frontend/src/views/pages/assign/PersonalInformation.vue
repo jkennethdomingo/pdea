@@ -111,6 +111,23 @@ const handleSubmit = () => {
   </div>
 </div>
 
+<!-- Date of Birth and Place of Birth Section -->
+<div class="mb-4 grid grid-cols-4 gap-4 items-center ">
+      <!-- Date of Birth -->
+      <div class="col-span-1">
+        <label for="dob" class="block text-gray-700 text-sm dark:text-white mb-2">
+          Date of Birth (mm/dd/yyyy):
+        </label>
+        <input type="date" id="dob" v-model="formData.date_of_birth" class="shadow border  dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
+      </div>
+      <!-- Place of Birth -->
+      <div class="col-span-2">
+        <label for="placeofbirth" class="block text-gray-700 text-sm dark:text-white mb-2">
+          Place of Birth:
+        </label>
+        <input type="text" id="placeofbirth" v-model="formData.place_of_birth" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+    </div>
 
     <div class="mb-4 flex justify-between items-center gap-28">
       <!-- Sex Section -->

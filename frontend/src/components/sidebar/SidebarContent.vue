@@ -52,7 +52,7 @@ const isAssignRouteActive = () => {
         >
         </SidebarLink>
         <SidebarLink
-            icon="clarity:assign-user-solid"
+            icon="mdi:calendar"
             :to="{ name: 'Calendar' }"
             title="Calendar"
             :active="isCurrentRoute('Calendar')"
