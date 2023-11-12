@@ -1,9 +1,22 @@
 import { createStore } from 'vuex';
+import axios from 'axios'; // Ensure axios is imported if you plan to use it for API calls
 
 // State
 const state = {
     token: null,
     userRole: null,
+    formData: {
+        // Initialize states for each page of the form
+        page1: { /* ... fields for page 1 ... */ },
+        page2: { /* ... fields for page 2 ... */ },
+        page3: { /* ... fields for page 2 ... */ },
+        page4: { /* ... fields for page 2 ... */ },
+        page5: { /* ... fields for page 2 ... */ },
+        page6: { /* ... fields for page 2 ... */ },
+        page7: { /* ... fields for page 2 ... */ },
+        page8: { /* ... fields for page 2 ... */ },
+        page9: { /* ... fields for page 9 ... */ }
+    },
 };
 
 // Mutations
@@ -15,6 +28,9 @@ const mutations = {
     clearAuth(state) {
         state.token = null;
         state.userRole = null;
+    },
+    updateFormData(state, { page, data }) {
+        state.formData[page] = { ...state.formData[page], ...data };
     },
 };
 
@@ -31,8 +47,18 @@ const actions = {
     initializeAuth({ commit }) {
         const authData = getStoredAuthData();
         if (authData) {
-        commit('setAuth', { token: authData.token, role: authData.role });
+            commit('setAuth', { token: authData.token, role: authData.role });
         }
+    },
+    submitFormData({ state }) {
+        // Implement the logic to submit the form data
+        axios.post('api/employee/insert', state.formData)
+            .then(response => {
+                // Handle response
+            })
+            .catch(error => {
+                // Handle error
+            });
     },
 };
 
