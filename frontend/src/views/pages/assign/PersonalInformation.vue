@@ -242,11 +242,11 @@ const handleSubmit = () => {
     <!-- Citizenship by Birth and Naturalization Checkboxes -->
     <div class="flex items-center space-x-2">
         <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox checkbox-by-birth dark:bg-dark-eval-2" v-model="formData.citizenship" value="by birth">
+            <input type="checkbox" class="form-checkbox checkbox-by-birth dark:bg-dark-eval-2" v-model="formData.dual_citizenship_type" true-value="by birth">
             <span class="ml-2">by birth</span>
         </label>
         <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox checkbox-by-naturalization dark:bg-dark-eval-2" v-model="formData.citizenship" value="by naturalization">
+            <input type="checkbox" class="form-checkbox checkbox-by-naturalization dark:bg-dark-eval-2" v-model="formData.dual_citizenship_type" true-value="by naturalization">
             <span class="ml-2">by naturalization</span>
         </label>
     </div>
@@ -259,7 +259,7 @@ const handleSubmit = () => {
     <div class="relative">
       <select id="country" v-model="formData.country" class="  dark:bg-dark-eval-2 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2"> <!-- Adjusted padding -->
         <option value="" disabled selected>Select a country</option>
-        <option v-for="country in countryData" :key="country.code" :value="country.code">{{ country.name }}</option>
+        <option v-for="country in countryData" :key="country.code" :value="country.name">{{ country.name }}</option>
       </select>
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
         <!-- SVG for the dropdown icon -->
@@ -458,9 +458,6 @@ const handleSubmit = () => {
       Next
     </Button>
 
-    <button @click="handleSubmit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-    Submit Form
-</button>
   </div>
   </form>
 </template>
