@@ -2,20 +2,20 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import axios from 'axios';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import '@/assets/css/main.css';
 import 'flowbite';
 import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
-
-// Set axios defaults
-axios.defaults.baseURL = "http://backend.test/api/";
+import apiService from '@/composables/axios-setup'; // Ensure this path is correct
 
 const app = createApp(App);
 
-app.use(VCalendar, {})
+// Optionally, if you want to use apiService globally
+app.config.globalProperties.$api = apiService;
+
+app.use(VCalendar, {});
 app.use(router);
 app.use(store);
 

@@ -7,7 +7,11 @@ const state = {
     userRole: null,
     formData: {
         // Initialize states for each page of the form
-        page1: { /* ... fields for page 1 ... */ },
+        page1: { 
+            designation: "",
+            position: "", 
+            section: "", 
+         },
         page2: { /* ... fields for page 2 ... */ },
         page3: { /* ... fields for page 2 ... */ },
         page4: { /* ... fields for page 2 ... */ },
