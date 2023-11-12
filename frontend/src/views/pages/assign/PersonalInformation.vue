@@ -164,6 +164,43 @@ onMounted(async () => {
   </div>
   <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
 
+  <div class="space-y-4">
+  <!-- Citizenship Section -->
+  <div class="flex items-center">
+    <div class="mr-4">
+      <label class="block text-sm font-bold mb-1">CITIZENSHIP</label>
+      <div class="mt-2">
+        <label class="inline-flex items-center">
+          <input type="checkbox" class="form-checkbox" name="citizenship" value="Filipino">
+          <span class="ml-2">Filipino</span>
+        </label>
+        <label class="inline-flex items-center ml-6">
+          <input type="checkbox" class="form-checkbox" name="dual_citizenship" value="Dual Citizenship">
+          <span class="ml-2">Dual Citizenship</span>
+        </label>
+        <div class="mt-2 ml-6">
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox" name="citizenship_by_birth" value="by birth">
+            <span class="ml-2">by birth</span>
+          </label>
+          <label class="inline-flex items-center ml-4">
+            <input type="checkbox" class="form-checkbox" name="citizenship_by_naturalization" value="by naturalization">
+            <span class="ml-2">by naturalization</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1">
+      <label for="country" class="block text-sm font-bold mb-1">Pls. indicate country:</label>
+      <select id="country" name="country" class="block w-48 mt-1 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+        <option value="">Select Country</option>
+        <!-- Country options will be populated here by the API -->
+      </select>
+    </div>
+  </div>
+</div>
+<hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
 <!-- Address Section -->
 <div class="mb-4">
   <span class="block text-gray-700 text-sm dark:text-white mb-2">Residential Address:</span>
@@ -273,32 +310,34 @@ onMounted(async () => {
   </div>
 </div>
 
-    <!-- Dropdowns for Designation, Position, and Section -->
-    <div>
-    <label for="designation" class="block text-sm mb-2 dark:text-white">Designation:</label>
-    <select id="designation" name="designation" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-      <option value="">Select Designation</option>
-      <option v-for="designation in dropdownData.designations" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
-    </select>
-  </div>
+<div class="grid grid-cols-3 gap-4">
+      <!-- Designation -->
+      <div>
+        <label for="designation" class="dark:text-white block text-sm mb-2">Designation:</label>
+        <select id="designation" name="designation" class="  dark:text-white shadow border rounded w-full py-2 px-3 leading-tight  dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+          <option value="">Select Designation</option>
+          <!-- Additional options here -->
+        </select>
+      </div>
 
       <!-- Position -->
       <div>
-        <label for="position" class="block text-sm mb-2  dark:text-white ">Position:</label>
-        <select id="position" name="position" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+        <label for="position" class="dark:text-white block text-sm mb-2">Position:</label>
+        <select id="position" name="position" class=" dark:text-white shadow border rounded w-full py-2 px-3 leading-tight  dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
           <option value="">Select Position</option>
-          <option v-for="position in dropdownData.positions" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
+          <!-- Additional options here -->
         </select>
       </div>
 
       <!-- Section -->
       <div>
-        <label for="section" class="block text-sm mb-2  dark:text-white ">Section:</label>
-        <select id="section" name="section" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+        <label for="section" class="dark:text-white block text-sm mb-2">Section:</label>
+        <select id="section" name="section" class="  dark:text-white shadow border rounded w-full py-2 px-3 leading-tight  dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
           <option value="">Select Section</option>
-          <option v-for="section in dropdownData.sections" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
+          <!-- Additional options here -->
         </select>
       </div>
+    </div>
 
     <div class="mb-4 grid grid-cols-3 gap-4 py-5 items-end">
   <!-- Date Picker for Date of Entry -->
@@ -320,9 +359,12 @@ onMounted(async () => {
   </div>
 </div>
 
-<Button :to="{ name: 'Family Background' }">
-  Next
-</Button>
+<div class="flex justify-end">
+  <Button :to="{ name: 'Family Background' }" class="bg-green-600 text-white">
+    Next
+  </Button>
+</div>
+
 
 
 
