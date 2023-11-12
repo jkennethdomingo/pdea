@@ -53,54 +53,38 @@ const handleSubmit = () => {
 
 <template>
   <form @submit.prevent="handleSubmit">
-    <p class="text-xl text-gray-900 dark:text-white">Personal Information</p>
-    
-    <!-- Form Fields -->
-    <div class="mb-4 grid grid-cols-4 gap-4">
-      <!-- Surname -->
-      <div>
-        <label for="surname" class="block text-gray-700 text-sm dark:text-white mb-2">Surname:</label>
-        <input type="text" id="surname" v-model="formData.surname" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- First Name -->
-      <div>
-        <label for="firstname" class="block text-gray-700 text-sm dark:text-white mb-2">First Name:</label>
-        <input type="text" id="firstname" v-model="formData.first_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- Middle Name -->
-      <div>
-        <label for="middlename" class="block text-gray-700 text-sm dark:text-white mb-2">Middle Name:</label>
-        <input type="text" id="middlename" v-model="formData.middle_name" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- Name Extension -->
-      <div>
-        <label for="name_extension" class="block text-gray-700 text-sm dark:text-white mb-2">Name Extension:</label>
-        <input type="text" id="name_extension" v-model="formData.name_extension" placeholder="e.g., Jr, Sr" class="shadow border  dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-    </div>
+    <p class="text-xl text-gray-900 dark:text-white font-bold">Personal Information</p>
 
-    <!-- Date of Birth and Place of Birth Section -->
-    <div class="mb-4 grid grid-cols-4 gap-4 items-center ">
-      <!-- Date of Birth -->
-      <div class="col-span-1">
-        <label for="dob" class="block text-gray-700 text-sm dark:text-white mb-2">
-          Date of Birth (mm/dd/yyyy):
-        </label>
-        <input type="date" id="dob" v-model="formData.date_of_birth" class="shadow border  dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- Place of Birth -->
-      <div class="col-span-2">
-        <label for="placeofbirth" class="block text-gray-700 text-sm dark:text-white mb-2">
-          Place of Birth:
-        </label>
-        <input type="text" id="placeofbirth" v-model="formData.place_of_birth" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- Employee Id -->
-      <div>
-        <label for="EmployeeID" class="block text-gray-700 text-sm dark:text-white mb-2">Employee ID:</label>
-        <input type="text" id="EmployeeID" v-model="formData.EmployeeID" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-    </div>
+<!-- Employee ID -->
+<div class="mb-4">
+  <label for="EmployeeID" class="block text-gray-700 text-sm dark:text-white mb-2">Employee ID:</label>
+  <input type="text" id="EmployeeID" v-model="formData.EmployeeID" class="shadow border dark:bg-dark-eval-2 rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+</div>
+
+<!-- Form Fields -->
+<div class="mb-4 grid grid-cols-4 gap-4">
+  <!-- Surname -->
+  <div>
+    <label for="surname" class="block text-gray-700 text-sm dark:text-white mb-2">Surname:</label>
+    <input type="text" id="surname" v-model="formData.surname" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  <!-- First Name -->
+  <div>
+    <label for="firstname" class="block text-gray-700 text-sm dark:text-white mb-2">First Name:</label>
+    <input type="text" id="firstname" v-model="formData.first_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  <!-- Middle Name -->
+  <div>
+    <label for="middlename" class="block text-gray-700 text-sm dark:text-white mb-2">Middle Name:</label>
+    <input type="text" id="middlename" v-model="formData.middle_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+  <!-- Name Extension -->
+  <div>
+    <label for="name_extension" class="block text-gray-700 text-sm dark:text-white mb-2">Name Extension:</label>
+    <input type="text" id="name_extension" v-model="formData.name_extension" placeholder="e.g., Jr, Sr" class="shadow border dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
+</div>
+
 
     <div class="mb-4 flex justify-between items-center gap-28">
       <!-- Sex Section -->
@@ -190,6 +174,60 @@ const handleSubmit = () => {
         </div>
       </div>
     <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
+    <div class="flex items-center space-x-4">
+  <!-- Citizenship Section -->
+  <div class="flex items-center space-x-3"> <!-- Adjusted space between items -->
+    <div class=" text-black dark:text-white">
+      Citizenship:
+    </div>
+
+    <!-- Filipino Checkbox -->
+    <div class="flex items-center space-x-2">
+      <label class="inline-flex items-center">
+        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="Filipino">
+        <span class="ml-2">Filipino</span>
+      </label>
+
+      <!-- Dual Citizenship Checkbox -->
+      <label class="inline-flex items-center">
+        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="Dual Citizenship">
+        <span class="ml-2">Dual Citizenship</span>
+      </label>
+    </div>
+
+    <!-- Citizenship by Birth and Naturalization Checkboxes -->
+    <div class="flex items-center space-x-2">
+      <label class="inline-flex items-center">
+        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="by birth">
+        <span class="ml-2">by birth</span>
+      </label>
+      <label class="inline-flex items-center">
+        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="by naturalization">
+        <span class="ml-2">by naturalization</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Country Picker -->
+  <div class="flex items-center">
+    <label for="country" class="mr-2 text-black dark:text-white">Please indicate country:</label>
+    <div class="relative">
+      <select id="country" name="country" class="  dark:bg-dark-eval-2 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2"> <!-- Adjusted padding -->
+        <option value="">Select Country</option>
+        <!-- Country options will be populated here by the API -->
+      </select>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <!-- SVG for the dropdown icon -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
 
     <!-- Address Section -->
     <div class="mb-4">
@@ -348,9 +386,10 @@ const handleSubmit = () => {
       </div>
     </div>
 
-
+    <div class="flex justify-end">
     <Button :to="{ name: 'Family Background' }">
       Next
     </Button>
+  </div>
   </form>
 </template>

@@ -31,7 +31,7 @@ const handleSubmit = () => {
 
 <template>
 
-  <p class="text-xl text-gray-900 dark:text-white">Family Background</p>
+  <p class="text-xl text-gray-900 dark:text-white font-bold">Family Background</p>
     <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Surname -->
       <div>

@@ -30,7 +30,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-    <p class="text-xl text-gray-900 dark:text-white">Educational Background</p>
+    <p class="text-xl text-gray-900 dark:text-white font-bold">Educational Background</p>
     <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Elementary -->
       <div>
@@ -198,13 +198,16 @@ const handleSubmit = () => {
         <input type="text" id="scholarship_academic_honors_received" v-model="formData.scholarship_academic_honors_received" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
    </div>
-
-
+<div class="flex justify-between">
+ <div>
     <Button :to="{ name: 'Family Background' }">
   Back
 </Button>
-
+</div>
+ <div>
 <Button :to="{ name: 'Civil Service Eligibility' }">
   Next
 </Button>
+</div>
+</div>
 </template>
