@@ -1,12 +1,29 @@
 <script setup>
+import axios from 'axios';
+import { reactive, onMounted } from 'vue';
 import Button from '@/components/Button.vue';
-import { ref, onMounted } from 'vue';
 import { initDropdowns } from 'flowbite';
 
-onMounted(() => {
-    initDropdowns();
-    // Any additional logic for onMounted
-  });
+const dropdownData = reactive({
+  designations: [],
+  positions: [],
+  sections: []
+});
+
+onMounted(async () => {
+  initDropdowns();
+  try {
+    const response = await axios.post('employee/getDropdownData');
+    if (response && response.data) {
+      dropdownData.designations = response.data.designations;
+      dropdownData.positions = response.data.positions;
+      dropdownData.sections = response.data.sections;
+    }
+  } catch (error) {
+    console.error('Error fetching dropdown data:', error);
+    // Handle error appropriately
+  }
+});
 </script>
 
 <template>
@@ -257,22 +274,20 @@ onMounted(() => {
 </div>
 
     <!-- Dropdowns for Designation, Position, and Section -->
-    <div class="grid grid-cols-3 gap-4">
-      <!-- Designation -->
-      <div>
-        <label for="designation" class="block text-sm mb-2  dark:text-white ">Designation:</label>
-        <select id="designation" name="designation" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-          <option value="">Select Designation</option>
-          <!-- Additional options here -->
-        </select>
-      </div>
+    <div>
+    <label for="designation" class="block text-sm mb-2 dark:text-white">Designation:</label>
+    <select id="designation" name="designation" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+      <option value="">Select Designation</option>
+      <option v-for="designation in dropdownData.designations" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
+    </select>
+  </div>
 
       <!-- Position -->
       <div>
         <label for="position" class="block text-sm mb-2  dark:text-white ">Position:</label>
         <select id="position" name="position" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
           <option value="">Select Position</option>
-          <!-- Additional options here -->
+          <option v-for="position in dropdownData.positions" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
         </select>
       </div>
 
@@ -281,10 +296,9 @@ onMounted(() => {
         <label for="section" class="block text-sm mb-2  dark:text-white ">Section:</label>
         <select id="section" name="section" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
           <option value="">Select Section</option>
-          <!-- Additional options here -->
+          <option v-for="section in dropdownData.sections" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
         </select>
       </div>
-    </div>
 
     <div class="mb-4 grid grid-cols-3 gap-4 py-5 items-end">
   <!-- Date Picker for Date of Entry -->
