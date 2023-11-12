@@ -1,24 +1,80 @@
 import { createStore } from 'vuex';
-import axios from 'axios'; // Ensure axios is imported if you plan to use it for API calls
+import apiService from '@/composables/axios-setup';
+
+// Helper function to retrieve and parse stored authentication data
+function getStoredAuthData() {
+    const authDataString = localStorage.getItem('authData') || sessionStorage.getItem('authData');
+    return authDataString ? JSON.parse(authDataString) : null;
+}
+
+// Helper function to transform the form data
+function transformFormData(formData) {
+    const transformedData = {};
+
+    // Flatten the nested structure
+    Object.keys(formData).forEach(page => {
+        Object.keys(formData[page]).forEach(field => {
+            // Remove the page_ prefix and store in the transformedData object
+            transformedData[field] = formData[page][field];
+        });
+    });
+
+    // Return the transformed data
+    return transformedData;
+}
 
 // State
 const state = {
     token: null,
     userRole: null,
     formData: {
-        // Initialize states for each page of the form
-        page1: { 
-            designation: "",
-            position: "", 
-            section: "", 
-         },
+        page1: {
+            EmployeeID: '',
+            surname: '',
+            first_name: '',
+            middle_name: '',
+            name_extension: '',
+            sex: '',
+            civil_status: '',
+            height: '',
+            weight: '',
+            blood_type: '',
+            gsis_id_no: '',
+            pag_ibig_id_no: '',
+            philhealth_no: '',
+            sss_no: '',
+            tin_no: '',
+            agency_employee_no: '',
+            citizenship: '',
+            country: '',
+            residentialForm: {
+                house_block_lot_no: '',
+                street: '',
+                subdivision_village: '',
+                region: '',
+                province: '',
+                municipality: '',
+                barangay: '',
+                zip_code: '',
+            },
+            permanentForm: {
+                house_block_lot_no: '',
+                street: '',
+                subdivision_village: '',
+                region: '',
+                province: '',
+                municipality: '',
+                barangay: '',
+                zip_code: '',
+            },
+        },
         page2: { /* ... fields for page 2 ... */ },
-        page3: { /* ... fields for page 2 ... */ },
-        page4: { /* ... fields for page 2 ... */ },
-        page5: { /* ... fields for page 2 ... */ },
-        page6: { /* ... fields for page 2 ... */ },
-        page7: { /* ... fields for page 2 ... */ },
-        page8: { /* ... fields for page 2 ... */ },
+        page3: { /* ... fields for page 3 ... */ },
+        page4: { /* ... fields for page 4 ... */ },
+        page5: { /* ... fields for page 5 ... */ },
+        page6: { /* ... fields for page 6 ... */ },
+        page7: { /* ... fields for page 7 ... */ },
+        page8: { /* ... fields for page 8 ... */ },
         page9: { /* ... fields for page 9 ... */ }
     },
 };
@@ -55,8 +111,11 @@ const actions = {
         }
     },
     submitFormData({ state }) {
+        // Transform the data before submitting
+        const transformedFormData = transformFormData(state.formData);
+
         // Implement the logic to submit the form data
-        axios.post('api/employee/insert', state.formData)
+        apiService.post('employee/insert', transformedFormData)
             .then(response => {
                 // Handle response
             })
@@ -65,12 +124,6 @@ const actions = {
             });
     },
 };
-
-// Helper function to retrieve and parse stored authentication data
-function getStoredAuthData() {
-    const authDataString = localStorage.getItem('authData') || sessionStorage.getItem('authData');
-    return authDataString ? JSON.parse(authDataString) : null;
-}
 
 // Store
 export default createStore({

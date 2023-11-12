@@ -3,8 +3,10 @@ import { computed, reactive, ref, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
 import { initDropdowns } from 'flowbite';
-import apiService from '@/composables/axios-setup'; // Ensure this path is correct
+import apiService from '@/composables/axios-setup';
 import bloodTypesData from '@/assets/json/bloodtype.json';
+import addressData from '@/assets/json/address.json';
+import countriesData from '@/assets/json/countries.json';
 
 const store = useStore();
 
@@ -15,6 +17,30 @@ const dropdownData = reactive({
 });
 
 const bloodTypes = bloodTypesData.bloodTypes;
+const jsonData = computed(() => addressData);
+const countryData = computed(() => countriesData);
+
+const residentialForm = ref({
+  house_block_lot_no: '',
+  street: '',
+  subdivision_village: '',
+  region: '',
+  province: '',
+  municipality: '',
+  barangay: '',
+  zip_code: '',
+});
+
+const permanentForm = ref({
+  house_block_lot_no: '',
+  street: '',
+  subdivision_village: '',
+  region: '',
+  province: '',
+  municipality: '',
+  barangay: '',
+  zip_code: '',
+});
 
 
 // Form data bound to Vuex store
@@ -34,7 +60,7 @@ watch(formData, (newValue) => {
 onMounted(async () => {
   initDropdowns();
   try {
-    const response = await apiService.post('/employee/getDropdownData'); // Changed to apiService
+    const response = await apiService.post('/employee/getDropdownData');
     if (response && response.data) {
       dropdownData.designations = response.data.designations;
       dropdownData.positions = response.data.positions;
@@ -116,7 +142,7 @@ const handleSubmit = () => {
           <label class="inline-flex items-center ml-4">
             <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status"><span class="ml-2 text-gray-700 dark:text-white">Other/s:</span>
           </label>
-          <input type="text" id="other_civilstatus" v-model="formData.civilstatus" class="ml-2 shadow border rounded py-2 px-3  dark:bg-dark-eval-2 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline" placeholder="Please specify">
+          <input type="text" id="other_civilstatus" v-model="formData.civil_status" class="ml-2 shadow border rounded py-2 px-3  dark:bg-dark-eval-2 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline" placeholder="Please specify">
         </div>
       </div>
     </div>
@@ -178,44 +204,45 @@ const handleSubmit = () => {
     <div class="flex items-center space-x-4">
   <!-- Citizenship Section -->
   <div class="flex items-center space-x-3"> <!-- Adjusted space between items -->
-    <div class=" text-black dark:text-white">
-      Citizenship:
+    <div class="text-black dark:text-white">
+        Citizenship:
     </div>
 
     <!-- Filipino Checkbox -->
     <div class="flex items-center space-x-2">
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="Filipino">
-        <span class="ml-2">Filipino</span>
-      </label>
+        <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox checkbox-filipino dark:bg-dark-eval-2" v-model="formData.citizenship" true-value="Filipino">
+            <span class="ml-2">Filipino</span>
+        </label>
 
-      <!-- Dual Citizenship Checkbox -->
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="Dual Citizenship">
-        <span class="ml-2">Dual Citizenship</span>
-      </label>
+        <!-- Dual Citizenship Checkbox -->
+        <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox checkbox-dual-citizenship dark:bg-dark-eval-2" v-model="formData.citizenship" true-value="Dual Citizenship">
+            <span class="ml-2">Dual Citizenship</span>
+        </label>
     </div>
 
     <!-- Citizenship by Birth and Naturalization Checkboxes -->
     <div class="flex items-center space-x-2">
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="by birth">
-        <span class="ml-2">by birth</span>
-      </label>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox  dark:bg-dark-eval-2" name="citizenship" value="by naturalization">
-        <span class="ml-2">by naturalization</span>
-      </label>
+        <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox checkbox-by-birth dark:bg-dark-eval-2" v-model="formData.citizenship" value="by birth">
+            <span class="ml-2">by birth</span>
+        </label>
+        <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox checkbox-by-naturalization dark:bg-dark-eval-2" v-model="formData.citizenship" value="by naturalization">
+            <span class="ml-2">by naturalization</span>
+        </label>
     </div>
-  </div>
+</div>
+
 
   <!-- Country Picker -->
   <div class="flex items-center">
     <label for="country" class="mr-2 text-black dark:text-white">Please indicate country:</label>
     <div class="relative">
-      <select id="country" name="country" class="  dark:bg-dark-eval-2 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2"> <!-- Adjusted padding -->
-        <option value="">Select Country</option>
-        <!-- Country options will be populated here by the API -->
+      <select id="country" v-model="formData.country" class="  dark:bg-dark-eval-2 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2"> <!-- Adjusted padding -->
+        <option value="" disabled selected>Select a country</option>
+        <option v-for="country in countryData" :key="country.code" :value="country.code">{{ country.name }}</option>
       </select>
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
         <!-- SVG for the dropdown icon -->
@@ -235,40 +262,53 @@ const handleSubmit = () => {
     <div class="grid grid-cols-6 gap-4">
       <!-- House/Block/Lot No. -->
       <div class="col-span-2">
-        <input type="text" placeholder="House/Block/Lot No." v-model="formData.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+        <input type="text" placeholder="House/Block/Lot No." v-model="formData.residentialForm.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
       <!-- Street -->
       <div class="col-span-3">
-        <input type="text" placeholder="Street" v-model="formData.street" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
+        <input type="text" placeholder="Street" v-model="formData.residentialForm.street" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
       </div>
       <!-- Subdivision/Village -->
       <div class="col-span-1">
-        <input type="text" placeholder="Subdivision/Village" v-model="formData.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
+        <input type="text" placeholder="Subdivision/Village" v-model="formData.residentialForm.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
       </div>
-      <!-- Barangay Address Picker -->
-      <div class="col-span-1">
-        <select id="barangay" v-model="formData.barangay" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-          <option value="">Select Barangay</option>
-          <!-- Additional options will be populated by the API -->
-        </select>
+
+      <!-- Region -->
+      <div>
+          <label for="residential_region" class="block text-sm mb-2 dark:text-white">Region:</label>
+          <select id="residential_region" v-model="formData.residentialForm.region" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+              <option value="" disabled selected>Select Region</option>
+              <option v-for="(region, regionCode) in jsonData" :key="regionCode" :value="regionCode">{{ region.region_name }}</option>
+          </select>
       </div>
-      <!-- City/Municipality Address Picker -->
-      <div class="col-span-2">
-        <select id="city_municipality" v-model="formData.city_municipality" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-          <option value="">Select City/Municipality</option>
-          <!-- Additional options will be populated by the API -->
-        </select>
+
+      <div v-if="formData.residentialForm.region">
+          <label for="residential_province" class="block text-sm mb-2 dark:text-white">Province:</label>
+          <select id="residential_province" v-model="formData.residentialForm.province" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+              <option value="" disabled selected>Select Province</option>
+              <option v-for="(provinceData, provinceName) in jsonData[formData.residentialForm.region].province_list" :key="provinceName" :value="provinceName">{{ provinceName }}</option>
+          </select>
       </div>
-      <!-- Province Address Picker -->
-      <div class="col-span-2">
-        <select id="province" v-model="formData.province" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-          <option value="">Select Province</option>
-          <!-- Additional options will be populated by the API -->
-        </select>
+
+      <div v-if="formData.residentialForm.region && formData.residentialForm.province">
+          <label for="residential_municipality" class="block text-sm mb-2 dark:text-white">Municipality:</label>
+          <select id="residential_municipality" v-model="formData.residentialForm.municipality" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+              <option value="" disabled selected>Select Municipality</option>
+              <option v-for="(municipalityData, municipalityName) in jsonData[formData.residentialForm.region].province_list[formData.residentialForm.province].municipality_list" :key="municipalityName" :value="municipalityName">{{ municipalityName }}</option>
+          </select>
       </div>
+
+      <div v-if="formData.residentialForm.region && formData.residentialForm.province && formData.residentialForm.municipality">
+          <label for="residential_barangay" class="block text-sm mb-2 dark:text-white">Barangay:</label>
+          <select id="residential_barangay" v-model="formData.residentialForm.barangay" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+              <option value="" disabled selected>Select Barangay</option>
+              <option v-for="barangay in jsonData[formData.residentialForm.region].province_list[formData.residentialForm.province].municipality_list[formData.residentialForm.municipality].barangay_list" :key="barangay" :value="barangay">{{ barangay }}</option>
+          </select>
+      </div>
+
       <!-- ZIP Code -->
       <div class="col-span-1">
-        <input type="text" placeholder="ZIP Code" v-model="formData.zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+        <input type="text" placeholder="ZIP Code" v-model="formData.residentialForm.zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
       </div>
     </div>
     </div>
@@ -281,40 +321,50 @@ const handleSubmit = () => {
       <div class="grid grid-cols-6 gap-4">
           <!-- House/Block/Lot No. -->
           <div class="col-span-2">
-            <input type="text" placeholder="House/Block/Lot No." v-model="formData.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+            <input type="text" placeholder="House/Block/Lot No." v-model="formData.permanentForm.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
           </div>
           <!-- Street -->
           <div class="col-span-3">
-            <input type="text" placeholder="Street" v-model="formData.street" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
+            <input type="text" placeholder="Street" v-model="formData.permanentForm.street" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
           </div>
           <!-- Subdivision/Village -->
           <div class="col-span-1">
-            <input type="text" placeholder="Subdivision/Village" v-model="formData.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
+            <input type="text" placeholder="Subdivision/Village" v-model="formData.permanentForm.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
           </div>
-          <!-- Barangay Address Picker -->
-          <div class="col-span-1">
-            <select id="barangay" v-model="formData.barangay" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-              <option value="">Select Barangay</option>
-              <!-- Additional options will be populated by the API -->
-            </select>
+          <div>
+              <label for="permanent_region" class="block text-sm mb-2 dark:text-white">Region:</label>
+              <select id="permanent_region" v-model="formData.permanentForm.region" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+                  <option value="" disabled selected>Select Region</option>
+                  <option v-for="(region, regionCode) in jsonData" :key="regionCode" :value="regionCode">{{ region.region_name }}</option>
+              </select>
           </div>
-          <!-- City/Municipality Address Picker -->
-          <div class="col-span-2">
-            <select id="city_municipality" v-model="formData.city_municipality" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-              <option value="">Select City/Municipality</option>
-              <!-- Additional options will be populated by the API -->
-            </select>
+
+          <div v-if="formData.permanentForm.region">
+              <label for="permanent_province" class="block text-sm mb-2 dark:text-white">Province:</label>
+              <select id="permanent_province" v-model="formData.permanentForm.province" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+                  <option value="" disabled selected>Select Province</option>
+                  <option v-for="(provinceData, provinceName) in jsonData[formData.permanentForm.region].province_list" :key="provinceName" :value="provinceName">{{ provinceName }}</option>
+              </select>
           </div>
-          <!-- Province Address Picker -->
-          <div class="col-span-2">
-            <select id="province" v-model="formData.province" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-              <option value="">Select Province</option>
-              <!-- Additional options will be populated by the API -->
-            </select>
+
+          <div v-if="formData.permanentForm.region && formData.permanentForm.province">
+              <label for="permanent_municipality" class="block text-sm mb-2 dark:text-white">Municipality:</label>
+              <select id="permanent_municipality" v-model="formData.permanentForm.municipality" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+                  <option value="" disabled selected>Select Municipality</option>
+                  <option v-for="(municipalityData, municipalityName) in jsonData[formData.permanentForm.region].province_list[formData.permanentForm.province].municipality_list" :key="municipalityName" :value="municipalityName">{{ municipalityName }}</option>
+              </select>
+          </div>
+
+          <div v-if="formData.permanentForm.region && formData.permanentForm.province && formData.permanentForm.municipality">
+              <label for="permanent_barangay" class="block text-sm mb-2 dark:text-white">Barangay:</label>
+              <select id="permanent_barangay" v-model="formData.permanentForm.barangay" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+                  <option value="" disabled selected>Select Barangay</option>
+                  <option v-for="barangay in jsonData[formData.permanentForm.region].province_list[formData.permanentForm.province].municipality_list[formData.permanentForm.municipality].barangay_list" :key="barangay" :value="barangay">{{ barangay }}</option>
+              </select>
           </div>
           <!-- ZIP Code -->
           <div class="col-span-1">
-            <input type="text" placeholder="ZIP Code" v-model="formData.zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+            <input type="text" placeholder="ZIP Code" v-model="formData.permanentForm.zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
           </div>
       </div>
     </div>
@@ -390,6 +440,10 @@ const handleSubmit = () => {
     <Button :to="{ name: 'Family Background' }">
       Next
     </Button>
+
+    <button @click="handleSubmit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    Submit Form
+</button>
   </div>
   </form>
 </template>
