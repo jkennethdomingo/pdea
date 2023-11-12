@@ -1,9 +1,10 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, reactive, ref, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
-import { reactive, ref, onMounted } from 'vue';
 import { initDropdowns } from 'flowbite';
+import apiService from '@/composables/axios-setup'; // Ensure this path is correct
+import bloodTypesData from '@/assets/json/bloodtype.json';
 
 const store = useStore();
 
@@ -13,20 +14,27 @@ const dropdownData = reactive({
   sections: []
 });
 
+const bloodTypes = bloodTypesData.bloodTypes;
+
+
 // Form data bound to Vuex store
 const formData = computed({
   get() {
-    return store.state.formData.page1; // Assuming this is page 1 data
+    return store.state.formData.page1;
   },
   set(value) {
     store.commit('updateFormData', { page: 'page1', data: value });
   },
 });
 
+watch(formData, (newValue) => {
+  console.log('Form Data Updated:', newValue);
+}, { deep: true });
+
 onMounted(async () => {
   initDropdowns();
   try {
-    const response = await axios.post('employee/getDropdownData');
+    const response = await apiService.post('/employee/getDropdownData'); // Changed to apiService
     if (response && response.data) {
       dropdownData.designations = response.data.designations;
       dropdownData.positions = response.data.positions;
@@ -34,16 +42,14 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error fetching dropdown data:', error);
-    // Handle error appropriately
   }
 });
 
 const handleSubmit = () => {
-  // Submit form data or navigate to the next page
   store.dispatch('submitFormData');
 };
-
 </script>
+
 
 <template>
   <form @submit.prevent="handleSubmit">
@@ -101,10 +107,10 @@ const handleSubmit = () => {
       <div>
         <span class="block text-gray-700 text-sm dark:text-white mb-2">Sex:</span>
         <label class="inline-flex items-center">
-          <input type="radio" class="form-radio h-5 w-5 dark:bg-dark-eval-2 text-gray-600" v-model="formData.sex" value="male"><span class="ml-2 text-gray-700 dark:text-white">Male</span>
+          <input type="radio" class="form-radio h-5 w-5 dark:bg-dark-eval-2 text-gray-600" v-model="formData.sex" value="M"><span class="ml-2 text-gray-700 dark:text-white">Male</span>
         </label>
         <label class="inline-flex items-center ml-4">
-          <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.sex" value="female"><span class="ml-2 text-gray-700 dark:text-white">Female</span>
+          <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.sex" value="F"><span class="ml-2 text-gray-700 dark:text-white">Female</span>
         </label>
       </div>
       <!-- Civil Status Section -->
@@ -112,21 +118,21 @@ const handleSubmit = () => {
         <span class="block text-gray-700 text-sm dark:text-white mb-2">Civil Status:</span>
         <div class="flex items-center">
           <label class="inline-flex items-center">
-            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="single"><span class="ml-2 text-gray-700 dark:text-white">Single</span>
+            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="Single"><span class="ml-2 text-gray-700 dark:text-white">Single</span>
           </label>
           <label class="inline-flex items-center ml-4">
-            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="married"><span class="ml-2 text-gray-700 dark:text-white">Married</span>
+            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="Married"><span class="ml-2 text-gray-700 dark:text-white">Married</span>
           </label>
           <label class="inline-flex items-center ml-4">
-            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="widowed"><span class="ml-2 text-gray-700 dark:text-white">Widowed</span>
+            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="Widowed"><span class="ml-2 text-gray-700 dark:text-white">Widowed</span>
           </label>
           <label class="inline-flex items-center ml-4">
-            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="separated"><span class="ml-2 text-gray-700 dark:text-white">Separated</span>
+            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="Separated"><span class="ml-2 text-gray-700 dark:text-white">Separated</span>
           </label>
           <label class="inline-flex items-center ml-4">
-            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status" value="other"><span class="ml-2 text-gray-700 dark:text-white">Other/s:</span>
+            <input type="radio" class="form-radio h-5 w-5  dark:bg-dark-eval-2 text-gray-600" v-model="formData.civil_status"><span class="ml-2 text-gray-700 dark:text-white">Other/s:</span>
           </label>
-          <input type="text" id="other_civilstatus" v-model="formData.other_civilstatus" class="ml-2 shadow border rounded py-2 px-3  dark:bg-dark-eval-2 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline" placeholder="Please specify">
+          <input type="text" id="other_civilstatus" v-model="formData.civilstatus" class="ml-2 shadow border rounded py-2 px-3  dark:bg-dark-eval-2 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline" placeholder="Please specify">
         </div>
       </div>
     </div>
@@ -146,8 +152,13 @@ const handleSubmit = () => {
       <!-- Blood Type -->
       <div>
         <label for="bloodtype" class="block text-gray-700 text-sm dark:text-white mb-2">Blood Type:</label>
-        <input type="text" id="bloodtype" v-model="formData.blood_type" class="shadow appearance-none  dark:bg-dark-eval-2 border rounded w-32 py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+        <select id="bloodtype" v-model="formData.blood_type" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-32 py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+          <option v-for="bloodType in bloodTypes" :key="bloodType.value" :value="bloodType.value">
+            {{ bloodType.text }}
+          </option>
+        </select>
       </div>
+
     </div>
 
     <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
@@ -293,8 +304,8 @@ const handleSubmit = () => {
     <!-- Dropdowns for Designation, Position, and Section -->
     <div>
       <label for="designation" class="block text-sm mb-2 dark:text-white">Designation:</label>
-      <select id="designation" v-model="formData.SectionID" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="">Select Designation</option>
+      <select id="designation" v-model="formData.designation" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+        <option value="" disabled selected>Select Designation</option>
         <option v-for="designation in dropdownData.designations" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
       </select>
     </div>
@@ -302,18 +313,18 @@ const handleSubmit = () => {
     <!-- Position -->
     <div>
       <label for="position" class="block text-sm mb-2  dark:text-white ">Position:</label>
-      <select id="position" name="position" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="">Select Position</option>
-        <option v-for="position in dropdownData.PositionsID" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
+      <select id="position" v-model="formData.position" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+        <option value="" disabled selected>Select Position</option>
+        <option v-for="position in dropdownData.positions" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
       </select>
     </div>
 
     <!-- Section -->
     <div>
       <label for="section" class="block text-sm mb-2  dark:text-white ">Section:</label>
-      <select id="section" name="section" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="">Select Section</option>
-        <option v-for="section in dropdownData.SectionsID" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
+      <select id="section" v-model="formData.section" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+        <option value="" disabled selected>Select Section</option>
+        <option v-for="section in dropdownData.sections" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
       </select>
     </div>
 
