@@ -12,7 +12,7 @@ class PersonalInformationModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'surname', 'first_name', 'name_extension', 'middle_name', 'date_of_birth', 'place_of_birth', 'sex', 'civil_status', 'height', 'weight', 'blood_type', 'gsis_id_no', 'pag_ibig_id_no', 'philhealth_no', 'sss_no', 'tin_no', 'agency_employee_no', 'citizenship', 'telephone_no', 'mobile_no', 'Email', 'Password', 'DateOfEntry', 'IPCR'];
+    protected $allowedFields    = ['EmployeeID', 'surname', 'first_name', 'name_extension', 'middle_name', 'date_of_birth', 'place_of_birth', 'sex', 'civil_status', 'height', 'weight', 'blood_type', 'gsis_id_no', 'pag_ibig_id_no', 'philhealth_no', 'sss_no', 'tin_no', 'agency_employee_no', 'citizenship', 'dual_citizenship_type', 'country', 'telephone_no', 'mobile_no', 'Email', 'Password', 'DateOfEntry', 'IPCR'];
 
     // Dates
     protected $useTimestamps = true;

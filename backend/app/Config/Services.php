@@ -20,8 +20,6 @@ use App\Models\WorkExperienceModel;
 use App\Models\VoluntaryWorkModel;
 use App\Models\TrainingProgramsModel;
 use App\Models\OtherInformationModel;
-
-
 use App\Models\PdSheetQuestionsModel;
 use App\Models\ReferencesTblModel;
 use App\Models\GovernmentIssuedIDsModel;
@@ -111,24 +109,24 @@ class Services extends BaseService
         return new EmployeePositionModel();
     }
 
-    public static function employeeDesignation($getShared = true)
+    public static function employeeDesignationModel($getShared = true)
     {
         if ($getShared)
         {
-            return static::getSharedInstance('employeeDesignation');
+            return static::getSharedInstance('employeeDesignationModel');
         }
 
-        return new EmployeeDesignation();
+        return new EmployeeDesignationModel();
     }
 
-    public static function employeeSection($getShared = true)
+    public static function employeeSectionModel($getShared = true)
     {
         if ($getShared)
         {
-            return static::getSharedInstance('employeeSection');
+            return static::getSharedInstance('employeeSectionModel');
         }
 
-        return new EmployeeSection();
+        return new EmployeeSectionModel();
     }
 
     public static function leavetypeModel($getShared = true)
