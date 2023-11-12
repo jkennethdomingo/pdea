@@ -10,7 +10,7 @@ import BaseCard from '@/components/BaseCard.vue';
     <template #header>
       
     </template>
-    <BaseCard >
+    <BaseCard class="h-[72vh] overflow-y-scroll">
       <router-view />
     </BaseCard>
   </PageWrapNew>

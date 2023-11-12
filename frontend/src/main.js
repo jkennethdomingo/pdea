@@ -7,12 +7,15 @@ import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import '@/assets/css/main.css';
 import 'flowbite';
+import VCalendar from 'v-calendar';
+import 'v-calendar/style.css';
 
 // Set axios defaults
 axios.defaults.baseURL = "http://backend.test/api/";
 
 const app = createApp(App);
 
+app.use(VCalendar, {})
 app.use(router);
 app.use(store);
 

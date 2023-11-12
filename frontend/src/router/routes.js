@@ -17,7 +17,7 @@ export default [
       },
       {
         path: 'company',
-        component: () => import('@/layouts/RegisterAccountLayout.vue'),
+        component: () => import('@/layouts/CompanyStructureLayout.vue'),
         meta: { requiresRole: 'HR_ADMIN' },
         children: [
           {
@@ -35,7 +35,7 @@ export default [
       },
       {
         path: 'register',
-        component: () => import('@/layouts/AssignTrainingLayout.vue'),
+        component: () => import('@/layouts/RegisterLayout.vue'),
         meta: { requiresRole: 'HR_ADMIN' },
         children: [
           {
