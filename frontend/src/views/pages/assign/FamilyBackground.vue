@@ -35,7 +35,7 @@ const handleSubmit = () => {
     <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Surname -->
       <div>
-        <label for="spouse_surname" class="block text-gray-700 text-sm dark:text-white mb-2">Surname:</label>
+        <label for="spouse_surname" class="block text-gray-700 text-sm dark:text-white mb-2">Spouse's Surname:</label>
         <input type="text" id="spouse_surname" v-model="formData.spouse_surname" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
       </div>
       <!-- First Name -->
