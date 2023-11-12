@@ -3,6 +3,29 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Models\SectionModel;
+use App\Models\DesignationModel;
+use App\Models\PositionModel;
+use App\Models\EmployeeAuthRoleModel;
+use App\Models\EmployeePositionModel;
+use App\Models\EmployeeDesignationModel;
+use App\Models\EmployeeSectionModel;
+use App\Models\LeavetypeModel;
+use App\Models\LeaveBalanceModel;
+use App\Models\FamilyBackgroundModel;
+use App\Models\ChildrenModel;
+use App\Models\EducationalBackgroundModel;
+use App\Models\CivilServiceEligibilityModel;
+use App\Models\WorkExperienceModel;
+use App\Models\VoluntaryWorkModel;
+use App\Models\TrainingProgramsModel;
+use App\Models\OtherInformationModel;
+
+
+use App\Models\PdSheetQuestionsModel;
+use App\Models\ReferencesTblModel;
+use App\Models\GovernmentIssuedIDsModel;
+use App\Models\AddressModel;
 
 /**
  * Services Configuration file.
@@ -36,6 +59,216 @@ class Services extends BaseService
         }
 
         return new \App\Models\PersonalInformationModel();
+    }
+
+    public static function sectionModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('sectionModel');
+        }
+
+        return new SectionModel();
+    }
+
+    public static function designationModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('designationModel');
+        }
+
+        return new DesignationModel();
+    }
+
+    public static function positionModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('positionModel');
+        }
+
+        return new PositionModel();
+    }
+    
+    public static function employeeAuthRoleModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('employeeAuthRoleModel');
+        }
+
+        return new EmployeeAuthRoleModel();
+    }
+    
+    public static function employeePositionModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('employeePositionModel');
+        }
+
+        return new EmployeePositionModel();
+    }
+
+    public static function employeeDesignation($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('employeeDesignation');
+        }
+
+        return new EmployeeDesignation();
+    }
+
+    public static function employeeSection($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('employeeSection');
+        }
+
+        return new EmployeeSection();
+    }
+
+    public static function leavetypeModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('leavetypeModel');
+        }
+
+        return new LeavetypeModel();
+    }
+
+    public static function leaveBalanceModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('leaveBalanceModel');
+        }
+
+        return new LeaveBalanceModel();
+    }
+
+    public static function FamilyBackgroundModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('FamilyBackgroundModel');
+        }
+
+        return new FamilyBackgroundModel();
+    }
+
+    public static function ChildrenModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('ChildrenModel');
+        }
+
+        return new ChildrenModel();
+    }
+
+    public static function EducationalBackgroundModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('EducationalBackgroundModel');
+        }
+
+        return new EducationalBackgroundModel();
+    }
+
+    public static function CivilServiceEligibilityModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('CivilServiceEligibilityModel');
+        }
+
+        return new CivilServiceEligibilityModel();
+    }
+
+    public static function WorkExperienceModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('WorkExperienceModel');
+        }
+
+        return new WorkExperienceModel();
+    }
+
+    public static function VoluntaryWorkModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('VoluntaryWorkModel');
+        }
+
+        return new VoluntaryWorkModel();
+    }
+
+    public static function TrainingProgramsModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('TrainingProgramsModel');
+        }
+
+        return new TrainingProgramsModel();
+    }
+
+    public static function OtherInformationModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('OtherInformationModel');
+        }
+
+        return new OtherInformationModel();
+    }
+
+    public static function PdSheetQuestionsModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('PdSheetQuestionsModel');
+        }
+
+        return new PdSheetQuestionsModel();
+    }
+
+    public static function ReferencesTblModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('ReferencesTblModel');
+        }
+
+        return new ReferencesTblModel();
+    }
+
+    public static function GovernmentIssuedIDsModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('GovernmentIssuedIDsModel');
+        }
+
+        return new GovernmentIssuedIDsModel();
+    }
+
+    public static function AddressModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('AddressModel');
+        }
+
+        return new AddressModel();
     }
 
 }
