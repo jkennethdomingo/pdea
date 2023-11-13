@@ -1,32 +1,39 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue'; // Ensure 'computed' is imported here
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
-import { reactive, ref, onMounted } from 'vue';
 import { initDropdowns } from 'flowbite';
 
 const store = useStore();
 
-
-// Form data bound to Vuex store
-const formData = computed({
-  get() {
-    return store.state.formData.page2; 
-  },
-  set(value) {
-    store.commit('updateFormData', { page: 'page2', data: value });
-  },
-});
-
-onMounted(async () => {
+// Assuming your Vuex store has an action called 'getDropdownData'
+onMounted(() => {
   initDropdowns();
 });
 
-const handleSubmit = () => {
-  // Submit form data or navigate to the next page
-  store.dispatch('submitFormData');
-};
+// Simplify formData to directly refer to the store state
+const formData = computed(() => store.state.formData.page3);
 
+watch(formData, (newValue) => {
+  console.log('Form Data Updated:', newValue);
+}, { deep: true });
+
+// Debounce handleSubmit to prevent double submission
+const isSubmitting = ref(false);
+const handleSubmit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+
+  try {
+    await store.dispatch('submitFormData');
+    // Success feedback (toast, modal, etc.) goes here
+  } catch (error) {
+    console.error('Error submitting form data:', error);
+    // Error feedback (toast, modal, etc.) goes here
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>
 
 <template>
@@ -34,12 +41,8 @@ const handleSubmit = () => {
     <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Elementary -->
       <div>
-        <label for="level" class="block text-gray-700 text-sm dark:text-white mb-2">Level</label>
-        <input type="text" id="level" v-model="formData.level" placeholder="Elementary"   class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
-      </div>
-      <div>
         <label for="name_of_school" class="block text-gray-700 text-sm dark:text-white mb-2"> Name of School:</label>
-        <input type="text" id="name_of_school" v-model="formData.name_of_school"  class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+        <input type="text" id="name_of_school" v-model="formData.elementary.name_of_school"  class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
       <div>
         <label for="degree_course" class="block text-gray-700 text-sm dark:text-white mb-2">Degree/Course:</label>

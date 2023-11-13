@@ -65,6 +65,10 @@ function resetPermanentForm() {
   resetFormFields('permanentForm', 'region');
 }
 
+watch(formData, (newValue) => {
+  console.log('Form Data Updated:', newValue);
+}, { deep: true });
+
 // Watching changes in residentialForm to update permanentForm
 watch(
   () => formData.value.residentialForm,

@@ -69,7 +69,11 @@ const state = {
             },
         },
         page2: { /* ... fields for page 2 ... */ },
-        page3: { /* ... fields for page 3 ... */ },
+        page3: { 
+            elementary: {
+                name_of_school: '',
+            }
+        },
         page4: { /* ... fields for page 4 ... */ },
         page5: { /* ... fields for page 5 ... */ },
         page6: { /* ... fields for page 6 ... */ },
