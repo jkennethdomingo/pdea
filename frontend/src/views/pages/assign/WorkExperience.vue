@@ -1,72 +1,175 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, reactive, watch, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
-import { reactive, ref, onMounted } from 'vue';
 import { initDropdowns } from 'flowbite';
 
 const store = useStore();
 
-
-// Form data bound to Vuex store
+// Reactive state for the form data, binding to the Vuex store
 const formData = computed({
   get() {
-    return store.state.formData.page2; 
+    return store.state.formData.page4;
   },
   set(value) {
-    store.commit('updateFormData', { page: 'page2', data: value });
+    store.commit('updateFormData', { page: 'page4', data: value });
   },
 });
 
-onMounted(async () => {
+// Function to parse entries from localStorage or initialize as empty array
+const getInitialEntries = () => {
+  const savedEntries = localStorage.getItem('eligibilityEntries');
+  return savedEntries ? JSON.parse(savedEntries) : [];
+};
+
+// Reactive state for eligibility entries
+const eligibilityEntries = reactive({
+  entries: getInitialEntries(),
+});
+
+// Watcher to save to localStorage
+watch(eligibilityEntries.entries, (newEntries) => {
+  localStorage.setItem('eligibilityEntries', JSON.stringify(newEntries));
+}, { deep: true });
+
+// Function to add a new entry
+const addNewEntry = () => {
+  if (Array.isArray(eligibilityEntries.entries)) {
+    eligibilityEntries.entries.push({
+      organization_name: '',
+      period_from: '',
+      period_to: '',
+      number_of_hours: '',
+      position: ''
+    });
+  } else {
+    // Reset entries to an array with one new entry if it's not an array
+    eligibilityEntries.entries = [{
+      organization_name: '',
+      period_from: '',
+      period_to: '',
+      number_of_hours: '',
+      position: ''
+    }];
+  }
+};
+
+// Function to delete an entry
+const deleteEntry = (index) => {
+  if (Array.isArray(eligibilityEntries.entries)) {
+    eligibilityEntries.entries.splice(index, 1);
+  }
+};
+
+// Initiate any dropdowns when the component is mounted
+onMounted(() => {
   initDropdowns();
 });
 
+// Submit form data handler
 const handleSubmit = () => {
-  // Submit form data or navigate to the next page
-  store.dispatch('submitFormData');
+  store.dispatch('submitFormData', formData.value);
 };
 
 </script>
 
+
+
 <template>
-     <p class="text-xl text-gray-900 dark:text-white font-bold">Work Experience</p>
+  <p class="text-xl text-gray-900 dark:text-white font-bold">Work Experience</p>
+    <div class="container mx-auto p-4">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr>
+            <th scope="col" colspan="2" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              INCLUSIVE DATES 
+              (mm/dd/yyyy)
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              POSITION TITLE 
+              (Write in full/Do not abbreviate)
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              DEPARTMENT / AGENCY / OFFICE / COMPANY
+               (Write in full/Do not abbreviate)
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              MONTHLY SALARY
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              SALARY/ JOB/ PAY GRADE 
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              STATUS OF APPOINTMENT
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              GOV'T SERVICE (Y/ N)
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+          <tr>
+            <!-- Sub-headers for the inclusive dates -->
+            <th scope="col" class="px-6 py-1 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              FROM
+            </th>
+            <th scope="col" class="px-6 py-1 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
+              TO
+            </th>
+            <!-- Empty cells for spacing under the other headers -->
+            <th scope="col" class="border-0"></th>
+            <th scope="col" class="border-0"></th>
+            <th scope="col" class="border-0"></th>
+          </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows and other code remains the same -->
+            <tr v-for="(entry, index) in eligibilityEntries.entries" :key="index">
+            <!-- ... input fields ... -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="date" v-model="entry.inclusive_dates_from" class="dark:bg-dark-eval-2 mt-1 block w-32 border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="date" v-model="entry.inclusive_dates_to" class="dark:bg-dark-eval-2 mt-1 block w-32 border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap ">
+              <input type="text" v-model="entry.position_title" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="text" v-model="entry.department_agency_office_company" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="text" v-model="entry.monthly_salary" class="dark:bg-dark-eval-2 mt-1 block w-40 border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="text" v-model="entry.salary_grade_step_increment" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="text" v-model="entry.status_of_appointment" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input type="text" v-model="entry.govt_service" class="dark:bg-dark-eval-2 mt-1 block w-40 border border-green-600 rounded-md shadow-sm" />
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <button @click="deleteEntry(index)" class="text-red-500 hover:text-red-700">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
 
-
-<div class="mb-4 grid grid-cols-4 gap-4">
-  <div class="mb-4">
-    <label for="inclusive_dates_from" class="block text-gray-700 text-sm dark:text-white mb-2">Inclusive Dates:</label>
-    <input type="text" id="inclusive_dates_from" v-model="formData.inclusive_dates_from" placeholder="From" class="shadow border dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-    <input type="text" id="inclusive_dates_to" v-model="formData.inclusive_dates_to" placeholder="To" class="shadow border dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-  <div>
-    <label for="position_title" class="block text-gray-700 text-sm dark:text-white mb-2">Position Title:</label>
-    <input type="text" id="position_title" v-model="formData.position_title" placeholder="(Write in full/Do not abbreviate)" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-  <div>
-    <label for="department_agency_office_company" class="block text-gray-700 text-sm dark:text-white mb-2">Department/Agency/Office/Company</label>
-    <input type="text" id="department_agency_office_company" v-model="formData.department_agency_office_company" placeholder="(Write in full/Do not abbreviate)" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-  <div>
-    <label for="monthly_salary" class="block text-gray-700 text-sm dark:text-white mb-2">Monthly Salary</label>
-    <input type="text" id="monthly_salary" v-model="formData.monthly_salary" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-</div>
-
-<div class="mb-4 grid grid-cols-4 gap-4">
-  <div>
-    <label for="salary_grade_step_increment" class="block text-gray-700 text-sm dark:text-white mb-2">Salary/Job/Pay Grade</label>
-    <input type="text" id="salary_grade_step_increment" v-model="formData.salary_grade_step_increment" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-  <div>
-    <label for="status_of_appointment" class="block text-gray-700 text-sm dark:text-white mb-2">Status Of Appointment</label>
-    <input type="text" id="status_of_appointment" v-model="formData.status_of_appointment" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-  <div>
-    <label for="govt_service" class="block text-gray-700 text-sm dark:text-white mb-2">Gov't Service</label>
-    <input type="text" id="govt_service" v-model="formData.govt_service" placeholder="(Y/ N)" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-  </div>
-</div>
+    <div class="mt-4 ml-6 flex justify-end">
+      <button @click="addNewEntry" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
+        Add Entry
+      </button>
+    </div>
+    <div class="mt-4 flex justify-between">
 
     <Button :to="{ name: 'Civil Service Eligibility' }">
   Back
@@ -75,4 +178,5 @@ const handleSubmit = () => {
 <Button :to="{ name: 'Voluntary Work' }">
   Next
 </Button>
+</div>
 </template>
