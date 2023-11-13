@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class AddressModel extends Model
+class EmployeeAddressModel extends Model
 {
-    protected $table            = 'address';
-    protected $primaryKey       = 'address_id';
+    protected $table            = 'employee_address';
+    protected $primaryKey       = 'EmployeeAddressID';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['province', 'city_municipality', 'barangay', 'subdivision_village', 'street', 'house_block_lot', 'zip_code'];
+    protected $allowedFields    = ['EmployeeID', 'address_id', 'address_type'];
 
     // Dates
     protected $useTimestamps = false;

@@ -30,6 +30,7 @@ class AccountInformationController extends ResourceController
     protected $ReferencesTblModel;
     protected $GovernmentIssuedIDsModel;
     protected $AddressModel;
+    protected $EmployeeAddressModel;
     protected $sectionModel;
     protected $designationModel;
     protected $positionModel;
@@ -56,6 +57,7 @@ class AccountInformationController extends ResourceController
         $this->ReferencesTblModel = Services::ReferencesTblModel();
         $this->GovernmentIssuedIDsModel = Services::GovernmentIssuedIDsModel();
         $this->AddressModel = Services::AddressModel();
+        $this->EmployeeAddressModel = Services::EmployeeAddressModel();
         $this->sectionModel = Services::SectionModel();
         $this->designationModel = Services::DesignationModel();
         $this->positionModel = Services::PositionModel();
@@ -111,33 +113,27 @@ class AccountInformationController extends ResourceController
         return $jsonData->EmployeeID;
     }
 
-    private function insertAddress($json, $EmployeeID, $addressType) {
-        // Check if address data is provided
-        if (!isset($json->house_block_lot_no)) {
-            // Optionally handle the lack of address data
-            throw new \Exception('No address information provided.');
-        }
+    private function insertAddress($json) {
     
         $addressData = [
-            'EmployeeID' => $EmployeeID,
-            'address_type' => $addressType,
             'province' => $json->province,
             'city_municipality' => $json->municipality,
             'barangay' => $json->barangay,
-            'subdivision_village' => $json->subdivision_village,
-            'street' => $json->street,
-            'house_block_lot' => $json->house_block_lot_no,
+            'subdivision_village' => $json->subdivision_village ?? null,
+            'street' => $json->street ?? null,
+            'house_block_lot' => $json->house_block_lot_no ?? null,
             'zip_code' => $json->zip_code
         ];
     
-        // Insert the data and check for success
-        if (!$this->AddressModel->insert($addressData)) {
+        // Insert the address data and check for success
+        $addressID = $this->AddressModel->insert($addressData);
+        if (!$addressID) {
             // If the insert failed, throw an exception
             throw new \Exception('Failed to insert address information');
         }
-    
-        // If the insert was successful, return true
-        return true;
+        
+        // If the insert was successful, return the address ID
+        return $addressID;
     }
     
 
@@ -470,6 +466,24 @@ class AccountInformationController extends ResourceController
 
         return true;
     }
+
+    private function linkEmployeeToAddress($EmployeeID, $AddressID, $AddressType) {
+        $linkData = [
+            'EmployeeID' => $EmployeeID,
+            'address_id' => $AddressID,
+            'address_type' => $AddressType
+        ];
+    
+        // Insert the link data and check for success
+        if (!$this->EmployeeAddressModel->insert($linkData)) {
+            // If the insert failed, throw an exception
+            throw new \Exception('Failed to link employee to address');
+        }
+        
+        // If the insert was successful, return true
+        return true;
+    }
+
     // Main function to handle the create operation
     public function create() {
 
@@ -485,6 +499,10 @@ class AccountInformationController extends ResourceController
 
         // Hash the password after validation
         $hashedPassword = $this->hashPassword($json->Password);
+        
+        if ($this->personalInformationModel->find($json->EmployeeID)) {
+            return $this->fail('EmployeeID already exists.', 400);
+        }
 
         // Start transaction
         $this->personalInformationModel->transStart();
@@ -494,45 +512,51 @@ class AccountInformationController extends ResourceController
         $EmployeeID = $this->insertPersonalInformation($json, $hashedPassword);
 
         // Extract residential address data
-        $jsonResidential = (object) $json->residentialForm;
+        $jsonResidential = $json->residentialForm;
 
-        // Extract permanent address data
-        $jsonPermanent = (object) $json->permanentForm;
+        // Insert the residential address and get its ID
+        $residentialAddressID = $this->insertAddress($jsonResidential);
 
-        $this->insertAddress($jsonResidential, $EmployeeID, 'Residential');
+        $this->linkEmployeeToAddress($EmployeeID, $residentialAddressID, 'Residential');
 
-        $this->insertAddress($jsonPermanent, $EmployeeID, 'Permanent');
+        // Extract residential address data
+        $jsonPermanent = $json->permanentForm;
 
-        $this->insertFamilyBackground($json, $EmployeeID);
+        // Insert the residential address and get its ID
+        $permanentAddressID = $this->insertAddress($jsonPermanent);
 
-        if (isset($json->children) && is_array($json->children)) {
-            // Insert children information
-            foreach ($json->children as $childJson) {
-                $this->insertChildrenInformation($childJson, $EmployeeID);
-            }
-        }
+        $this->linkEmployeeToAddress($EmployeeID, $permanentAddressID , 'Permanent');
 
-        $this->insertEducationalBackground($json, $EmployeeID);
+        // $this->insertFamilyBackground($json, $EmployeeID);
 
-        $this->insertCivilServiceEligibility($json, $EmployeeID);
+        // if (isset($json->children) && is_array($json->children)) {
+        //     // Insert children information
+        //     foreach ($json->children as $childJson) {
+        //         $this->insertChildrenInformation($childJson, $EmployeeID);
+        //     }
+        // }
 
-        $this->insertWorkExperience($json, $EmployeeID);
+        // $this->insertEducationalBackground($json, $EmployeeID);
 
-        $this->insertVoluntaryWork($json, $EmployeeID);
+        // $this->insertCivilServiceEligibility($json, $EmployeeID);
 
-        $this->insertTrainingPrograms($json, $EmployeeID);
+        // $this->insertWorkExperience($json, $EmployeeID);
+
+        // $this->insertVoluntaryWork($json, $EmployeeID);
+
+        // $this->insertTrainingPrograms($json, $EmployeeID);
         
-        $this->insertOtherInformation($json, $EmployeeID);
+        // $this->insertOtherInformation($json, $EmployeeID);
 
-        $this->insertPDSheetQuestions($json, $EmployeeID);
+        // $this->insertPDSheetQuestions($json, $EmployeeID);
 
-        $this->insertReferences($json, $EmployeeID);
+        // $this->insertReferences($json, $EmployeeID);
 
-        $this->insertGovernmentIssuedIDs($json, $EmployeeID);
+        // $this->insertGovernmentIssuedIDs($json, $EmployeeID);
 
         $authRoleData = [
             'EmployeeID' => $EmployeeID,
-            'AuthRoleID' => '2',
+            'AuthRoleID' => '3',
         ];
 
         $this->insertDataAndRollbackOnFailure(

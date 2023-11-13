@@ -24,6 +24,7 @@ use App\Models\PdSheetQuestionsModel;
 use App\Models\ReferencesTblModel;
 use App\Models\GovernmentIssuedIDsModel;
 use App\Models\AddressModel;
+use App\Models\EmployeeAddressModel;
 
 /**
  * Services Configuration file.
@@ -267,6 +268,16 @@ class Services extends BaseService
         }
 
         return new AddressModel();
+    }
+
+    public static function EmployeeAddressModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('EmployeeAddressModel');
+        }
+
+        return new EmployeeAddressModel();
     }
 
 }
