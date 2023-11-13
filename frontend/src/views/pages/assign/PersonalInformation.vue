@@ -13,6 +13,8 @@ const bloodTypes = bloodTypesData.bloodTypes;
 const jsonData = computed(() => addressData);
 const countryData = computed(() => countriesData);
 
+const { findLocationByZipCode } = useZipCodes();
+
 // Assuming your Vuex store has an action called 'getDropdownData'
 onMounted(() => {
   initDropdowns();
@@ -22,29 +24,48 @@ onMounted(() => {
 // Simplify formData to directly refer to the store state
 const formData = computed(() => store.state.formData.page1);
 
-watch(() => formData.value.residentialForm.region, (newRegion, oldRegion) => {
-  if (newRegion !== oldRegion) {
-    formData.value.residentialForm.province = '';
-    formData.value.residentialForm.municipality = '';
-    formData.value.residentialForm.barangay = '';
+// Generalized function to reset form fields
+function resetFormFields(formType, fieldType) {
+  if (fieldType === 'region') {
+    formData.value[formType].province = '';
+    formData.value[formType].municipality = '';
+    formData.value[formType].barangay = '';
+  } else if (fieldType === 'province') {
+    formData.value[formType].municipality = '';
+    formData.value[formType].barangay = '';
+  } else if (fieldType === 'municipality') {
+    const zipCode = findLocationByZipCode(formData.value[formType].municipality);
+    if (zipCode) {
+      formData.value[formType].zip_code = zipCode;
+    }
   }
-});
+}
 
-watch(() => formData.value.residentialForm.province, (newProvince, oldProvince) => {
-  if (newProvince !== oldProvince) {
-    formData.value.residentialForm.municipality = '';
-    formData.value.residentialForm.barangay = '';
-  }
-});
+// Generalized function to set up watchers
+function setupWatchers(formType) {
+  watch(() => formData.value[formType].region, (newRegion, oldRegion) => {
+    if (newRegion !== oldRegion) {
+      resetFormFields(formType, 'region');
+    }
+  });
 
-watch(() => formData.value.residentialForm.municipality, (newMunicipality, oldMunicipality) => {
-  if (newMunicipality !== oldMunicipality) {
-    formData.value.residentialForm.barangay = '';
-  }
-});
+  watch(() => formData.value[formType].province, (newProvince, oldProvince) => {
+    if (newProvince !== oldProvince) {
+      resetFormFields(formType, 'province');
+    }
+  });
 
-const isSameAsResidential = ref(false);
+  watch(() => formData.value[formType].municipality, (newMunicipality) => {
+    resetFormFields(formType, 'municipality');
+  });
+}
 
+// Function to reset the entire permanent form
+function resetPermanentForm() {
+  resetFormFields('permanentForm', 'region');
+}
+
+// Watching changes in residentialForm to update permanentForm
 watch(
   () => formData.value.residentialForm,
   (newResidentialForm) => {
@@ -52,21 +73,23 @@ watch(
       formData.value.permanentForm = { ...newResidentialForm };
     }
   },
-  { deep: true } // Watch for nested property changes
+  { deep: true }
 );
 
-// This watcher reacts to changes in the checkbox's state
+// Watching the checkbox's state
+const isSameAsResidential = ref(false);
 watch(isSameAsResidential, (newValue) => {
   if (newValue) {
-    // Checkbox is checked, copy residential address to permanent address
     formData.value.permanentForm = { ...formData.value.residentialForm };
   } else {
-    // Checkbox is unchecked, clear permanent address fields
-    for (const key in formData.value.permanentForm) {
-      formData.value.permanentForm[key] = '';
-    }
+    resetPermanentForm();
   }
 });
+
+// Initialize watchers for both forms
+setupWatchers('residentialForm');
+setupWatchers('permanentForm');
+
 
 const designationsDropdown = computed(() => store.state.dropdownData.designations);
 const positionsDropdown = computed(() => store.state.dropdownData.positions);
