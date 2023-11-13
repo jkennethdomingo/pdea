@@ -1,11 +1,12 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue'; // Ensure 'computed' is imported here
+import { computed, ref, onMounted, watch } from 'vue'; // Ensure 'computed' is imported here
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
 import { initDropdowns } from 'flowbite';
 import bloodTypesData from '@/assets/json/bloodtype.json';
 import addressData from '@/assets/json/address.json';
 import countriesData from '@/assets/json/countries.json';
+import useZipCodes from '@/composables/useZipCodes';
 
 const store = useStore();
 const bloodTypes = bloodTypesData.bloodTypes;
@@ -21,6 +22,51 @@ onMounted(() => {
 // Simplify formData to directly refer to the store state
 const formData = computed(() => store.state.formData.page1);
 
+watch(() => formData.value.residentialForm.region, (newRegion, oldRegion) => {
+  if (newRegion !== oldRegion) {
+    formData.value.residentialForm.province = '';
+    formData.value.residentialForm.municipality = '';
+    formData.value.residentialForm.barangay = '';
+  }
+});
+
+watch(() => formData.value.residentialForm.province, (newProvince, oldProvince) => {
+  if (newProvince !== oldProvince) {
+    formData.value.residentialForm.municipality = '';
+    formData.value.residentialForm.barangay = '';
+  }
+});
+
+watch(() => formData.value.residentialForm.municipality, (newMunicipality, oldMunicipality) => {
+  if (newMunicipality !== oldMunicipality) {
+    formData.value.residentialForm.barangay = '';
+  }
+});
+
+const isSameAsResidential = ref(false);
+
+watch(
+  () => formData.value.residentialForm,
+  (newResidentialForm) => {
+    if (isSameAsResidential.value) {
+      formData.value.permanentForm = { ...newResidentialForm };
+    }
+  },
+  { deep: true } // Watch for nested property changes
+);
+
+// This watcher reacts to changes in the checkbox's state
+watch(isSameAsResidential, (newValue) => {
+  if (newValue) {
+    // Checkbox is checked, copy residential address to permanent address
+    formData.value.permanentForm = { ...formData.value.residentialForm };
+  } else {
+    // Checkbox is unchecked, clear permanent address fields
+    for (const key in formData.value.permanentForm) {
+      formData.value.permanentForm[key] = '';
+    }
+  }
+});
 
 const designationsDropdown = computed(() => store.state.dropdownData.designations);
 const positionsDropdown = computed(() => store.state.dropdownData.positions);
@@ -43,7 +89,6 @@ const handleSubmit = async () => {
   }
 };
 </script>
-
 
 <template>
   <form @submit.prevent="handleSubmit">
@@ -187,53 +232,45 @@ const handleSubmit = async () => {
     <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
 
     <div class="flex items-center space-x-4">
-  <!-- Citizenship Section -->
-  <div class="flex items-center space-x-3"> <!-- Adjusted space between items -->
-    <div class="text-black dark:text-white">
-        Citizenship:
-    </div>
+ <!-- Citizenship Section -->
+<div class="flex flex-col space-y-3 dark:text-white">
+  <div>Citizenship:</div>
 
-    <!-- Filipino Checkbox -->
+  <!-- Filipino Radio Button -->
+  <label class="inline-flex items-center">
+    <input type="radio" class="form-radio dark:bg-dark-eval-2" name="citizenship" value="Filipino" v-model="formData.citizenship">
+    <span class="ml-2">Filipino</span>
+  </label>
+
+  <!-- Dual Citizenship Radio Button -->
+  <label class="inline-flex items-center">
+    <input type="radio" class="form-radio dark:bg-dark-eval-2" name="citizenship" value="Dual Citizenship" v-model="formData.citizenship">
+    <span class="ml-2">Dual Citizenship</span>
+  </label>
+
+  <!-- Additional Choices for Dual Citizenship -->
+  <div v-if="formData.citizenship === 'Dual Citizenship'">
     <div class="flex items-center space-x-2">
-        <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox checkbox-filipino dark:bg-dark-eval-2" v-model="formData.citizenship" true-value="Filipino">
-            <span class="ml-2">Filipino</span>
-        </label>
-
-        <!-- Dual Citizenship Checkbox -->
-        <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox checkbox-dual-citizenship dark:bg-dark-eval-2" v-model="formData.citizenship" true-value="Dual Citizenship">
-            <span class="ml-2">Dual Citizenship</span>
-        </label>
+      <label class="inline-flex items-center">
+        <input type="radio" class="form-radio dark:bg-dark-eval-2" name="dual_citizenship_type" value="by birth" v-model="formData.dual_citizenship_type">
+        <span class="ml-2">by birth</span>
+      </label>
+      <label class="inline-flex items-center">
+        <input type="radio" class="form-radio dark:bg-dark-eval-2" name="dual_citizenship_type" value="by naturalization" v-model="formData.dual_citizenship_type">
+        <span class="ml-2">by naturalization</span>
+      </label>
     </div>
 
-    <!-- Citizenship by Birth and Naturalization Checkboxes -->
-    <div class="flex items-center space-x-2">
-        <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox checkbox-by-birth dark:bg-dark-eval-2" v-model="formData.dual_citizenship_type" true-value="by birth">
-            <span class="ml-2">by birth</span>
-        </label>
-        <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox checkbox-by-naturalization dark:bg-dark-eval-2" v-model="formData.dual_citizenship_type" true-value="by naturalization">
-            <span class="ml-2">by naturalization</span>
-        </label>
-    </div>
-</div>
-
-
-  <!-- Country Picker -->
-  <div class="flex items-center">
-    <label for="country" class="mr-2 text-black dark:text-white">Please indicate country:</label>
-    <div class="relative">
+    <!-- Country Input Field -->
+    <div>
+      <label for="country" class="block text-sm mb-2">Country:</label>
       <select id="country" v-model="formData.country" class="  dark:bg-dark-eval-2 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2"> <!-- Adjusted padding -->
         <option value="" disabled selected>Select a country</option>
         <option v-for="country in countryData" :key="country.code" :value="country.name">{{ country.name }}</option>
       </select>
-      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <!-- SVG for the dropdown icon -->
-      </div>
     </div>
   </div>
+</div>
 </div>
 
 
@@ -303,6 +340,10 @@ const handleSubmit = async () => {
 
     <div class="mb-4">
         <span class="block text-gray-700 text-sm dark:text-white mb-2">Permanent Address:</span>
+        <div class="flex items-center mb-4">
+  <input type="checkbox" id="sameAsResidential" v-model="isSameAsResidential" class="mr-2">
+  <label for="sameAsResidential" class="text-sm dark:text-white">Same as residential address</label>
+</div>
       <div class="grid grid-cols-6 gap-4">
           <!-- House/Block/Lot No. -->
           <div class="col-span-2">
