@@ -1,24 +1,22 @@
 <script setup>
-import { computed, ref, onMounted, watch } from 'vue'; // Ensure 'computed' is imported here
+import { computed, ref, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
 import { initDropdowns } from 'flowbite';
 
 const store = useStore();
 
-// Assuming your Vuex store has an action called 'getDropdownData'
+
 onMounted(() => {
   initDropdowns();
 });
 
-// Simplify formData to directly refer to the store state
 const formData = computed(() => store.state.formData.page2);
 
 watch(formData, (newValue) => {
   console.log('Form Data Updated:', newValue);
 }, { deep: true });
 
-// Debounce handleSubmit to prevent double submission
 const isSubmitting = ref(false);
 const handleSubmit = async () => {
   if (isSubmitting.value) return;
@@ -34,19 +32,29 @@ const handleSubmit = async () => {
     isSubmitting.value = false;
   }
 };
-const childrenCount = ref(0); // A ref to keep track of the number of children
-const childrenData = ref([]); // An array to store the children's information
+
+const childrenCount = ref(0);
+const childrenData = ref([]);
+
+// Define a computed property for children data in formData
+const childrenFormData = computed({
+  get: () => formData.value.children,
+  set: (newChildren) => { formData.value.children = newChildren; }
+});
+
+// Update childrenData watch to modify formData
+watch(childrenData, (newChildrenData) => {
+  childrenFormData.value = newChildrenData;
+}, { deep: true });
 
 // Watch the childrenCount and update childrenData accordingly
 watch(childrenCount, (newCount) => {
-  // Adjust the childrenData array to have the new count of children
-  childrenData.value = Array.from({ length: newCount }, (_, index) => childrenData.value[index] || { name: '', dob: '' });
+  childrenData.value = Array.from({ length: newCount }, (_, index) => childrenData.value[index] || { full_name: '', date_of_birth: '' });
 });
-
 </script>
 
 <template>
-
+<form @submit.prevent="handleSubmit">
   <p class="text-xl text-gray-900 dark:text-white font-bold">Family Background</p>
     <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Surname -->
@@ -165,8 +173,8 @@ watch(childrenCount, (newCount) => {
       </div>
     </div>
   </div>
-
-   
+</form>
+  
 
 <div class="flex justify-between">
   <div>
