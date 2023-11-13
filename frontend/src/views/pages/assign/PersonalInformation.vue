@@ -1,78 +1,46 @@
 <script setup>
-import { computed, reactive, ref, onMounted, watch } from 'vue';
+import { computed, ref, onMounted } from 'vue'; // Ensure 'computed' is imported here
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
 import { initDropdowns } from 'flowbite';
-import apiService from '@/composables/axios-setup';
 import bloodTypesData from '@/assets/json/bloodtype.json';
 import addressData from '@/assets/json/address.json';
 import countriesData from '@/assets/json/countries.json';
 
 const store = useStore();
-
-const dropdownData = reactive({
-  designations: [],
-  positions: [],
-  sections: []
-});
-
 const bloodTypes = bloodTypesData.bloodTypes;
 const jsonData = computed(() => addressData);
 const countryData = computed(() => countriesData);
 
-const residentialForm = ref({
-  house_block_lot_no: '',
-  street: '',
-  subdivision_village: '',
-  region: '',
-  province: '',
-  municipality: '',
-  barangay: '',
-  zip_code: '',
-});
-
-const permanentForm = ref({
-  house_block_lot_no: '',
-  street: '',
-  subdivision_village: '',
-  region: '',
-  province: '',
-  municipality: '',
-  barangay: '',
-  zip_code: '',
-});
-
-
-// Form data bound to Vuex store
-const formData = computed({
-  get() {
-    return store.state.formData.page1;
-  },
-  set(value) {
-    store.commit('updateFormData', { page: 'page1', data: value });
-  },
-});
-
-watch(formData, (newValue) => {
-  console.log('Form Data Updated:', newValue);
-}, { deep: true });
-
-onMounted(async () => {
+// Assuming your Vuex store has an action called 'getDropdownData'
+onMounted(() => {
   initDropdowns();
-  try {
-    const response = await apiService.post('/employee/getDropdownData');
-    if (response && response.data) {
-      dropdownData.designations = response.data.designations;
-      dropdownData.positions = response.data.positions;
-      dropdownData.sections = response.data.sections;
-    }
-  } catch (error) {
-    console.error('Error fetching dropdown data:', error);
-  }
+  store.dispatch('getDropdownData');
 });
 
-const handleSubmit = () => {
-  store.dispatch('submitFormData');
+// Simplify formData to directly refer to the store state
+const formData = computed(() => store.state.formData.page1);
+
+
+const designationsDropdown = computed(() => store.state.dropdownData.designations);
+const positionsDropdown = computed(() => store.state.dropdownData.positions);
+const sectionsDropdown = computed(() => store.state.dropdownData.sections);
+
+// Debounce handleSubmit to prevent double submission
+const isSubmitting = ref(false);
+const handleSubmit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+
+  try {
+    await store.dispatch('submitFormData');
+    // Success feedback (toast, modal, etc.) goes here
+  } catch (error) {
+    console.error('Error submitting form data:', error);
+    // Error feedback (toast, modal, etc.) goes here
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 </script>
 
@@ -410,17 +378,18 @@ const handleSubmit = () => {
     <div>
       <label for="designation" class="block text-sm mb-2 dark:text-white">Designation:</label>
       <select id="designation" v-model="formData.designation" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="" disabled selected>Select Designation</option>
-        <option v-for="designation in dropdownData.designations" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
+        <option value="" disabled>Select Designation</option>
+        <option v-for="designation in designationsDropdown" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
       </select>
     </div>
+
 
     <!-- Position -->
     <div>
       <label for="position" class="block text-sm mb-2  dark:text-white ">Position:</label>
       <select id="position" v-model="formData.position" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
         <option value="" disabled selected>Select Position</option>
-        <option v-for="position in dropdownData.positions" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
+        <option v-for="position in positionsDropdown" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
       </select>
     </div>
 
@@ -429,7 +398,7 @@ const handleSubmit = () => {
       <label for="section" class="block text-sm mb-2  dark:text-white ">Section:</label>
       <select id="section" v-model="formData.section" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
         <option value="" disabled selected>Select Section</option>
-        <option v-for="section in dropdownData.sections" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
+        <option v-for="section in sectionsDropdown" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
       </select>
     </div>
 

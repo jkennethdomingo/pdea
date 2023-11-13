@@ -77,6 +77,12 @@ const state = {
         page8: { /* ... fields for page 8 ... */ },
         page9: { /* ... fields for page 9 ... */ }
     },
+    dropdownData: {  // Added dropdown data state
+        designations: [],
+        positions: [],
+        sections: []
+    },
+    isSubmitting: false  // Added a flag to prevent double submissions
 };
 
 // Mutations
@@ -91,6 +97,14 @@ const mutations = {
     },
     updateFormData(state, { page, data }) {
         state.formData[page] = { ...state.formData[page], ...data };
+    },
+    setDropdownData(state, payload) {  // Added mutation to set dropdown data
+        state.dropdownData.designations = payload.designations;
+        state.dropdownData.positions = payload.positions;
+        state.dropdownData.sections = payload.sections;
+    },
+    setIsSubmitting(state, status) {  // Added mutation to set the isSubmitting flag
+        state.isSubmitting = status;
     },
 };
 
@@ -110,17 +124,34 @@ const actions = {
             commit('setAuth', { token: authData.token, role: authData.role });
         }
     },
-    submitFormData({ state }) {
+    getDropdownData({ commit }) {
+        apiService.post('/employee/getDropdownData')
+            .then(response => {
+                if (response && response.data) {
+                    commit('setDropdownData', response.data);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching dropdown data:', error);
+            });
+    },
+    submitFormData({ commit, state }) {
+        if (state.isSubmitting) return;  // Prevent double submission
+
+        commit('setIsSubmitting', true);  // Set isSubmitting to true before the request
+
         // Transform the data before submitting
         const transformedFormData = transformFormData(state.formData);
-
+        
         // Implement the logic to submit the form data
         apiService.post('employee/insert', transformedFormData)
             .then(response => {
                 // Handle response
+                commit('setIsSubmitting', false);  // Reset the isSubmitting flag after response
             })
             .catch(error => {
                 // Handle error
+                commit('setIsSubmitting', false);  // Reset the isSubmitting flag also in case of an error
             });
     },
 };
