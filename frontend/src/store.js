@@ -111,7 +111,7 @@ const state = {
                 scholarship_academic_honors_received:''
             }
         },
-        page4: { career_service: '', rating: '', date_of_examination: '', place_of_examination: '', license_number: '', license_date_of_validity: '' },
+        page4: [{ career_service: '', rating: '', date_of_examination: '', place_of_examination: '', license_number: '', license_date_of_validity: '' }],
         page5: { /* ... fields for page 5 ... */ },
         page6: { /* ... fields for page 6 ... */ },
         page7: { /* ... fields for page 7 ... */ },
@@ -159,7 +159,16 @@ const mutations = {
     },
     setIsSubmitting(state, status) {
         state.loadingStates.isSubmitting = status;
-    }
+    },
+    updateDynamicForm(state, { page, data }) {
+        if (Array.isArray(data)) {
+            // If the data is an array, replace the entire array for the page
+            state.formData[page] = data;
+        } else {
+            // If the data is not an array, perform an object merge
+            state.formData[page] = { ...state.formData[page], ...data };
+        }
+    },
 };
 
 const actions = {
