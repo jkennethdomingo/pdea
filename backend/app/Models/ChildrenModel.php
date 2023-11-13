@@ -6,8 +6,8 @@ use CodeIgniter\Model;
 
 class ChildrenModel extends Model
 {
-    protected $table            = 'child_id';
-    protected $primaryKey       = 'id';
+    protected $table            = 'children';
+    protected $primaryKey       = 'child_id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;

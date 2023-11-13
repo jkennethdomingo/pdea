@@ -12,7 +12,7 @@ class FamilyBackgroundModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'spouse_surname', 'spouse_first_name', 'spouse_middle_name', 'spouse_occupation', 'spouse_employer_business_name', 'spouse_business_address', 'spouse_telephone_no', 'father_surname', 'father_first_name', 'father_middle_name', 'mother_maiden_name', 'mother_first_name', 'mother_middle_name'];
+    protected $allowedFields    = ['EmployeeID', 'spouse_surname', 'spouse_first_name', 'spouse_name_extension', 'spouse_middle_name', 'spouse_occupation', 'spouse_employer_business_name', 'spouse_business_address', 'spouse_telephone_no', 'father_surname', 'father_middle_name', 'father_first_name', 'father_name_extension', 'mother_maiden_name', 'mother_surname', 'mother_first_name', 'mother_middle_name'];
 
     // Dates
     protected $useTimestamps = false;

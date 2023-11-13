@@ -149,30 +149,33 @@ class AccountInformationController extends ResourceController
             'spouse_employer_business_name' => $jsonData->spouse_employer_business_name ?? null,
             'spouse_business_address' => $jsonData->spouse_business_address ?? null,
             'spouse_telephone_no' => $jsonData->spouse_telephone_no ?? null,
-            'father_surname' => $jsonData->father_surname,
-            'father_first_name' => $jsonData->father_first_name,
+            'father_surname' => $jsonData->father_surname ?? null,
+            'father_first_name' => $jsonData->father_first_name ?? null,
             'father_middle_name' => $jsonData->father_middle_name ?? null,
             'father_name_extension' => $jsonData->father_name_extension ?? null,
-            'mother_maiden_name' => $jsonData->mother_maiden_name,
-            'mother_first_name' => $jsonData->mother_first_name,
+            'mother_maiden_name' => $jsonData->mother_maiden_name ?? null,
+            'mother_surname' => $jsonData->mother_surname ?? null,
+            'mother_first_name' => $jsonData->mother_first_name ?? null,
             'mother_middle_name' => $jsonData->mother_middle_name ?? null,
             // ... include other fields as necessary
         ];
+
+        $familyBackgroundID = $this->FamilyBackgroundModel->insert($familyBackgroundData);
     
         // Insert the data and check for success
-        if (!$this->FamilyBackgroundModel->insert($familyBackgroundData)) {
+        if(!$familyBackgroundID) {
             // If the insert failed, throw an exception
             throw new \Exception('Failed to insert family background information');
         }
     
         // If the insert was successful, return true
-        return true;
+        return $familyBackgroundID;
     }
 
-    private function insertChildrenInformation($childJson, $EmployeeID) {
+    private function insertChildrenInformation($childJson, $EmployeeID, $familyId) {
         // Prepare the array for insertion
         $childData = [
-            'family_id' => $EmployeeID, // assuming family_id is the same as EmployeeID in this context
+            'family_id' => $familyId, // assuming family_id is the same as EmployeeID in this context
             'full_name' => $childJson->full_name,
             'date_of_birth' => $childJson->date_of_birth,
             // ... include other fields as necessary
@@ -186,37 +189,41 @@ class AccountInformationController extends ResourceController
     }
 
     private function insertEducationalBackground($json, $EmployeeID) {
-        // Check if educational data is provided
-        if (!isset($json->education)) {
-            // Optionally handle the lack of educational data
-            throw new \Exception('No educational background information provided.');
-        }
+        // Define the educational levels
+        $educationLevels = ['Elementary', 'Secondary', 'Vocational', 'College', 'GraduateStudies'];
     
-        // Assuming $json->education contains an array of education background entries
-        foreach ($json->education as $educationJson) {
-            $educationData = [
-                'EmployeeID' => $EmployeeID,
-                'level' => $educationJson->level,
-                'name_of_school' => $educationJson->name_of_school,
-                'degree_course' => $educationJson->degree_course ?? null, // Assuming this can be optional
-                'period_of_attendance_from' => $educationJson->period_of_attendance_from,
-                'period_of_attendance_to' => $educationJson->period_of_attendance_to,
-                'highest_level_units_earned' => $educationJson->highest_level_units_earned ?? null,
-                'year_graduated' => $educationJson->year_graduated ?? null,
-                'scholarship_academic_honors_received' => $educationJson->scholarship_academic_honors_received ?? null,
-                // ... include other fields as necessary
-            ];
+        // Loop through each educational level
+        foreach ($educationLevels as $level) {
+            // Check if educational data for the level is provided
+            if (isset($json->$level)) {
+                $educationJson = $json->$level;
     
-            // Insert the data and check for success
-            if (!$this->EducationalBackgroundModel->insert($educationData)) {
-                // If the insert failed, throw an exception
-                throw new \Exception('Failed to insert educational background information');
+                // Prepare the education data array
+                $educationData = [
+                    'EmployeeID' => $EmployeeID,
+                    'level' => $level,
+                    'name_of_school' => $educationJson->name_of_school,
+                    'degree_course' => $educationJson->degree_course ?? null,
+                    'period_of_attendance_from' => $educationJson->period_of_attendance_from,
+                    'period_of_attendance_to' => $educationJson->period_of_attendance_to,
+                    'highest_level_units_earned' => $educationJson->highest_level_units_earned ?? null,
+                    'year_graduated' => $educationJson->year_graduated ?? null,
+                    'scholarship_academic_honors_received' => $educationJson->scholarship_academic_honors_received ?? null,
+                    // ... include other fields as necessary
+                ];
+    
+                // Insert the data and check for success
+                if (!$this->EducationalBackgroundModel->insert($educationData)) {
+                    // If the insert failed, throw an exception
+                    throw new \Exception('Failed to insert educational background information for ' . $level);
+                }
             }
         }
     
         // If all inserts were successful, return true
         return true;
     }
+    
 
     private function insertCivilServiceEligibility($json, $EmployeeID) {
         // Check if civil service eligibility data is provided
@@ -511,32 +518,32 @@ class AccountInformationController extends ResourceController
             // Insert personal information and get cs_id_no
         $EmployeeID = $this->insertPersonalInformation($json, $hashedPassword);
 
-        // Extract residential address data
-        $jsonResidential = $json->residentialForm;
+        // // Extract residential address data
+        // $jsonResidential = $json->residentialForm;
 
-        // Insert the residential address and get its ID
-        $residentialAddressID = $this->insertAddress($jsonResidential);
+        // // Insert the residential address and get its ID
+        // $residentialAddressID = $this->insertAddress($jsonResidential);
 
-        $this->linkEmployeeToAddress($EmployeeID, $residentialAddressID, 'Residential');
+        // $this->linkEmployeeToAddress($EmployeeID, $residentialAddressID, 'Residential');
 
-        // Extract residential address data
-        $jsonPermanent = $json->permanentForm;
+        // // Extract residential address data
+        // $jsonPermanent = $json->permanentForm;
 
-        // Insert the residential address and get its ID
-        $permanentAddressID = $this->insertAddress($jsonPermanent);
+        // // Insert the residential address and get its ID
+        // $permanentAddressID = $this->insertAddress($jsonPermanent);
 
-        $this->linkEmployeeToAddress($EmployeeID, $permanentAddressID , 'Permanent');
+        // $this->linkEmployeeToAddress($EmployeeID, $permanentAddressID , 'Permanent');
 
-        // $this->insertFamilyBackground($json, $EmployeeID);
+        // $familyId = $this->insertFamilyBackground($json, $EmployeeID);
 
         // if (isset($json->children) && is_array($json->children)) {
         //     // Insert children information
         //     foreach ($json->children as $childJson) {
-        //         $this->insertChildrenInformation($childJson, $EmployeeID);
+        //         $this->insertChildrenInformation($childJson, $EmployeeID, $familyId);
         //     }
         // }
 
-        // $this->insertEducationalBackground($json, $EmployeeID);
+        $this->insertEducationalBackground($json, $EmployeeID);
 
         // $this->insertCivilServiceEligibility($json, $EmployeeID);
 
