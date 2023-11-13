@@ -65,8 +65,50 @@ const state = {
         },
         page2: { /* ... fields for page 2 ... */ },
         page3: { 
-            elementary: {
+            Elementary: {
                 name_of_school: '',
+                degree_course:'',
+                period_of_attendance_from:'',
+                period_of_attendance_to:'',
+                highest_level_units_earned:'',
+                year_graduated:'',
+                scholarship_academic_honors_received:''
+            },
+            Secondary: {
+                name_of_school: '',
+                degree_course:'',
+                period_of_attendance_from:'',
+                period_of_attendance_to:'',
+                highest_level_units_earned:'',
+                year_graduated:'',
+                scholarship_academic_honors_received:''
+            },
+            Vocational: {
+                name_of_school: '',
+                degree_course:'',
+                period_of_attendance_from:'',
+                period_of_attendance_to:'',
+                highest_level_units_earned:'',
+                year_graduated:'',
+                scholarship_academic_honors_received:''
+            },
+            College: {
+                name_of_school: '',
+                degree_course:'',
+                period_of_attendance_from:'',
+                period_of_attendance_to:'',
+                highest_level_units_earned:'',
+                year_graduated:'',
+                scholarship_academic_honors_received:''
+            },
+            GraduateStudies: {
+                name_of_school: '',
+                degree_course:'',
+                period_of_attendance_from:'',
+                period_of_attendance_to:'',
+                highest_level_units_earned:'',
+                year_graduated:'',
+                scholarship_academic_honors_received:''
             }
         },
         page4: { career_service: '', rating: '', date_of_examination: '', place_of_examination: '', license_number: '', license_date_of_validity: '' },
