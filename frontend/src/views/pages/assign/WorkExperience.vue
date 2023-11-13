@@ -9,7 +9,7 @@ const store = useStore();
 // Reactive state for the form data, binding to the Vuex store
 const formData = computed({
   get() {
-    return store.state.formData.page4;
+    return store.state.formData.page5;
   },
   set(value) {
     store.commit('updateFormData', { page: 'page4', data: value });
