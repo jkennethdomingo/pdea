@@ -1,14 +1,26 @@
 <script setup>
-
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
 import PageWrapNew from '@/components/PageWrapNew.vue';
 import BaseCard from '@/components/BaseCard.vue';
 
+const store = useStore();
+
+function logFormData() {
+  console.log(store.state.formData);
+}
+
+// Example: Call logFormData when the component is mounted
+onMounted(() => {
+  logFormData();
+});
 </script>
 
 <template>
   <PageWrapNew>
     <template #header>
-      
+      <!-- Optional: Add a button to trigger logFormData -->
+      <!-- <button @click="logFormData">Log Form Data</button> -->
     </template>
     <BaseCard class="h-[72vh] overflow-y-scroll">
       <router-view />

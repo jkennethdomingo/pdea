@@ -1,36 +1,60 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
-import { reactive, ref, onMounted } from 'vue';
 import { initDropdowns } from 'flowbite';
 
 const store = useStore();
 
 
-// Form data bound to Vuex store
-const formData = computed({
-  get() {
-    return store.state.formData.page2; 
-  },
-  set(value) {
-    store.commit('updateFormData', { page: 'page2', data: value });
-  },
-});
-
-onMounted(async () => {
+onMounted(() => {
   initDropdowns();
 });
 
-const handleSubmit = () => {
-  // Submit form data or navigate to the next page
-  store.dispatch('submitFormData');
+const formData = computed(() => store.state.formData.page2);
+
+watch(formData, (newValue) => {
+  console.log('Form Data Updated:', newValue);
+}, { deep: true });
+
+const isSubmitting = ref(false);
+const handleSubmit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+
+  try {
+    await store.dispatch('submitFormData');
+    // Success feedback (toast, modal, etc.) goes here
+  } catch (error) {
+    console.error('Error submitting form data:', error);
+    // Error feedback (toast, modal, etc.) goes here
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
+const childrenCount = ref(0);
+const childrenData = ref([]);
+
+// Define a computed property for children data in formData
+const childrenFormData = computed({
+  get: () => formData.value.children,
+  set: (newChildren) => { formData.value.children = newChildren; }
+});
+
+// Update childrenData watch to modify formData
+watch(childrenData, (newChildrenData) => {
+  childrenFormData.value = newChildrenData;
+}, { deep: true });
+
+// Watch the childrenCount and update childrenData accordingly
+watch(childrenCount, (newCount) => {
+  childrenData.value = Array.from({ length: newCount }, (_, index) => childrenData.value[index] || { full_name: '', date_of_birth: '' });
+});
 </script>
 
 <template>
-
+<form @submit.prevent="handleSubmit">
   <p class="text-xl text-gray-900 dark:text-white font-bold">Family Background</p>
     <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Surname -->
@@ -78,6 +102,9 @@ const handleSubmit = () => {
       </div>
    </div>
 
+
+   <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
    <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- Father Name -->
       <div>
@@ -101,6 +128,9 @@ const handleSubmit = () => {
       </div>
    </div>
 
+   
+   <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
    <div class="mb-4 grid grid-cols-4 gap-4">
       <!-- mother maiden name -->
       <div>
@@ -117,20 +147,34 @@ const handleSubmit = () => {
         <label for="mother_middle_name" class="block text-gray-700 text-sm dark:text-white mb-2">Mother Middlename :</label>
         <input type="text" id="mother_middle_name" v-model="formData.mother_middle_name" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
+      <!-- Name Extension -->
+      <div>
+        <label for="father_name_extension" class="block text-gray-700 text-sm dark:text-white mb-2">Name Extension:</label>
+        <input type="text" id="mother_name_extension" v-model="formData.mother_name_extension" placeholder="e.g., Jr, Sr" class="shadow border  dark:bg-dark-eval-2 rounded w-32 py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+      </div>
    </div>
 
-   <div class="mb-4 grid grid-cols-4 gap-4">
-      <!-- children name -->
-      <div>
-        <label for="full_name" class="block text-gray-700 text-sm dark:text-white mb-2">Children Name:</label>
-        <input type="text" id="full_name" v-model="formData.full_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">  
+   <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
+  <div class="container mx-auto px-4">
+    <div class="max-w-sm mx-auto">
+      <label for="children_count" class="block text-gray-700 text-sm dark:text-white mb-2">Children Quantity:</label>
+      <input type="number" id="children_count" v-model.number="childrenCount" class="shadow border dark:bg-dark-eval-2 rounded py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline text-center">
+    </div>
+    
+    <div v-for="(child, index) in childrenData" :key="index" class="flex flex-wrap -mx-3 mb-4">
+      <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label :for="'child_name_' + index" class="block text-gray-700 text-sm dark:text-white mb-2">Child {{ index + 1 }} Full Name:</label>
+        <input :id="'child_name_' + index" type="text" v-model="child.full_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
-      <!-- DOB -->
-      <div>
-        <label for="date_of_birth" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Birth:</label>
-        <input type="text" id="date_of_birth" v-model="formData.date_of_birth" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      <div class="w-full md:w-1/2 px-3">
+        <label :for="'child_dob_' + index" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Birth (mm/dd/yyyy):</label>
+        <input :id="'child_dob_' + index" type="date" v-model="child.date_of_birth" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
-   </div>
+    </div>
+  </div>
+</form>
+  
 
 <div class="flex justify-between">
   <div>
@@ -144,11 +188,5 @@ const handleSubmit = () => {
     </Button>
   </div>
 </div>
-
-
-
-
-
-
 
 </template>
