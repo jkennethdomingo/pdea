@@ -20,6 +20,7 @@ module.exports = {
           'eval-1': '#393E46',
           'eval-2': '#2A2F42',
           'eval-3': '#2C3142',
+          'eval-4' : '#1f2937'
         },
       },
     },

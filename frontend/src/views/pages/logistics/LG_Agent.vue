@@ -1,5 +1,9 @@
 <template lang="">
-    Agent
+    
+    <section class="bg-white dark:bg-gray-900">
+        Agent
+
+    </section>
 </template>
 <script>
 export default {

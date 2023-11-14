@@ -105,7 +105,7 @@ export default [
   },
   {
     path: '/logistics',
-    component: () => import('@/layouts/DashboardLayout.vue'),
+    component: () => import('@/layouts/MainLayout.vue'),
     meta: { requiresRole: 'LOGISTICS_ADMIN' },
     children: [
       {
@@ -114,35 +114,42 @@ export default [
         component: () => import('@/views/pages/logistics/LG_Dashboard.vue'),
       },
       {
-        path: 'inventory',
-        name: 'LG_Inventory',
-        component: () => import('@/views/pages/logistics/LG_Inventory.vue'),
-      },
-      {
-        path: 'reports',
-        name: 'LG_Reports',
-        component: () => import('@/views/pages/logistics/LG_Reports.vue'),
-      },
-      {
-        path: 'material_requisition',
+        path: 'lg',
+        component: () => import('@/layouts/LogisticsLayout.vue'),
         children: [
           {
-            path: 'agent',
-            name: 'LG_Agent',
-            component: () => import('@/views/pages/logistics/LG_Agent.vue'),
+            path: 'inventory',
+            name: 'LG_Inventory',
+            component: () => import('@/views/pages/logistics/LG_Inventory.vue'),
           },
           {
-            path: 'Department',
-            name: 'LG_Department',
-            component: () => import('@/views/pages/logistics/LG_Department.vue'),
+            path: 'reports',
+            name: 'LG_Reports',
+            component: () => import('@/views/pages/logistics/LG_Reports.vue'),
           },
           {
-            path: 'ProvincialOffice',
-            name: 'LG_Provincial_Office',
-            component: () => import('@/views/pages/logistics/LG_Province.vue'),
+            path: 'material_requisition',
+            children: [
+              {
+                path: 'agent',
+                name: 'LG_Agent',
+                component: () => import('@/views/pages/logistics/LG_Agent.vue'),
+              },
+              {
+                path: 'Department',
+                name: 'LG_Department',
+                component: () => import('@/views/pages/logistics/LG_Department.vue'),
+              },
+              {
+                path: 'ProvincialOffice',
+                name: 'LG_Provincial_Office',
+                component: () => import('@/views/pages/logistics/LG_Province.vue'),
+              },
+            ],
           },
         ],
       },
+      
       // ... other logistics routes if needed ...
     ],
   },
