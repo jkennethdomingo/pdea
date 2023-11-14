@@ -111,7 +111,7 @@ const state = {
                 scholarship_academic_honors_received:''
             }
         },
-        page4: [{ career_service: '', rating: '', date_of_examination: '', place_of_examination: '', license_number: '', license_date_of_validity: '' }],
+        page4: {},
         page5: { /* ... fields for page 5 ... */ },
         page6: { /* ... fields for page 6 ... */ },
         page7: { /* ... fields for page 7 ... */ },
@@ -135,6 +135,38 @@ const mutations = {
     setAuth(state, payload) {
         state.token = payload.token;
         state.userRole = payload.role;
+    },
+    resetFormData(state) {
+        // Reset the fields for page1
+        Object.keys(state.formData.page1).forEach(key => {
+            if (typeof state.formData.page1[key] === 'object') {
+                Object.keys(state.formData.page1[key]).forEach(innerKey => {
+                    state.formData.page1[key][innerKey] = '';
+                });
+            } else {
+                state.formData.page1[key] = '';
+            }
+        });
+
+        // Reset the fields for other pages (page2, page3, etc.)
+        // Repeat the above process for each page in your formData
+
+        // Example for resetting page3
+        Object.keys(state.formData.page3).forEach(key => {
+            Object.keys(state.formData.page3[key]).forEach(innerKey => {
+                state.formData.page3[key][innerKey] = '';
+            });
+        });
+
+        // Reset page4 which is an array of objects
+        state.formData.page4 = state.formData.page4.map(item => {
+            return Object.keys(item).reduce((acc, key) => {
+                acc[key] = '';
+                return acc;
+            }, {});
+        });
+
+        // Add similar logic for pages 5 to 9
     },
     clearAuth(state) {
         state.token = null;

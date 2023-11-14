@@ -67,6 +67,8 @@ const handleSubmit = () => {
   store.dispatch('submitFormData', formData.value);
 };
 
+// TODO separate the things that are not included in this page
+
 
 </script>
 

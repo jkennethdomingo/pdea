@@ -3,7 +3,6 @@ import { computed, ref, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/Button.vue';
 import { initDropdowns } from 'flowbite';
-import DynamicForm from '@/components/dynamic/DynamicForm.vue';
 
 const store = useStore();
 
@@ -57,6 +56,25 @@ watch(childrenData, (newChildrenData) => {
 </script>
 
 <template>
-  <DynamicForm />
+  <div class="max-w-sm mx-auto">
+    <label for="children_count" class="block text-gray-700 text-sm dark:text-white mb-2">
+      Children Quantity:
+    </label>
+    <input type="number" id="children_count" v-model.number="childrenCount" class="shadow border dark:bg-dark-eval-2 rounded py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline text-center">
+  </div>
 
+  <div v-for="(child, index) in childrenData" :key="index" class="flex flex-wrap -mx-3 mb-4">
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+      <label :for="'child_name_' + index" class="block text-gray-700 text-sm dark:text-white mb-2">
+        Child {{ index + 1 }} Full Name:
+      </label>
+      <input :id="'child_name_' + index" type="text" v-model="child.full_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div class="w-full md:w-1/2 px-3">
+      <label :for="'child_dob_' + index" class="block text-gray-700 text-sm dark:text-white mb-2">
+        Date of Birth (mm/dd/yyyy):
+      </label>
+      <input :id="'child_dob_' + index" type="date" v-model="child.date_of_birth" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+  </div>
 </template>
