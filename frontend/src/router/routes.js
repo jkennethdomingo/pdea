@@ -145,6 +145,11 @@ export default [
                 name: 'LG_Provincial_Office',
                 component: () => import('@/views/pages/logistics/LG_Province.vue'),
               },
+              {
+                path: 'RegionalOffice',
+                name: 'LG_Regional_Office',
+                component: () => import('@/views/pages/logistics/LG_Regional.vue'),
+              },
             ],
           },
         ],

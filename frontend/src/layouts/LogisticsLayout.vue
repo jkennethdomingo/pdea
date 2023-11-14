@@ -10,7 +10,7 @@ const route = useRoute();
 </script>
 
 <template>
-      <LG_BaseCard class="h-[100vh] overflow-y-scroll">
+      <LG_BaseCard class="h-[80vh] overflow-y-scroll">
       <router-view />
     </LG_BaseCard>
 </template>

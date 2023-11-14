@@ -58,6 +58,11 @@ const isCurrentPath = (path) => {
                 title="Provincial Office "
                 :active="isCurrentRoute('LG_Provincial_Office')"
             />
+            <SidebarCollapsibleItem
+                :to="{ name: 'LG_Regional_Office' }"
+                title="Regional Office "
+                :active="isCurrentRoute('LG_Regional_Office')"
+            />
         </SidebarCollapsible>
         
     </PerfrectScrollbar>

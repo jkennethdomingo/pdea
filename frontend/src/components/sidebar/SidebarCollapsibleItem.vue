@@ -38,7 +38,7 @@ defineProps({
             :class="[
                 'transition-colors hover:text-gray-900 dark:hover:text-gray-100',
                 {
-                    'text-gray-900 dark:text-gray-200': active,
+                    'text-green-400 dark:text-green-400': active,
                     'text-gray-500 dark:text-gray-400': !active,
                 },
             ]"
