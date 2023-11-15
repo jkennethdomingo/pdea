@@ -2,7 +2,7 @@ export default [
   {
     path: '/',
     name: 'LandingPage',
-    component: () => import('@/views/LandingPage.vue'),
+    component: () => import('@/views/Index.vue'),
     meta: { requiresAuth: false },
   },
   {
@@ -12,7 +12,7 @@ export default [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        component: () => import('@/views/Index.vue'),
+        component: () => import('@/views/hr/Index.vue'),
         meta: { requiresRole: 'HR_ADMIN' },
       },
       {
@@ -23,12 +23,7 @@ export default [
           {
             path: '',
             name: 'Company',
-            component: () => import('@/views/pages/company/Company.vue'),
-          },
-          {
-            path: 'add-account',
-            name: 'Add Account',
-            component: () => import('@/views/pages/company/Register.vue'),
+            component: () => import('@/views/hr/company_structure/CompanyStructure.vue'),
           },
           // ... other company routes if needed ...
         ],
@@ -41,47 +36,47 @@ export default [
           {
             path: 'page1',
             name: 'Personal Information',
-            component: () => import('@/views/pages/assign/PersonalInformation.vue'),
+            component: () => import('@/views/hr/insert_employee/PersonalInformation.vue'),
           },
           {
             path: 'page2',
             name: 'Family Background',
-            component: () => import('@/views/pages/assign/FamilyBackground.vue'),
+            component: () => import('@/views/hr/insert_employee/FamilyBackground.vue'),
           },
           {
             path: 'page3',
             name: 'Educational Background',
-            component: () => import('@/views/pages/assign/EducationalBackground.vue'),
+            component: () => import('@/views/hr/insert_employee/EducationalBackground.vue'),
           },
           {
             path: 'page4',
             name: 'Civil Service Eligibility',
-            component: () => import('@/views/pages/assign/CivilServiceEligibility.vue'),
+            component: () => import('@/views/hr/insert_employee/CivilServiceEligibility.vue'),
           },
           {
             path: 'page5',
             name: 'Work Experience',
-            component: () => import('@/views/pages/assign/WorkExperience.vue'),
+            component: () => import('@/views/hr/insert_employee/WorkExperience.vue'),
           },
           {
             path: 'page6',
             name: 'Voluntary Work',
-            component: () => import('@/views/pages/assign/VoluntaryWork.vue'),
+            component: () => import('@/views/hr/insert_employee/VoluntaryWork.vue'),
           },
           {
             path: 'page7',
             name: 'Learning And Development',
-            component: () => import('@/views/pages/assign/LearningAndDevelopment.vue'),
+            component: () => import('@/views/hr/insert_employee/LearningAndDevelopment.vue'),
           },
           {
             path: 'page8',
             name: 'Other Information',
-            component: () => import('@/views/pages/assign/OtherInformation.vue'),
+            component: () => import('@/views/hr/insert_employee/OtherInformation.vue'),
           },
           {
             path: 'page9',
             name: 'Questions And Others',
-            component: () => import('@/views/pages/assign/QuestionsAndOthers.vue'),
+            component: () => import('@/views/hr/insert_employee/QuestionsAndOthers.vue'),
           },
           // ... other assign routes if needed ...
         ],
@@ -94,7 +89,7 @@ export default [
           {
             path: '',
             name: 'Calendar',
-            component: () => import('@/views/pages/assign/Calendar.vue'),
+            component: () => import('@/views/hr/assign_training/Calendar.vue'),
           },
         ],
       }
@@ -111,7 +106,7 @@ export default [
       {
         path: 'dashboard',
         name: 'LG_Dashboard',
-        component: () => import('@/views/pages/logistics/LG_Dashboard.vue'),
+        component: () => import('@/views/logistics/LG_Dashboard.vue'),
       },
       {
         path: 'lg',
@@ -123,12 +118,12 @@ export default [
               {
               path: 'inventory',
               name: 'LG_Inventory',
-              component: () => import('@/views/pages/logistics/LG_Inventory.vue'),
+              component: () => import('@/views/logistics/LG_Inventory.vue'),
               },
               {
               path: 'add_inventory',
               name: 'LG_Inventory_Add',
-              component: () => import('@/views/pages/logistics/LG_Inventory_Add.vue'),
+              component: () => import('@/views/logistics/LG_Inventory_Add.vue'),
               },
             ],
           },
@@ -136,7 +131,7 @@ export default [
           {
             path: 'reports',
             name: 'LG_Reports',
-            component: () => import('@/views/pages/logistics/LG_Reports.vue'),
+            component: () => import('@/views/logistics/LG_Reports.vue'),
           },
           {
             path: 'material_requisition',
@@ -144,22 +139,22 @@ export default [
               {
                 path: 'agent',
                 name: 'LG_Agent',
-                component: () => import('@/views/pages/logistics/LG_Agent.vue'),
+                component: () => import('@/views/logistics/LG_Agent.vue'),
               },
               {
                 path: 'Department',
                 name: 'LG_Department',
-                component: () => import('@/views/pages/logistics/LG_Department.vue'),
+                component: () => import('@/views/logistics/LG_Department.vue'),
               },
               {
                 path: 'ProvincialOffice',
                 name: 'LG_Provincial_Office',
-                component: () => import('@/views/pages/logistics/LG_Province.vue'),
+                component: () => import('@/views/logistics/LG_Province.vue'),
               },
               {
                 path: 'RegionalOffice',
                 name: 'LG_Regional_Office',
-                component: () => import('@/views/pages/logistics/LG_Regional.vue'),
+                component: () => import('@/views/logistics/LG_Regional.vue'),
               },
             ],
           },
