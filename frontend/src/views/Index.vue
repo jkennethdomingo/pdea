@@ -5,8 +5,11 @@ import {
     isDark,
     toggleDarkMode,
 } from '@/composables'
+import PerfectScrollbar
+ from '@/components/base/PerfectScrollbar.vue';
 </script>
 <template>
+ <PerfectScrollbar>
  <header>
     <nav class="drop-shadow-md bg-[#EEEDED] border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
         <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto">
@@ -105,27 +108,8 @@ import {
     
 </footer>
 </header> 
+</PerfectScrollbar>
 </template>
-
-<script>
-
-
-export default {
-  name: 'LandingPage',
-  data() {
-    return {
-
-    };
-  },
-  methods: {
-    
-    },
-  mounted() {
-   
-    
-  }
-};
-</script>
 
 
 <style scoped>

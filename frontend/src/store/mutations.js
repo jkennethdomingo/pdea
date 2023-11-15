@@ -3,38 +3,6 @@ export const mutations = {
         state.token = payload.token;
         state.userRole = payload.role;
     },
-    resetFormData(state) {
-        // Reset the fields for page1
-        Object.keys(state.formData.page1).forEach(key => {
-            if (typeof state.formData.page1[key] === 'object') {
-                Object.keys(state.formData.page1[key]).forEach(innerKey => {
-                    state.formData.page1[key][innerKey] = '';
-                });
-            } else {
-                state.formData.page1[key] = '';
-            }
-        });
-
-        // Reset the fields for other pages (page2, page3, etc.)
-        // Repeat the above process for each page in your formData
-
-        // Example for resetting page3
-        Object.keys(state.formData.page3).forEach(key => {
-            Object.keys(state.formData.page3[key]).forEach(innerKey => {
-                state.formData.page3[key][innerKey] = '';
-            });
-        });
-
-        // Reset page4 which is an array of objects
-        state.formData.page4 = state.formData.page4.map(item => {
-            return Object.keys(item).reduce((acc, key) => {
-                acc[key] = '';
-                return acc;
-            }, {});
-        });
-
-        // Add similar logic for pages 5 to 9
-    },
     clearAuth(state) {
         state.token = null;
         state.userRole = null;
@@ -68,4 +36,19 @@ export const mutations = {
             state.formData[page] = { ...state.formData[page], ...data };
         }
     },
+    resetFormData(state) {
+        // Set formData to its initial state
+        state.formData = {
+          page1: { /* ... initial page1 fields ... */ },
+          page2: { /* ... initial page2 fields ... */ },
+          page3: { /* ... initial page3 fields ... */ },
+          page4: { /* ... initial page4 fields ... */ },
+          page5: { /* ... initial page5 fields ... */ },
+          page6: { /* ... initial page2 fields ... */ },
+          page7: { /* ... initial page7 fields ... */ },
+          page8: { /* ... initial page8 fields ... */ },
+          page9: { /* ... initial page9 fields ... */ },
+          // ... all other pages to their initial state
+        };
+      },
 };

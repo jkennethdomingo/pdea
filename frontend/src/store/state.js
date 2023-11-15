@@ -90,7 +90,9 @@ export const state = {
                 scholarship_academic_honors_received:''
             }
         },
-        page4: {},
+        page4: {
+            CivilService: [], // Make sure this is initialized
+          },
         page5: { /* ... fields for page 5 ... */ },
         page6: { /* ... fields for page 6 ... */ },
         page7: { /* ... fields for page 7 ... */ },

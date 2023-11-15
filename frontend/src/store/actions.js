@@ -59,4 +59,7 @@ export const actions = {
             commit('setAuth', { token: authData.token, role: authData.role });
         }
     },
+    clearFormData({ commit }) {
+        commit('resetFormData');
+      },
 };

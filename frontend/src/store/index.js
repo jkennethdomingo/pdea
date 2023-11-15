@@ -8,7 +8,8 @@ const vuexLocal = new VuexPersist({
     storage: window.localStorage,
     reducer: state => ({
         token: state.token,
-        userRole: state.userRole
+        userRole: state.userRole,
+        formData: state.formData
     })
 });
 
