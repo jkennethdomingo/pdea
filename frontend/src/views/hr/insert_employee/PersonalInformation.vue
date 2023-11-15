@@ -8,6 +8,7 @@ import addressData from '@/assets/json/address.json';
 import countriesData from '@/assets/json/countries.json';
 import useZipCodes from '@/composables/useZipCodes';
 
+
 const store = useStore();
 const bloodTypes = bloodTypesData.bloodTypes;
 const jsonData = computed(() => addressData);
@@ -20,6 +21,37 @@ onMounted(() => {
   initDropdowns();
   store.dispatch('getDropdownData');
 });
+
+// Your SVG icon as a string
+const svgIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+  <path fill="currentColor" fill-rule="evenodd" 
+    d="M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0Zm0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5H8Z" 
+    clip-rule="evenodd"/>
+</svg>`;
+
+// Encode the SVG icon to Base64
+const svgBase64 = btoa(svgIcon);
+
+// Create a data URL for the SVG
+const userImage = ref(`data:image/svg+xml;base64,${svgBase64}`);
+
+const fileInput = ref(null);
+
+const triggerFileInput = () => {
+  fileInput.value.click();
+};
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      userImage.value = e.target.result; // Set the userImage to the Data URL
+    };
+    reader.readAsDataURL(file); // Read the file
+  }
+};
 
 // Simplify formData to directly refer to the store state
 const formData = computed(() => store.state.formData.page1);
@@ -122,10 +154,26 @@ const handleSubmit = async () => {
     <p class="text-xl text-gray-900 dark:text-white font-bold">Personal Information</p>
 
 <!-- Employee ID -->
-<div class="mb-4">
-  <label for="EmployeeID" class="block text-gray-700 text-sm dark:text-white mb-2">Employee ID:</label>
-  <input type="text" id="EmployeeID" v-model="formData.EmployeeID" class="shadow border dark:bg-dark-eval-2 rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+<div class="flex items-center space-x-4 mb-4">
+  <div class="relative h-32 w-32">
+    <!-- Image bound with userImage variable -->
+    <img :src="userImage" alt="Employee" class="w-32 h-32 object-cover rounded-2xl">
+    <input type="file" ref="fileInput" @change="handleFileChange" class="hidden" />
+    <!-- Button to trigger file input -->
+    <button @click="triggerFileInput" class="absolute -right-2 bottom-2 text-white p-1 text-xs bg-green-400 hover:bg-green-500 font-medium tracking-wider rounded-full transition ease-in duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+      </svg>
+    </button>
+  </div>
+
+  
+  <div class="flex flex-col"> <!-- Container for the Employee ID field -->
+    <label for="EmployeeID" class="block text-gray-700 text-sm dark:text-white mb-2">Employee ID:</label>
+    <input type="text" id="EmployeeID" v-model="formData.EmployeeID" class="shadow border dark:bg-dark-eval-2 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+  </div>
 </div>
+
 
 <!-- Form Fields -->
 <div class="mb-4 grid grid-cols-4 gap-4">
