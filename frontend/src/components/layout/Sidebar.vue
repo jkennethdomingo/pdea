@@ -1,16 +1,28 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { sidebarState } from '@/composables'
 import SidebarHeader from '@/components/sidebar/SidebarHeader.vue'
-import SidebarContent from '@/components/sidebar/SidebarContent.vue'
-import LG_SidebarContent from '@/components/sidebar/logistics/LG_SidebarContent.vue'
+import HR_SidebarContent from '@/components/sidebar/HR_SidebarContent.vue'
+import LG_SidebarContent from '@/components/sidebar/LG_SidebarContent.vue'
 import SidebarFooter from '@/components/sidebar/SidebarFooter.vue'
 
 const store = useStore()
 
 // Reactive reference for userRole
 const userRole = ref(null)
+
+const sidebarComponent = computed(() => {
+  switch (userRole.value) {
+    case 'HR_ADMIN':
+      return HR_SidebarContent;
+    case 'LOGISTICS_ADMIN':
+      return LG_SidebarContent;
+    default:
+      return null;
+  }
+});
+
 
 // Lifecycle hook for onMounted
 onMounted(() => {
@@ -61,8 +73,7 @@ onUnmounted(() => {
         @mouseleave="sidebarState.handleHover(false)"
     >
         <SidebarHeader />
-        <SidebarContent v-if="userRole === 'HR_ADMIN'" sidebar-type="hr" />
-        <LG_SidebarContent v-else-if="userRole === 'LOGISTICS_ADMIN'" sidebar-type="logistics" />
+        <component :is="sidebarComponent" sidebar-type="sidebarType" />
         <SidebarFooter />
     </aside>
 </template>
