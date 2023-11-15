@@ -26,13 +26,18 @@ const isCurrentPath = (path) => {
             :active="isCurrentRoute('LG_Dashboard')"
             icon="mdi:view-dashboard"
         />
-        <SidebarLink
-            icon="material-symbols:inventory"
+        <SidebarCollapsible icon="material-symbols:inventory" title="Manage Inventory" :active="isCurrentPath('/logistics/lg/inventory_management')">
+            <SidebarCollapsibleItem
             :to="{ name: 'LG_Inventory' }"
             title="Inventory"
             :active="isCurrentRoute('LG_Inventory')"
-        >
-        </SidebarLink>
+            />
+            <SidebarCollapsibleItem
+            :to="{ name: 'LG_Inventory_Add' }"
+            title="Add Inventory"
+            :active="isCurrentRoute('LG_Inventory_Add')"
+            />
+        </SidebarCollapsible>
 
         <SidebarLink
             icon="carbon:report"
@@ -42,7 +47,7 @@ const isCurrentPath = (path) => {
         >
         </SidebarLink>
 
-        <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/material_requisition')">
+        <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/lg/material_requisition')">
             <SidebarCollapsibleItem
                 :to="{ name: 'LG_Agent' }"
                 title="Agent"
@@ -64,6 +69,7 @@ const isCurrentPath = (path) => {
                 :active="isCurrentRoute('LG_Regional_Office')"
             />
         </SidebarCollapsible>
+
         
     </PerfrectScrollbar>
 </template>

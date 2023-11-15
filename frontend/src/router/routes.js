@@ -118,10 +118,21 @@ export default [
         component: () => import('@/layouts/LogisticsLayout.vue'),
         children: [
           {
-            path: 'inventory',
-            name: 'LG_Inventory',
-            component: () => import('@/views/pages/logistics/LG_Inventory.vue'),
+            path: 'inventory_management',
+            children: [
+              {
+              path: 'inventory',
+              name: 'LG_Inventory',
+              component: () => import('@/views/pages/logistics/LG_Inventory.vue'),
+              },
+              {
+              path: 'add_inventory',
+              name: 'LG_Inventory_Add',
+              component: () => import('@/views/pages/logistics/LG_Inventory_Add.vue'),
+              },
+            ],
           },
+
           {
             path: 'reports',
             name: 'LG_Reports',

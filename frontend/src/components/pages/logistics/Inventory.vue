@@ -3,27 +3,46 @@ import { ref, onMounted } from 'vue';
 import Button from '@/components/Button.vue';
 import ReusableTable from '@/components/flowbite/ReusableTable.vue';
 import { initDropdowns } from 'flowbite';
+import Edit from '@/components/modals/Edit.vue';
 
 const tableHeaders = [
-  { key: 'name', text: 'Product Name' },
-  { key: 'category', text: 'Category' },
-  { key: 'brand', text: 'Brand' },
+  { key: 'Date', text: 'Date of Receipt of Request' },
+  { key: 'Project', text: 'Project/Particular' },
+  { key: 'End', text: 'End-User' },
+  { key: 'Purchase', text: 'Purchase/Work/Job Request',
+  columns: [
+      { key: 'No', text: 'No' },
+      { key: 'Date', text: 'Date' }
+    ] },
+  { key: 'Philgeps', text: 'Philgeps' },
+  { key: 'Price', text: 'Price Quotation' },
+  { key: 'Abstract', text: 'Abstract of Canvass' },
+  { key: 'Amount', text: 'Amount' },
+  { key: 'Supplier', text: 'Supplier' },
+  { key: 'Date_Request', text: 'Date Request for Fund' },
+  { key: 'Ideal_No', text: 'Ideal_No. of days to complete' },
+  { key: 'Actual_days', text: 'Actual days Completed' },
+  { key: 'Difference', text: 'Difference' },
+  { key: 'Purchase', text: 'Purchase/Work/Job Order' },
+  { key: 'Delivery_Status', text: 'Delivery_Status' },
+  { key: 'Remarks', text: 'Remarks' },
+  { key: 'Action', text: 'Action' },
   // ... other headers
 ];
 
 // Example data for rows
 const tableRows = ref([
-  { name: 'Apple iMac 27"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
-  { name: 'Apple iMac 20"', category: 'PC', brand: 'Apple', /* ... other data */ },
+  { Date: 'Apple iMac 27"', category: 'PC', brand: 'Apple', Supplier: 'Apple iMac 27"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
+  { Date: 'Apple iMac 20"', category: 'PC', brand: 'Apple',},
   // ... other rows
 ]);
 
@@ -39,6 +58,7 @@ onMounted(() => {
 
 
 <template>
+    <Edit/>
      <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 rounded-lg">
         <div class="mx-auto max-w-screen-xl px-4 max-h-[76vh] overflow-y-scroll">
             <!-- Start coding here -->
@@ -116,6 +136,8 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
+                
+
                 <div class="overflow-x-auto">
                     <ReusableTable :headers="tableHeaders" :rows="tableRows" @action="handleAction" />
                 </div>

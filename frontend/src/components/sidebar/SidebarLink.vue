@@ -35,7 +35,7 @@ defineProps({
             {
                 'text-gray-500 hover:text-white-700 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-dark-eval-2':
                     !active,
-                'text-white bg-green-500 shadow-lg hover:bg-green-600':
+                'text-white bg-green-300 shadow-lg hover:bg-green-600':
                     active,
             },
         ]"
@@ -78,7 +78,7 @@ defineProps({
             {
                 'text-black-500 hover:text-gray-500 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-dark-eval-2':
                     !active,
-                'text-black bg-green-600 shadow-lg':
+                'text-black bg-green-300 shadow-lg':
                     active,
             },
         ]"
