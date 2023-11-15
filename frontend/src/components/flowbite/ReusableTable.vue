@@ -4,6 +4,8 @@ import PerfectScrollbar from '@/components/base/PerfectScrollbar.vue';
 import Button from '@/components/base/Button.vue';
 import { initDropdowns } from 'flowbite';
 import DeleteModal from '@/components/modals/Delete.vue';
+import EditModal from '@/components/modals/Edit.vue';
+import ViewModal from '@/components/modals/View.vue';
 
 const scrollContainerRef = ref(null);
 const props = defineProps({
@@ -52,11 +54,23 @@ onMounted(() => {
 });
 
 const isDeleteModalVisible = ref(false);
+const isEditModalVisible = ref(false);
+const isViewModalVisible = ref(false);
 const selectedItem = ref(null);
 
 function openDeleteModal(item) {
   selectedItem.value = item;
   isDeleteModalVisible.value = true;
+}
+
+function openEditModal(item) {
+  selectedItem.value = item;
+  isEditModalVisible.value = true;
+}
+
+function openViewModal(item) {
+  selectedItem.value = item;
+  isViewModalVisible.value = true;
 }
 
 function handleConfirm() {
@@ -68,6 +82,8 @@ function handleConfirm() {
 function handleCancel() {
   console.log('Cancel clicked');
   isDeleteModalVisible.value = false;
+  isEditModalVisible.value = false;
+  isViewModalVisible.value = false;
 }
 
 </script>
@@ -145,10 +161,10 @@ function handleCancel() {
               <div id="xbox-series-x-dropdown" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                   <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="xbox-series-x-dropdown-button">
                       <li>
-                          <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Show</a>
+                          <a href="#"  @click.prevent="openViewModal(row)" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Show</a>
                       </li>
                       <li>
-                        <a href="#" @click.prevent="emitAction('edit', row)" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                        <a href="#" @click.prevent="openEditModal(row)" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                             Edit
                         </a>
                       </li>
@@ -206,6 +222,16 @@ function handleCancel() {
     @confirm="handleConfirm"
     @cancel="handleCancel"
     message="Are you sure you want to delete this item?"
+  />
+  <EditModal
+    :isVisible="isEditModalVisible"
+    @cancel="handleCancel"
+    message="Are you sure you want to edit this item?"
+  />
+  <ViewModal
+    :isVisible="isViewModalVisible"
+    @cancel="handleCancel"
+    message="Are you sure you want to view this item?"
   />
 </template>
 
