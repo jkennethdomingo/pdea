@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from 'vuex';
-import Button from '@/components/Button.vue';
+import Button from '@/components/base/Button.vue';
 
 const store = useStore();
 

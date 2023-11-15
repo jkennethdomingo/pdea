@@ -1,7 +1,7 @@
 <script setup>
 
-import PageWrapNew from '@/components/PageWrapNew.vue';
-import BaseCard from '@/components/BaseCard.vue';
+import PageWrapNew from '@/components/layout/PageWrapNew.vue';
+import BaseCard from '@/components/ui/BaseCard.vue';
 
 </script>
 

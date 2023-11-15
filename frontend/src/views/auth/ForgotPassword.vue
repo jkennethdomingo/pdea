@@ -1,9 +1,9 @@
 <script setup>
 import { reactive } from 'vue'
-import InputIconWrapper from '@/components/InputIconWrapper.vue'
-import Button from '@/components/Button.vue'
-import Input from '@/components/Input.vue'
-import Label from '@/components/Label.vue'
+import InputIconWrapper from '@/components/forms/InputIconWrapper.vue'
+import Button from '@/components/base/Button.vue'
+import Input from '@/components/base/Input.vue'
+import Label from '@/components/base/Label.vue'
 
 const forgotPasswordForm = reactive({
     email: '',

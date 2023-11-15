@@ -44,8 +44,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import PerfectScrollbar from '@/components/PerfectScrollbar.vue';
-import Button from '@/components/Button.vue';
+import PerfectScrollbar from '@/components/base/PerfectScrollbar.vue';
+import Button from '@/components/base/Button.vue';
 import { initDropdowns } from 'flowbite';
 
 const scrollContainerRef = ref(null);

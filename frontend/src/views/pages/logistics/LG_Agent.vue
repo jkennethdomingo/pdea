@@ -1,5 +1,5 @@
 <script setup>
-import Button from '@/components/Button.vue';
+import Button from '@/components/base/Button.vue';
 import { ref } from 'vue';
 
 const showModal = ref(false);

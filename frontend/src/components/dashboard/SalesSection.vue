@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import ApexCharts from 'apexcharts'
-import BaseCard from '@/components/BaseCard.vue'
+import BaseCard from '@/components/ui/BaseCard.vue'
 import { Icon } from '@iconify/vue'
 
 const earningChartEl = ref(null)

@@ -9,11 +9,11 @@ import {
     toggleDarkMode,
     sidebarState,
 } from '@/composables'
-import Button from '@/components/Button.vue'
-import Logo from '@/components/Logo.vue'
-import Dropdown from '@/components/Dropdown.vue'
-import DropdownLink from '@/components/DropdownLink.vue'
-import DropdownButton from '@/components/DropdownButton.vue'
+import Button from '@/components/base/Button.vue'
+import Logo from '@/components/base/Logo.vue'
+import Dropdown from '@/components/base/Dropdown.vue'
+import DropdownLink from '@/components/base/DropdownLink.vue'
+import DropdownButton from '@/components/base/DropdownButton.vue'
 import userAvatar from '@/assets/images/avatar.jpg'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';

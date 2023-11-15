@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
-import Button from '@/components/Button.vue';
 import { initDropdowns } from 'flowbite';
 import DynamicForm from '@/components/dynamic/DynamicForm.vue';
 

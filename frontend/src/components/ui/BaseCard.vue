@@ -1,5 +1,5 @@
 <script setup>
-import Button from '@/components/Button.vue'
+import Button from '@/components/base/Button.vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
 defineProps({

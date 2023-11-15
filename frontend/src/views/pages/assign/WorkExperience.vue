@@ -1,7 +1,7 @@
 <script setup>
 import { computed, reactive, watch, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import Button from '@/components/Button.vue';
+import Button from '@/components/base/Button.vue';
 import { initDropdowns } from 'flowbite';
 
 const store = useStore();

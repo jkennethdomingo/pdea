@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import PageWrapNew from '@/components/PageWrapNew.vue';
-import BaseCard from '@/components/BaseCard.vue';
+import PageWrapNew from '@/components/layout/PageWrapNew.vue';
+import BaseCard from '@/components/ui/BaseCard.vue';
 
 const router = useRouter();
 const route = useRoute();

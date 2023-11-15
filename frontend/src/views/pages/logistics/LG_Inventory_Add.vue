@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import PageWrapper from '@/components/PageWrapper.vue';
+import PageWrapper from '@/components/layout/PageWrapper.vue';
 
 
 </script>

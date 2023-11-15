@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useStore } from 'vuex';
-import PageWrapNew from '@/components/PageWrapNew.vue';
-import BaseCard from '@/components/BaseCard.vue';
+import PageWrapNew from '@/components/layout/PageWrapNew.vue';
+import BaseCard from '@/components/ui/BaseCard.vue';
 
 const store = useStore();
 

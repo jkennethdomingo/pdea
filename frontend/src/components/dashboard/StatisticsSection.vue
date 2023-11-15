@@ -1,5 +1,5 @@
 <script setup>
-import QuiclStatisticsCard from '@/components/QuiclStatisticsCard.vue'
+import QuiclStatisticsCard from '@/components/ui/QuiclStatisticsCard.vue'
 
 const customersData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
 const visitsData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13].reverse()

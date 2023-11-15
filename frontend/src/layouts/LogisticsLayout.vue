@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import LG_BaseCard from '@/components/LG_BaseCard.vue';
+import LG_BaseCard from '@/components/ui/LG_BaseCard.vue';
 
 const router = useRouter();
 const route = useRoute();

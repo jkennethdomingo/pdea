@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import BaseCard from '@/components/BaseCard.vue'
+import BaseCard from '@/components/ui/BaseCard.vue'
 import ApexCharts from 'apexcharts'
 import { Icon } from '@iconify/vue'
 

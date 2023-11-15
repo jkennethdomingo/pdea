@@ -1,5 +1,4 @@
 <script setup>
-import Button from '@/components/Button.vue';
 import { ref, onMounted } from 'vue';
 import { initDropdowns } from 'flowbite';
 onMounted(() => {

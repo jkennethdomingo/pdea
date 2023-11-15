@@ -1,6 +1,6 @@
 <script setup>
-import BaseCard from '@/components/BaseCard.vue'
-import Button from '@/components/Button.vue'
+import BaseCard from '@/components/ui/BaseCard.vue'
+import Button from '@/components/base/Button.vue'
 import { Icon } from '@iconify/vue'
 </script>
 

@@ -1,8 +1,8 @@
 <script setup>
-import PageWrapper from '@/components/PageWrapper.vue'
-import StatisticsSection from '@/components/pages/dashboard/StatisticsSection.vue'
-import SalesSection from '@/components/pages/dashboard/SalesSection.vue'
-import LatestSection from '@/components/pages/dashboard/LatestSection.vue'
+import PageWrapper from '@/components/layout/PageWrapper.vue'
+import StatisticsSection from '@/components/dashboard/StatisticsSection.vue'
+import SalesSection from '@/components/dashboard/SalesSection.vue'
+import LatestSection from '@/components/dashboard/LatestSection.vue'
 </script>
 
 <template>

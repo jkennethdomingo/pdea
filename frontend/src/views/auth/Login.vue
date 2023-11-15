@@ -5,8 +5,8 @@ import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { ROLE_ROUTE_MAP } from '@/constants/roleRoutes';
 import { errorToast } from '@/toast/index'; // Import your custom toast utility
-import PageFooter from '@/components/PageFooter.vue';
-import Button from '@/components/Button.vue';
+import PageFooter from '@/components/layout/PageFooter.vue';
+import Button from '@/components/base/Button.vue';
 import { Icon } from '@iconify/vue';
 import {
     isDark,

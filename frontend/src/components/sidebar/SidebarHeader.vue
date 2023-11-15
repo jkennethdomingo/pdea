@@ -1,6 +1,6 @@
 <script setup>
-import Logo from '@/components/Logo.vue'
-import Button from '@/components/Button.vue'
+import Logo from '@/components/base/Logo.vue'
+import Button from '@/components/base/Button.vue'
 import { Icon } from '@iconify/vue'
 import { sidebarState } from '@/composables'
 </script>

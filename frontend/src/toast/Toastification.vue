@@ -29,7 +29,7 @@
 import { defineComponent, computed } from 'vue';
 import { Icon } from '@iconify/vue'
 import '@/toast/style.css'
-import Button from '@/components/Button.vue'
+import Button from '@/components/base/Button.vue'
 
 export default defineComponent({
   components: {
