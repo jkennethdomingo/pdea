@@ -1,19 +1,43 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+
 import PageWrapper from '@/components/layout/PageWrapper.vue';
-import Edit from '@/components/modals/Edit.vue';
+// Create a reactive object for your form data
+const formData = ref({
+  date: '',
+  project: '',
+  endUser: '',
+  // ... add all other form fields here
+});
 
+const store = useStore();
 
+// Form submission handler
+const submitForm = async () => {
+  try {
+    // Dispatch the Vuex action with the form data
+    await store.dispatch('addInventory', formData.value);
+
+    // Optionally, handle post-submission logic (e.g., clear form, show success message)
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    // Handle the error, e.g., show an error message to the user
+  }
+};
 </script>
 
 <template>
   <PageWrapper>
   
   <br>
+  <form @submit.prevent="submitForm">
+  
+
     <div class="mb-4 grid grid-cols-4 gap-4">
       <div>
         <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Receipt of Request:</label>
-        <input type="date" id="Date" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
+        <input type="date" id="Date" v-model="formData.date" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
       </div>
       <div>
         <label for="Project" class="block text-gray-700 text-sm dark:text-white mb-2">Project/Particulara:</label>
@@ -81,11 +105,9 @@ import Edit from '@/components/modals/Edit.vue';
    </div>
 
    <div class="flex justify-end">
-        <button @click="handleSubmit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-sm">
-          Add
-        </button>
+    <button @click="submitForm">Submit</button>
       </div>
-
+    </form>
 </PageWrapper>
         
 </template>

@@ -53,6 +53,18 @@ export const actions = {
             commit('setIsSubmitting', false);
         }
     },
+    async addInventory({ commit }, inventoryData) {
+        try {
+            commit('setIsInserting', true); // Optional: mutation to set a loading state
+            const response = await apiService.post('/manageInventory/addInventory', inventoryData); // Adjust '/items' to your specific endpoint
+            commit('addItem', response.data); // Assuming the API returns the inserted item
+        } catch (error) {
+            console.error('Insert error:', error);
+            // Handle error (e.g., show a notification or set an error state)
+        } finally {
+            commit('setIsInserting', false); // Reset the loading state
+        }
+    },
     initializeAuth({ commit }) {
         const authData = getStoredAuthData();
         if (authData) {
