@@ -37,4 +37,22 @@ class PersonalInformationModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getSelectedInfo() {
+        // Start the query by selecting the fields from the personal_information table.
+        $this->select('personal_information.EmployeeID, personal_information.first_name, personal_information.surname, personal_information.agency_employee_no, personal_information.telephone_no, personal_information.mobile_no, personal_information.Email');
+        
+        // Join with the employee_position table to get the corresponding PositionID for each employee.
+        $this->join('employee_position', 'personal_information.EmployeeID = employee_position.EmployeeID', 'left');
+        
+        // Join with the position table to get the PositionName.
+        $this->join('position', 'employee_position.PositionID = position.PositionID', 'left');
+        
+        // Select the PositionName from the position table.
+        $this->select('position.PositionName');
+        
+        // Finally, perform the query and return the results.
+        return $this->findAll();
+    }
+    
 }

@@ -18,6 +18,11 @@ $routes->group('api', function($routes)
         $routes->post('getDropdownData', 'AccountInformationController::getDropdownData');
     });
 
+    $routes->group('materialRequisition', function($routes) {
+        $routes->post('insert', 'MaterialRequisitionController::assignAsset');
+        $routes->post('getData', 'MaterialRequisitionController::getData');
+    });
+
     $routes->post('insert', 'TestArea::create');
 
 });

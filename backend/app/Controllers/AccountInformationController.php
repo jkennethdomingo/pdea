@@ -518,48 +518,48 @@ class AccountInformationController extends ResourceController
             // Insert personal information and get cs_id_no
         $EmployeeID = $this->insertPersonalInformation($json, $hashedPassword);
 
-        // // Extract residential address data
-        // $jsonResidential = $json->residentialForm;
+        // Extract residential address data
+        $jsonResidential = $json->residentialForm;
 
-        // // Insert the residential address and get its ID
-        // $residentialAddressID = $this->insertAddress($jsonResidential);
+        // Insert the residential address and get its ID
+        $residentialAddressID = $this->insertAddress($jsonResidential);
 
-        // $this->linkEmployeeToAddress($EmployeeID, $residentialAddressID, 'Residential');
+        $this->linkEmployeeToAddress($EmployeeID, $residentialAddressID, 'Residential');
 
-        // // Extract residential address data
-        // $jsonPermanent = $json->permanentForm;
+        // Extract residential address data
+        $jsonPermanent = $json->permanentForm;
 
-        // // Insert the residential address and get its ID
-        // $permanentAddressID = $this->insertAddress($jsonPermanent);
+        // Insert the residential address and get its ID
+        $permanentAddressID = $this->insertAddress($jsonPermanent);
 
-        // $this->linkEmployeeToAddress($EmployeeID, $permanentAddressID , 'Permanent');
+        $this->linkEmployeeToAddress($EmployeeID, $permanentAddressID , 'Permanent');
 
-        // $familyId = $this->insertFamilyBackground($json, $EmployeeID);
+        $familyId = $this->insertFamilyBackground($json, $EmployeeID);
 
-        // if (isset($json->children) && is_array($json->children)) {
-        //     // Insert children information
-        //     foreach ($json->children as $childJson) {
-        //         $this->insertChildrenInformation($childJson, $EmployeeID, $familyId);
-        //     }
-        // }
+        if (isset($json->children) && is_array($json->children)) {
+            // Insert children information
+            foreach ($json->children as $childJson) {
+                $this->insertChildrenInformation($childJson, $EmployeeID, $familyId);
+            }
+        }
 
         $this->insertEducationalBackground($json, $EmployeeID);
 
-        // $this->insertCivilServiceEligibility($json, $EmployeeID);
+        $this->insertCivilServiceEligibility($json, $EmployeeID);
 
-        // $this->insertWorkExperience($json, $EmployeeID);
+        $this->insertWorkExperience($json, $EmployeeID);
 
-        // $this->insertVoluntaryWork($json, $EmployeeID);
+        $this->insertVoluntaryWork($json, $EmployeeID);
 
-        // $this->insertTrainingPrograms($json, $EmployeeID);
+        $this->insertTrainingPrograms($json, $EmployeeID);
         
-        // $this->insertOtherInformation($json, $EmployeeID);
+        $this->insertOtherInformation($json, $EmployeeID);
 
-        // $this->insertPDSheetQuestions($json, $EmployeeID);
+        $this->insertPDSheetQuestions($json, $EmployeeID);
 
-        // $this->insertReferences($json, $EmployeeID);
+        $this->insertReferences($json, $EmployeeID);
 
-        // $this->insertGovernmentIssuedIDs($json, $EmployeeID);
+        $this->insertGovernmentIssuedIDs($json, $EmployeeID);
 
         $authRoleData = [
             'EmployeeID' => $EmployeeID,

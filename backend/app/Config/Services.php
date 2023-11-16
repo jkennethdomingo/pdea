@@ -25,6 +25,14 @@ use App\Models\ReferencesTblModel;
 use App\Models\GovernmentIssuedIDsModel;
 use App\Models\AddressModel;
 use App\Models\EmployeeAddressModel;
+use App\Models\AssetAuditModel;
+use App\Models\AssetLocationModel;
+use App\Models\AssetModel;
+use App\Models\AssetStatusModel;
+use App\Models\AssetTypeModel;
+use App\Models\ProvincialOfficeModel;
+use App\Models\RegionalOfficeModel;
+use App\Models\DepartmentModel;
 
 /**
  * Services Configuration file.
@@ -270,6 +278,56 @@ class Services extends BaseService
         return new AddressModel();
     }
 
+    public static function AssetAuditModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('AssetAuditModel');
+        }
+
+        return new AssetAuditModel();
+    }
+
+    public static function AssetLocationModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('AssetLocationModel');
+        }
+
+        return new AssetLocationModel();
+    }
+
+    public static function AssetModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('AssetModel');
+        }
+
+        return new AssetModel();
+    }
+
+    public static function AssetStatusModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('AssetStatusModel');
+        }
+
+        return new AssetStatusModel();
+    }
+
+    public static function ProvincialOfficeModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('ProvincialOfficeModel');
+        }
+
+        return new ProvincialOfficeModel();
+    }
+
     public static function EmployeeAddressModel($getShared = true)
     {
         if ($getShared)
@@ -278,6 +336,36 @@ class Services extends BaseService
         }
 
         return new EmployeeAddressModel();
+    }
+
+    public static function DepartmentModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('DepartmentModel');
+        }
+
+        return new DepartmentModel();
+    }
+
+    public static function AssetTypeModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('AssetTypeModel');
+        }
+
+        return new AssetTypeModel();
+    }
+
+    public static function RegionalOfficeModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('RegionalOfficeModel');
+        }
+
+        return new RegionalOfficeModel();
     }
 
 }
