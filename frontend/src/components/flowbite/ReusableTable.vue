@@ -161,7 +161,7 @@ function handleCancel() {
               <div id="xbox-series-x-dropdown" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                   <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="xbox-series-x-dropdown-button">
                       <li>
-                          <a href="#"  @click.prevent="openViewModal(row)" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Show</a>
+                          <a href="#"  @click.prevent="openViewModal(row)" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View</a>
                       </li>
                       <li>
                         <a href="#" @click.prevent="openEditModal(row)" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
@@ -174,7 +174,7 @@ function handleCancel() {
                       href="#"
                       @click.prevent="openDeleteModal(row)" 
                       class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                      Delete
+                      Archive
                     </a>
                   </div>
               </div>
@@ -221,7 +221,7 @@ function handleCancel() {
     :isVisible="isDeleteModalVisible"
     @confirm="handleConfirm"
     @cancel="handleCancel"
-    message="Are you sure you want to delete this item?"
+    message="Are you sure you want to Archive this item?"
   />
   <EditModal
     :isVisible="isEditModalVisible"
