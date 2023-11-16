@@ -18,6 +18,14 @@ const formData = computed(() => {
   return pageData ? pageData[props.arrayName] : [];
 });
 
+function camelCaseToTitle(camelCase) {
+    let result = camelCase.replace(/([A-Z])/g, ' $1').trim();
+    return result.charAt(0).toUpperCase() + result.slice(1);
+}
+
+// Computed property for the title-cased array name
+const titleCasedArrayName = computed(() => camelCaseToTitle(props.arrayName));
+
 // Initialize rowData based on the Vuex state
 const rowCount = ref(formData.value.length);
 const rowData = ref(formData.value);
@@ -72,6 +80,7 @@ watch(rowData, (newRowData) => {
 
 
 <template>
+  <p class="text-xl text-gray-900 dark:text-white font-bold">{{ titleCasedArrayName }}</p>
   <div class="max-w-sm mx-auto">
     <label for="row_count" class="block text-gray-700 text-sm dark:text-white mb-2">
       Row Count:
@@ -79,12 +88,23 @@ watch(rowData, (newRowData) => {
     <input type="number" id="row_count" v-model.number="rowCount" class="shadow border dark:bg-dark-eval-2 rounded py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline text-center">
   </div>
 
-  <div v-for="(row, rowIndex) in rowData" :key="rowIndex" class="flex flex-wrap -mx-3 mb-4">
-    <div v-for="(field, fieldIndex) in fieldSchema" :key="fieldIndex" class="w-full px-3 mb-6 md:mb-0">
-      <label :for="`field_${rowIndex}_${field.name}`" class="block text-gray-700 text-sm dark:text-white mb-2">
-        {{ field.label }}:
-      </label>
-      <input :id="`field_${rowIndex}_${field.name}`" :type="field.type" v-model="row[field.name]" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-    </div>
-  </div>
+  <div>
+  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-6 py-3" v-for="(field, fieldIndex) in fieldSchema" :key="fieldIndex">
+          {{ field.label }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(row, rowIndex) in rowData" :key="rowIndex" :class="{'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': true, 'border-b dark:border-gray-700': true}">
+        <td v-for="(field, fieldIndex) in fieldSchema" :key="fieldIndex" class="px-6 py-4">
+          <input :id="`field_${rowIndex}_${field.name}`" :type="field.type" v-model="row[field.name]" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 </template>
