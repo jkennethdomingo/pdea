@@ -1,182 +1,68 @@
+<template>
+  <div>
+    <form @submit.prevent="handleSubmit">
+      <DynamicForm
+      :pageNumber="5"
+      :fieldSchema="fieldSchema"
+      arrayName="WorkExperience"
+    />
+    <div class="flex justify-between">
+      <Button :to="{ name: 'Civil Service Eligibility' }">
+        Back
+      </Button>
+      <Button :to="{ name: 'Voluntary Work' }">
+        Next
+      </Button>
+
+    </div>
+
+<button @click="handleSubmit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    Submit Form
+</button>
+    </form>
+    
+  </div>
+</template>
+
+
+
 <script setup>
-import { computed, reactive, watch, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import { ref } from 'vue';
+import DynamicForm from '@/components/dynamic/DynamicForm.vue'; // Adjust the path as needed
 import Button from '@/components/base/Button.vue';
-import { initDropdowns } from 'flowbite';
+import { useStore } from 'vuex';
 
 const store = useStore();
 
-// Reactive state for the form data, binding to the Vuex store
-const formData = computed({
-  get() {
-    return store.state.formData.page5;
-  },
-  set(value) {
-    store.commit('updateFormData', { page: 'page4', data: value });
-  },
-});
+const fieldSchema = ref([
+  { name: 'inclusive_dates_from', label: 'Inclusive Dates From', type: 'date' },
+  { name: 'inclusive_dates_to', label: 'Inclusive Dates To', type: 'date' },
+  { name: 'position_title', label: 'Position Title', type: 'text' },
+  { name: 'department_agency_office_company', label: 'Department Agency Office Company', type: 'text' },
+  { name: 'monthly_salary', label: 'Monthly Salary', type: 'text' },
+  { name: 'salary_grade_step_increment', label: 'Salary Grade Step Increment', type: 'text' },
+  { name: 'status_of_appointment', label: 'Status of Appointment', type: 'text' },
+  { name: 'govt_service', label: 'govt_service', type: 'text' },
+  // Add more fields as needed for the CivilService array
+]);
 
-// Function to parse entries from localStorage or initialize as empty array
-const getInitialEntries = () => {
-  const savedEntries = localStorage.getItem('eligibilityEntries');
-  return savedEntries ? JSON.parse(savedEntries) : [];
-};
+const isSubmitting = ref(false);
+const handleSubmit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
 
-// Reactive state for eligibility entries
-const eligibilityEntries = reactive({
-  entries: getInitialEntries(),
-});
-
-// Watcher to save to localStorage
-watch(eligibilityEntries.entries, (newEntries) => {
-  localStorage.setItem('eligibilityEntries', JSON.stringify(newEntries));
-}, { deep: true });
-
-// Function to add a new entry
-const addNewEntry = () => {
-  if (Array.isArray(eligibilityEntries.entries)) {
-    eligibilityEntries.entries.push({
-      organization_name: '',
-      period_from: '',
-      period_to: '',
-      number_of_hours: '',
-      position: ''
-    });
-  } else {
-    // Reset entries to an array with one new entry if it's not an array
-    eligibilityEntries.entries = [{
-      organization_name: '',
-      period_from: '',
-      period_to: '',
-      number_of_hours: '',
-      position: ''
-    }];
+  try {
+    await store.dispatch('submitFormData');
+    // Success feedback
+  } catch (error) {
+    console.error('Error submitting form data:', error);
+    // Error feedback
+  } finally {
+    isSubmitting.value = false;
   }
 };
-
-// Function to delete an entry
-const deleteEntry = (index) => {
-  if (Array.isArray(eligibilityEntries.entries)) {
-    eligibilityEntries.entries.splice(index, 1);
-  }
-};
-
-// Initiate any dropdowns when the component is mounted
-onMounted(() => {
-  initDropdowns();
-});
-
-// Submit form data handler
-const handleSubmit = () => {
-  store.dispatch('submitFormData', formData.value);
-};
-
 </script>
 
-
-
-<template>
-  <p class="text-xl text-gray-900 dark:text-white font-bold">Work Experience</p>
-    <div class="container mx-auto p-4">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th scope="col" colspan="2" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              INCLUSIVE DATES 
-              (mm/dd/yyyy)
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              POSITION TITLE 
-              (Write in full/Do not abbreviate)
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              DEPARTMENT / AGENCY / OFFICE / COMPANY
-               (Write in full/Do not abbreviate)
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              MONTHLY SALARY
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              SALARY/ JOB/ PAY GRADE 
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              STATUS OF APPOINTMENT
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              GOV'T SERVICE (Y/ N)
-            </th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-          <tr>
-            <!-- Sub-headers for the inclusive dates -->
-            <th scope="col" class="px-6 py-1 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              FROM
-            </th>
-            <th scope="col" class="px-6 py-1 text-center text-xs font-semibold text-black dark:text-white uppercase tracking-wider">
-              TO
-            </th>
-            <!-- Empty cells for spacing under the other headers -->
-            <th scope="col" class="border-0"></th>
-            <th scope="col" class="border-0"></th>
-            <th scope="col" class="border-0"></th>
-          </tr>
-        </thead>
-        <tbody>
-            <!-- Table rows and other code remains the same -->
-            <tr v-for="(entry, index) in eligibilityEntries.entries" :key="index">
-            <!-- ... input fields ... -->
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="date" v-model="entry.inclusive_dates_from" class="dark:bg-dark-eval-2 mt-1 block w-32 border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="date" v-model="entry.inclusive_dates_to" class="dark:bg-dark-eval-2 mt-1 block w-32 border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap ">
-              <input type="text" v-model="entry.position_title" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="text" v-model="entry.department_agency_office_company" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="text" v-model="entry.monthly_salary" class="dark:bg-dark-eval-2 mt-1 block w-40 border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="text" v-model="entry.salary_grade_step_increment" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="text" v-model="entry.status_of_appointment" class="dark:bg-dark-eval-2 mt-1 block w-50px border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <input type="text" v-model="entry.govt_service" class="dark:bg-dark-eval-2 mt-1 block w-40 border border-green-600 rounded-md shadow-sm" />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right">
-              <button @click="deleteEntry(index)" class="text-red-500 hover:text-red-700">
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-
-    <div class="mt-4 ml-6 flex justify-end">
-      <button @click="addNewEntry" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
-        Add Entry
-      </button>
-    </div>
-    <div class="mt-4 flex justify-between">
-
-    <Button :to="{ name: 'Civil Service Eligibility' }">
-  Back
-</Button>
-
-<Button :to="{ name: 'Voluntary Work' }">
-  Next
-</Button>
-</div>
-</template>
+<style>
+/* Add any styles specific to this parent component */
+</style>

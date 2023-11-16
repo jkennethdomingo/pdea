@@ -35,8 +35,12 @@ import { useStore } from 'vuex';
 const store = useStore();
 
 const fieldSchema = ref([
-  { name: 'full_name', label: 'Full Name', type: 'text' },
-  { name: 'date_of_birth', label: 'Date of Birth', type: 'date' },
+  { name: 'career_service', label: 'Career Service', type: 'text' },
+  { name: 'rating', label: 'Rating', type: 'text' },
+  { name: 'date_of_examination', label: 'Date of Examination', type: 'date' },
+  { name: 'place_of_examination', label: 'Place of Examination', type: 'text' },
+  { name: 'license_number', label: 'License Number', type: 'text' },
+  { name: 'license_date_of_validity', label: 'License Date of Validity', type: 'date' },
   // Add more fields as needed for the CivilService array
 ]);
 

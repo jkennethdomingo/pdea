@@ -92,12 +92,22 @@ export const state = {
         },
         page4: {
             CivilService: [], // Make sure this is initialized
-          },
-        page5: { /* ... fields for page 5 ... */ },
-        page6: { /* ... fields for page 6 ... */ },
-        page7: { /* ... fields for page 7 ... */ },
-        page8: { /* ... fields for page 8 ... */ },
-        page9: { /* ... fields for page 9 ... */ }
+        },
+        page5: { 
+            WorkExperience: [], 
+        },
+        page6: { 
+            VoluntaryWork: [], // Make sure this is initialized
+        },
+        page7: { 
+            LearningDevelopment: [], // Make sure
+        },
+        page8: { 
+            OtherInformation: [], // Make sure
+        },
+        page9: { 
+           
+        }
     },
     dropdownData: {
         designations: [],
