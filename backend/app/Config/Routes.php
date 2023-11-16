@@ -24,7 +24,8 @@ $routes->group('api', function($routes)
     });
 
     $routes->group('manageInventory', function($routes) {
-        $routes->post('insert', 'ManageInventoryController::addInventory');
+        $routes->post('addInventory', 'ManageInventoryController::addInventory');
+        $routes->post('getInventoryData', 'ManageInventoryController::getInventoryData');
     });
 
     $routes->post('insert', 'TestArea::create');

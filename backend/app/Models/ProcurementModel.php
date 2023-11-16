@@ -12,7 +12,7 @@ class ProcurementModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['date_of_receipt_of_request', 'purchase_work_job_request_no', 'purchase_work_job_request_date', 'philgeps_posting', 'abstract_of_canvas_no', 'abstract_of_canvas_date', 'price_quotation_no', 'price_quotation_date', 'amount', 'supplier', 'date_request_for_fund', 'ideal_no_of_days_to_complete', 'actual_days_to_complete', 'difference', 'purchase_order', 'delivery_status', 'remarks', 'EmployeeID', 'department_id', 'provincial_office_id', 'regional_office_id'];
+    protected $allowedFields    = ['project_particulars', 'date_of_receipt_of_request', 'purchase_work_job_request_no', 'purchase_work_job_request_date', 'philgeps_posting', 'abstract_of_canvas_no', 'abstract_of_canvas_date', 'price_quotation_no', 'price_quotation_date', 'amount', 'supplier', 'date_request_for_fund', 'ideal_no_of_days_to_complete', 'actual_days_to_complete', 'difference', 'purchase_order', 'delivery_status', 'remarks', 'EmployeeID', 'department_id', 'provincial_office_id', 'regional_office_id'];
 
     // Dates
     protected $useTimestamps = false;

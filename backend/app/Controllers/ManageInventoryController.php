@@ -29,6 +29,7 @@ class ManageInventoryController extends ResourceController
 
         // Insert into procurement table
         $procurementData = [
+            'project_particulars' => $json->project_particulars,
             'date_of_receipt_of_request' => $json->date_of_receipt_of_request,
             'purchase_work_job_request_no' => $json->purchase_work_job_request_no,
             'purchase_work_job_request_date' => $json->purchase_work_job_request_date,
@@ -49,18 +50,22 @@ class ManageInventoryController extends ResourceController
             // ... other fields from the JSON data
         ];
 
-        // Check and set foreign keys
-        if (isset($json->EmployeeID)) {
-            $procurementData['EmployeeID'] = $json->EmployeeID;
-        }
-        else if (isset($json->department_id)) {
-            $procurementData['department_id'] = $json->department_id;
-        }
-        else if (isset($json->provincial_office_id)) {
-            $procurementData['provincial_office_id'] = $json->provincial_office_id;
-        }
-        else if (isset($json->regional_office_id)) {
-            $procurementData['regional_office_id'] = $json->regional_office_id;
+        if (isset($json->endUserType)) {
+            switch ($json->endUserType) {
+                case 'personal':
+                    $procurementData['EmployeeID'] = $json->endUser;
+                    break;
+                case 'department':
+                    $procurementData['department_id'] = $json->endUser;
+                    break;
+                case 'province':
+                    $procurementData['provincial_office_id'] = $json->endUser;
+                    break;
+                case 'region':
+                    $procurementData['regional_office_id'] = $json->endUser;
+                    break;
+                // ... other cases
+            }
         }
         // ... similar checks for department_id, provincial_office_id, regional_office_id
         $procurementData['item_status'] = 'Active';
@@ -111,6 +116,14 @@ class ManageInventoryController extends ResourceController
             // Transaction succeeded
             return $this->respondUpdated(null, 'Item archived');
         }
+    }
+
+    public function getInventoryData(){
+        $data = [
+            'procurement' => $this->procurementModel->findAll(),
+        ];
+
+        return $this->respond($data);
     }
 
 
