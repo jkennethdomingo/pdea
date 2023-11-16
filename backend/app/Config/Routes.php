@@ -23,6 +23,10 @@ $routes->group('api', function($routes)
         $routes->post('getData', 'MaterialRequisitionController::getData');
     });
 
+    $routes->group('manageInventory', function($routes) {
+        $routes->post('insert', 'ManageInventoryController::addInventory');
+    });
+
     $routes->post('insert', 'TestArea::create');
 
 });

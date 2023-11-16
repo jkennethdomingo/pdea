@@ -63,6 +63,7 @@ class MaterialRequisitionController extends ResourceController
                 'unit_of_measure' => $json->unit_of_measure,
                 'unit_value' => $json->unit_value,
                 'asset_type_id' => $json->asset_type_id,
+                'procurement_id' => $json->procurement_id,
             ];
             $assetId = $this->assetModel->insert($assetData);
             if (!$assetId) {
@@ -88,39 +89,28 @@ class MaterialRequisitionController extends ResourceController
             ];
             $this->assetAuditModel->insert($assetAuditData);
 
-            // Conditionally insert asset location
             $assetLocationData = [
                 'asset_id' => $assetId,
                 'remarks_whereabouts' => $json->remarks_whereabouts,
             ];
-
-            $locationSet = false;
             
             // Check which IDs are present and add them to the $assetLocationData array
             if (!empty($json->EmployeeID)) {
                 $assetLocationData['EmployeeID'] = $json->EmployeeID;
-                $locationSet = true;
             }
-            else if (!empty($json->department_id)) {
+            if (!empty($json->department_id)) {
                 $assetLocationData['department_id'] = $json->department_id;
-                $locationSet = true;
             }
-            else if (!empty($json->provincial_office_id)) {
+            if (!empty($json->provincial_office_id)) {
                 $assetLocationData['provincial_office_id'] = $json->provincial_office_id;
-                $locationSet = true;
             }
-            else if (!empty($json->regional_office_id)) {
+            if (!empty($json->regional_office_id)) {
                 $assetLocationData['regional_office_id'] = $json->regional_office_id;
-                $locationSet = true;
             }
-
-            if (!$locationSet) {
-                // Handle the error appropriately, such as setting an error message and returning a response
-                // This could be a return statement or throwing an exception, depending on your application's structure
-                return 'An error message indicating that the asset must be assigned to at least one entity.';
-            }
-
+            
+            // Insert the asset location data into the model
             $this->assetLocationModel->insert($assetLocationData);
+            
 
             // Check for any errors after insert operations
             if ($this->assetModel->errors() || $this->assetLocationModel->errors() || $this->assetStatusModel->errors() || $this->assetAuditModel->errors()) {

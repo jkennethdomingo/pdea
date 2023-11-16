@@ -33,6 +33,8 @@ use App\Models\AssetTypeModel;
 use App\Models\ProvincialOfficeModel;
 use App\Models\RegionalOfficeModel;
 use App\Models\DepartmentModel;
+use App\Models\ProcurementModel;
+use App\Models\ProcurementStatusModel;
 
 /**
  * Services Configuration file.
@@ -366,6 +368,26 @@ class Services extends BaseService
         }
 
         return new RegionalOfficeModel();
+    }
+
+    public static function ProcurementModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('ProcurementModel');
+        }
+
+        return new ProcurementModel();
+    }
+
+    public static function ProcurementStatusModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('ProcurementStatusModel');
+        }
+
+        return new ProcurementStatusModel();
     }
 
 }
