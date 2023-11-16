@@ -1,0 +1,17 @@
+{
+    "statuses": [
+      {"value": "Pending", "label": "Pending: Awaiting initial review or approval"},
+      {"value": "Approved", "label": "Approved: Reviewed and approved for processing"},
+      {"value": "Rejected", "label": "Rejected: Reviewed and denied"},
+      {"value": "In Process", "label": "In Process: Procurement ongoing, including vendor selection, negotiations, etc."},
+      {"value": "Awarded", "label": "Awarded: Contract awarded to a selected vendor"},
+      {"value": "Contract Signed", "label": "Contract Signed: Formally signed with the vendor"},
+      {"value": "Order Placed", "label": "Order Placed: Order for goods/services placed with vendor"},
+      {"value": "Delivered", "label": "Delivered: Goods/services delivered and received"},
+      {"value": "Completed", "label": "Completed: Entire process completed, including receipt, acceptance, and payment"},
+      {"value": "Cancelled", "label": "Cancelled: Process cancelled before completion"},
+      {"value": "On Hold", "label": "On Hold: Process temporarily paused"},
+      {"value": "Under Review", "label": "Under Review: Detailed review of request or process"}
+    ]
+  }
+  

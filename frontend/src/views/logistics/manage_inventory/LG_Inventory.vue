@@ -1,20 +1,58 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed,  watchEffect } from 'vue';
 import ReusableTable from '@/components/flowbite/ReusableTable.vue';
 import { initDropdowns } from 'flowbite';
+import { useStore } from 'vuex';
+
+
+const store = useStore();
+const tableRows = computed(() => {
+  // Assuming your Vuex state has a structure like { procurementData: { procurement: [...] } }
+  const procurementData = store.state.procurementData.procurement;
+  if (Array.isArray(procurementData)) {
+    return procurementData.map(item => ({
+      Date: item.date_of_receipt_of_request,
+      ProjectParticulars: item.project_particulars,
+      End: item.department_id, // Assuming 'End' corresponds to 'department_id' //TODO ayusin ang fetch
+      PurchaseNo: item.purchase_work_job_request_no,
+      PurchaseDate: item.purchase_work_job_request_date,
+      Philgeps: item.philgeps_posting === '1' ? 'Registered' : 'Not Registered',
+      PriceNo: item.price_quotation_no,
+      PriceDate: item.price_quotation_date,
+      AbstractNo: item.abstract_of_canvas_no,
+      AbstractDate: item.abstract_of_canvas_date,
+      Amount: item.amount,
+      Supplier: item.supplier,
+      DateRequest: item.date_request_for_fund,
+      IdealNo: item.ideal_no_of_days_to_complete,
+      ActualDays: item.actual_days_to_complete,
+      Difference: item.difference,
+      PurchaseOrder: item.purchase_order,
+      DeliveryStatus: item.delivery_status,
+      Remarks: item.remarks,
+      // ... other fields as required
+    }));
+  }
+  return []; // Return an empty array if data is not an array
+});
+
+
+onMounted(async () => {
+  await store.dispatch('getInventoryData');
+  initDropdowns();
+});
 
 const tableHeaders = [
   { key: 'Date', text: 'Date of Receipt of Request' },
   { key: 'Project', text: 'Project/Particular' },
   { key: 'End', text: 'End-User' },
-  { key: 'Purchase', text: 'Purchase/Work/Job Request',
-  columns: [
-      { key: 'No', text: 'No' },
-      { key: 'Date', text: 'Date' }
-    ] },
+  { key: 'PurchaseNo', text: 'Purchase/Work/Job Request Number'},
+  { key: 'PurchaseDate', text: 'Purchase/Work/Job Request Date'},
   { key: 'Philgeps', text: 'Philgeps' },
-  { key: 'Price', text: 'Price Quotation' },
-  { key: 'Abstract', text: 'Abstract of Canvass' },
+  { key: 'PriceNo', text: 'Price Quotation Number' },
+  { key: 'PriceDate', text: 'Price Quotation Date' },
+  { key: 'AbstractNo', text: 'Abstract of Canvass Number' },
+  { key: 'AbstractDate', text: 'Abstract of Canvass Date' },
   { key: 'Amount', text: 'Amount' },
   { key: 'Supplier', text: 'Supplier' },
   { key: 'Date_Request', text: 'Date Request for Fund' },
@@ -28,54 +66,6 @@ const tableHeaders = [
   // ... other headers
 ];
 
-
-const tableRows = ref([
-  {
-    Date: '2023-11-01',
-    Project: 'Project Alpha',
-    End: 'User A',
-    Purchase: {
-      No: 'PR001',
-      Date: '2023-11-02'
-    },
-    Philgeps: 'Registered',
-    Price: '$500',
-    Abstract: 'Canvas 1',
-    Amount: '$1000',
-    Supplier: 'Supplier X',
-    Date_Request: '2023-11-03',
-    Ideal_No: '30',
-    Actual_days: '28',
-    Difference: '2',
-    Purchase: 'Order 123',
-    Delivery_Status: 'Delivered',
-    Remarks: 'On time',
-    Action: 'Review'
-  },
-  {
-    Date: '2023-11-05',
-    Project: 'Project Beta',
-    End: 'User B',
-    Purchase: {
-      No: 'PR002',
-      Date: '2023-11-06'
-    },
-    Philgeps: 'Not Registered',
-    Price: '$300',
-    Abstract: 'Canvas 2',
-    Amount: '$800',
-    Supplier: 'Supplier Y',
-    Date_Request: '2023-11-07',
-    Ideal_No: '25',
-    Actual_days: '20',
-    Difference: '5',
-    Purchase: 'Order 456',
-    Delivery_Status: 'Pending',
-    Remarks: 'Delayed',
-    Action: 'Escalate'
-  },
-  // ... more rows as needed
-]);
 
 
 // Define actions and filters if needed
@@ -93,9 +83,6 @@ const handleAction = (action) => {
   // Example: if (action === 'edit') { /* Open edit modal */ }
 };
 
-onMounted(() => {
-  initDropdowns();
-});
 </script>
 
 <template>

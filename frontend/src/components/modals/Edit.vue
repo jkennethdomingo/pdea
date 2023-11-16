@@ -98,7 +98,8 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
+import { useStore } from 'vuex';
 const formData = ref({
   status_name: '',
   date_of_receipt_of_request: '',
@@ -123,6 +124,7 @@ const formData = ref({
   // ... add all other form fields here
 });
 
+const store = useStore();
 
 const props = defineProps({
   isVisible: Boolean,

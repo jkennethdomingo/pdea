@@ -39,6 +39,32 @@ export const actions = {
             commit('setIsFetchingDropdownData', false);
         }
     },
+    async getData({ commit }) {
+        try {
+            commit('setIsFetchingData', true);
+            const response = await apiService.post('/materialRequisition/getData');
+            if (response && response.data) {
+                commit('setData', response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching  data:', error);
+        } finally {
+            commit('setIsFetchingData', false);
+        }
+    },
+    async getInventoryData({ commit }) {
+        try {
+          commit('setIsFetchingInventoryData', true);
+          const response = await apiService.post('/manageInventory/getInventoryData');
+          if (response && response.data) {
+            commit('setProcurementData', response.data); // Update to use the new mutation
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
+          commit('setIsFetchingInventoryData', false);
+        }
+      },
     async submitFormData({ commit, state }) {
         if (state.loadingStates.isSubmitting) return;
 

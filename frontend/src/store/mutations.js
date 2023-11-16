@@ -50,5 +50,29 @@ export const mutations = {
           page9: { /* ... initial page9 fields ... */ },
           // ... all other pages to their initial state
         };
+    },
+    setIsFetchingData(state, isFetching) {
+    state.isFetchingData = isFetching;
+    },
+    setData(state, data) {
+    // Assuming the API returns data in a structured format
+    // that matches the keys in `dropdownData`
+    state.dropdownData = {
+        ...state.dropdownData,
+        ...data
+    };
+    
+    },
+    setInventoryData(state, data) {
+        state.inventoryData = data;
+      },
+      
+      // Mutation to set the data fetching flag
+      setIsFetchingInventoryData(state, isFetching) {
+        state.isFetchingInventoryData = isFetching;
+      },
+
+      setProcurementData(state, data) {
+        state.procurementData = data; // Assuming the entire fetched data object is passed here
       },
 };

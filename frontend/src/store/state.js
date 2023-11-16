@@ -112,12 +112,18 @@ export const state = {
     dropdownData: {
         designations: [],
         positions: [],
-        sections: []
+        sections: [],
+        employee: [],
+        department: [],
+        provincial_office: [],
+        regional_office: [],
     },
     loadingStates: {
         isLoggingIn: false,
         isLoggingOut: false,
         isFetchingDropdownData: false,
         isSubmitting: false
-    }
+    },
+    procurementData: {}, 
+    isFetchingInventoryData: false 
 };
