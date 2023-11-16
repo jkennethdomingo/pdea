@@ -12,10 +12,7 @@
 </section>
     </div>
 </template>
-<script>
-export default {
-    
-}
+<script setup>
 </script>
 <style lang="">
     
