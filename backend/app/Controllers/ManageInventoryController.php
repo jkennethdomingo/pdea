@@ -131,6 +131,7 @@ class ManageInventoryController extends ResourceController
             CONCAT(personal_information.first_name, " ", personal_information.surname) AS end_user_name,
             procurement_status.status_name AS procurement_status
         ');
+        $builder->where('item_status', 'Active');
     
         // Left join with related tables to fetch additional information
         $builder->join('department', 'procurement.department_id = department.department_id', 'left');
@@ -140,6 +141,7 @@ class ManageInventoryController extends ResourceController
         // Join with the procurement_status table to get the status name
         $builder->join('procurement_status', 'procurement.procurement_id = procurement_status.procurement_id', 'left'); // Ensure this join condition is correct
     
+        
         // Execute the query
         $query = $builder->get();
         $procurements = $query->getResultArray();
@@ -151,26 +153,26 @@ class ManageInventoryController extends ResourceController
             
             // Add the procurement status to the transformed data, defaulting to 'Status not set' if null
             return [
-                'Date' => $procurement['date_of_receipt_of_request'],
-                'Status' => $procurement['procurement_status'] ?? 'Status not set',
-                'Project' => $procurement['project_particulars'],
-                'End' => $endUser,
-                'PurchaseNo' => $procurement['purchase_work_job_request_no'],
-                'PurchaseDate' => $procurement['purchase_work_job_request_date'],
-                'Philgeps' => $procurement['philgeps_posting'] ? 'Registered' : 'Not Registered',
-                'PriceNo' => $procurement['price_quotation_no'],
-                'PriceDate' => $procurement['price_quotation_date'],
-                'AbstractNo' => $procurement['abstract_of_canvas_no'],
-                'AbstractDate' => $procurement['abstract_of_canvas_date'],
-                'Amount' => $procurement['amount'],
-                'Supplier' => $procurement['supplier'],
-                'Date_Request' => $procurement['date_request_for_fund'],
-                'Ideal_No' => $procurement['ideal_no_of_days_to_complete'],
-                'Actual_days' => $procurement['actual_days_to_complete'],
-                'Difference' => $procurement['difference'],
-                'Purchase' => $procurement['purchase_order'],
-                'Delivery_Status' => $procurement['delivery_status'],
-                'Remarks' => $procurement['remarks'],
+                'date_of_receipt_of_request' => $procurement['date_of_receipt_of_request'],
+                'procurement_status' => $procurement['procurement_status'] ?? 'Status not set',
+                'project_particulars' => $procurement['project_particulars'],
+                'endUser' => $endUser,
+                'purchase_work_job_request_no' => $procurement['purchase_work_job_request_no'],
+                'purchase_work_job_request_date' => $procurement['purchase_work_job_request_date'],
+                'philgeps_posting' => $procurement['philgeps_posting'] ? 'Registered' : 'Not Registered',
+                'price_quotation_no' => $procurement['price_quotation_no'],
+                'price_quotation_date' => $procurement['price_quotation_date'],
+                'abstract_of_canvas_no' => $procurement['abstract_of_canvas_no'],
+                'abstract_of_canvas_date' => $procurement['abstract_of_canvas_date'],
+                'amount' => $procurement['amount'],
+                'supplier' => $procurement['supplier'],
+                'date_request_for_fund' => $procurement['date_request_for_fund'],
+                'ideal_no_of_days_to_complete' => $procurement['ideal_no_of_days_to_complete'],
+                'actual_days_to_complete' => $procurement['actual_days_to_complete'],
+                'difference' => $procurement['difference'],
+                'purchase_order' => $procurement['purchase_order'],
+                'delivery_status' => $procurement['delivery_status'],
+                'remarks' => $procurement['remarks'],
                 // Add other fields as needed
             ];
         }, $procurements);
