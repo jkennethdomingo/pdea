@@ -85,11 +85,10 @@ const closeModal = () => {
                         <input type="text" id="Project" v-model="formData.project_particulars"  class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div>
-                        <label for="End" class="block text-gray-700 text-sm dark:text-white mb-2">End-User:</label>
-                        <select type="dropdown" id="End" v-model="formData.endUser" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
+                        <label for="EndUser" class="block text-gray-700 text-sm dark:text-white mb-2">End-User:</label>
+                        <select id="EndUser" v-model="formData.endUser" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="" disabled>Select User</option>
+                        <option v-for="option in endUserOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
                         </select>
                     </div>
                     <div>
