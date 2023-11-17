@@ -54,15 +54,13 @@ export const actions = {
     },
     async getInventoryData({ commit }) {
         try {
-          commit('setIsFetchingInventoryData', true);
+            commit('setLoading', true); 
           const response = await apiService.post('/manageInventory/getInventoryData');
-          if (response && response.data) {
-            commit('setProcurementData', response.data); // Update to use the new mutation
-          }
+          commit('setProcurementData', response.data.procurement);
         } catch (error) {
           console.error('Error fetching data:', error);
         } finally {
-          commit('setIsFetchingInventoryData', false);
+            commit('setLoading', false);
         }
       },
     async submitFormData({ commit, state }) {

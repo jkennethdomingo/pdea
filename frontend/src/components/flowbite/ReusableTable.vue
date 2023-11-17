@@ -15,20 +15,30 @@ const props = defineProps({
   filters: Array  // New prop for filters
 });
 
+const editFormData = ref({});
+
+const handleUpdate = (updatedData) => {
+  // Process the updated data here, such as updating Vuex state or sending a request to the server
+  // Then, you can close the modal and reset the selectedItem
+  isEditModalVisible.value = false;
+  selectedItem.value = null;
+};
+
 const emit = defineEmits(['action']);
 const searchQuery = ref('');
 const currentPage = ref(1);
-const pageSize = 10; // Adjust as needed
+const pageSize = 5; // Adjust as needed
 const totalRows = computed(() => filteredRows.value.length);
 const totalPages = computed(() => Math.ceil(totalRows.value / pageSize));
 
 const filteredRows = computed(() => {
   return props.rows.filter(row =>
-    Object.values(row).some(
-      value => value.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
+    Object.values(row).some(value => 
+      value && value.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   );
 });
+
 
 const paginatedRows = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
@@ -64,7 +74,8 @@ function openDeleteModal(item) {
 }
 
 function openEditModal(item) {
-  selectedItem.value = item;
+  selectedItem.value = item; 
+  console.log(selectedItem.value)
   isEditModalVisible.value = true;
 }
 
@@ -195,7 +206,7 @@ function handleCancel() {
     </span>
     <ul class="inline-flex items-stretch -space-x-px">
       <li>
-        <a href="#" @click="changePage(currentPage - 1)" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        <a href="#" @click.prevent="changePage(currentPage - 1)" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
           <span class="sr-only">Previous</span>
           <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -203,12 +214,12 @@ function handleCancel() {
         </a>
       </li>
       <li v-for="page in totalPages" :key="page">
-        <a href="#" @click="changePage(page)" :class="{'z-10 text-primary-600 bg-primary-50 border-primary-300 dark:text-white': page === currentPage, 'text-gray-500 bg-white dark:bg-gray-800 dark:text-gray-400': page !== currentPage}" class="flex items-center justify-center text-sm py-2 px-3 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
+        <a href="#" @click.prevent="changePage(page)" :class="{'z-10 text-primary-600 bg-primary-50 border-primary-300 dark:text-white': page === currentPage, 'text-gray-500 bg-white dark:bg-gray-800 dark:text-gray-400': page !== currentPage}" class="flex items-center justify-center text-sm py-2 px-3 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
           {{ page }}
         </a>
       </li>
       <li>
-        <a href="#" @click="changePage(currentPage + 1)" class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        <a href="#" @click.prevent="changePage(currentPage + 1)" class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
           <span class="sr-only">Next</span>
           <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -224,10 +235,12 @@ function handleCancel() {
     message="Are you sure you want to Archive this item?"
   />
   <EditModal
-    :isVisible="isEditModalVisible"
-    @cancel="handleCancel"
-    message="Are you sure you want to edit this item?"
-  />
+  :isVisible="isEditModalVisible"
+  :itemToEdit="selectedItem"
+  @update="handleUpdate"
+  @cancel="handleCancel"
+/>
+
   <ViewModal
     :isVisible="isViewModalVisible"
     @cancel="handleCancel"

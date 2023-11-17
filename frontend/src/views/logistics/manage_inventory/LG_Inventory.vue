@@ -1,49 +1,26 @@
 <script setup>
-import { ref, onMounted, computed,  watchEffect } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import ReusableTable from '@/components/flowbite/ReusableTable.vue';
 import { initDropdowns } from 'flowbite';
 import { useStore } from 'vuex';
 
-
 const store = useStore();
-const tableRows = computed(() => {
-  // Assuming your Vuex state has a structure like { procurementData: { procurement: [...] } }
-  const procurementData = store.state.procurementData.procurement;
-  if (Array.isArray(procurementData)) {
-    return procurementData.map(item => ({
-      Date: item.date_of_receipt_of_request,
-      ProjectParticulars: item.project_particulars,
-      End: item.department_id, // Assuming 'End' corresponds to 'department_id' //TODO ayusin ang fetch
-      PurchaseNo: item.purchase_work_job_request_no,
-      PurchaseDate: item.purchase_work_job_request_date,
-      Philgeps: item.philgeps_posting === '1' ? 'Registered' : 'Not Registered',
-      PriceNo: item.price_quotation_no,
-      PriceDate: item.price_quotation_date,
-      AbstractNo: item.abstract_of_canvas_no,
-      AbstractDate: item.abstract_of_canvas_date,
-      Amount: item.amount,
-      Supplier: item.supplier,
-      DateRequest: item.date_request_for_fund,
-      IdealNo: item.ideal_no_of_days_to_complete,
-      ActualDays: item.actual_days_to_complete,
-      Difference: item.difference,
-      PurchaseOrder: item.purchase_order,
-      DeliveryStatus: item.delivery_status,
-      Remarks: item.remarks,
-      // ... other fields as required
-    }));
-  }
-  return []; // Return an empty array if data is not an array
-});
 
+const isLoading = computed(() => store.state.isLoading);
 
+// Fetch and compute the table rows based on the Vuex state
+const tableRows = computed(() => store.state.procurementData);
+
+// Fetch data on component mount
 onMounted(async () => {
   await store.dispatch('getInventoryData');
   initDropdowns();
 });
 
+// Define the headers for your table based on the key names used in tableRows
 const tableHeaders = [
-  { key: 'Date', text: 'Date of Receipt of Request' },
+{ key: 'Date', text: 'Date of Receipt of Request' },
+{ key: 'Status', text: 'Procurement Status' },
   { key: 'Project', text: 'Project/Particular' },
   { key: 'End', text: 'End-User' },
   { key: 'PurchaseNo', text: 'Purchase/Work/Job Request Number'},
@@ -63,10 +40,7 @@ const tableHeaders = [
   { key: 'Delivery_Status', text: 'Delivery_Status' },
   { key: 'Remarks', text: 'Remarks' },
   { key: 'Action', text: 'Action' },
-  // ... other headers
 ];
-
-
 
 // Define actions and filters if needed
 const actions = ref([
@@ -74,20 +48,25 @@ const actions = ref([
   { label: 'Delete', action: 'delete' }
 ]);
 
+// Define filters if needed
 const filters = ref([
-  // Define your filters here
+  // ... your filter definitions
 ]);
 
-const handleAction = (action) => {
+const handleAction = (action, item) => {
   // Handle your action here
-  // Example: if (action === 'edit') { /* Open edit modal */ }
+  // Example: if (action === 'edit') { /* Open edit modal with item */ }
 };
+
 
 </script>
 
 <template>
     <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 rounded-lg">
-      <div class="mx-auto max-w-screen-xl px-4 max-h-[76vh] overflow-y-scroll">
+      <div v-if="isLoading" class="flex justify-center items-center">
+        <span>Loading...</span> <!-- Replace with a spinner or a loading component -->
+      </div>
+      <div v-else class="mx-auto max-w-screen-xl px-4 max-h-[76vh] overflow-y-scroll">
         <div class="relative shadow-md rounded-lg overflow-hidden">
           <ReusableTable :headers="tableHeaders" :rows="tableRows" :actions="actions" :filters="filters" @action="handleAction" />
         </div>

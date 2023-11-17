@@ -67,12 +67,11 @@ export const mutations = {
         state.inventoryData = data;
       },
       
-      // Mutation to set the data fetching flag
-      setIsFetchingInventoryData(state, isFetching) {
-        state.isFetchingInventoryData = isFetching;
+      setProcurementData(state, payload) {
+        state.procurementData = payload;
       },
 
-      setProcurementData(state, data) {
-        state.procurementData = data; // Assuming the entire fetched data object is passed here
+      setLoading(state, isLoading) {
+        state.isLoading = isLoading;
       },
 };

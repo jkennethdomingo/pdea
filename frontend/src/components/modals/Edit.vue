@@ -1,3 +1,57 @@
+<script setup>
+import { defineProps, defineEmits, reactive, watch, toRefs } from 'vue';
+import procurementStatusData from '@/assets/json/procurement_status.json';
+
+// Define props and emits
+const props = defineProps({
+  isVisible: Boolean,
+  itemToEdit: Object // The prop name must match what's passed from the parent
+});
+
+const emit = defineEmits(['update', 'cancel']);
+
+// Use toRefs to make each prop reactive
+const { itemToEdit } = toRefs(props);
+
+// Log the initial itemToEdit to see if it's being passed correctly
+console.log('Initial itemToEdit:', itemToEdit.value);
+
+// Create a reactive formData object. The spread operator (...) can't be used directly with refs inside `reactive`
+const formData = reactive({});
+
+// Watch for changes in itemToEdit and update formData accordingly
+watch(itemToEdit, (newValue) => {
+  console.log('itemToEdit changed:', newValue);
+  for (const key in newValue) {
+    formData[key] = newValue[key];
+  }
+}, { deep: true, immediate: true });
+
+// Log formData to see if it reflects the changes
+watch(formData, (newFormData) => {
+  console.log('formData updated:', newFormData);
+}, { deep: true });
+
+// Method to handle saving changes
+const saveChanges = () => {
+  console.log('Saving changes:', formData);
+  // Here you would call an API to save the changes or emit an event with the updated data
+  emit('update', formData);
+  closeModal();
+};
+
+// Method to close the modal and reset formData
+const closeModal = () => {
+  console.log('Closing modal, resetting formData');
+  // Reset the form data to initial values or clear them
+  for (const key in formData) {
+    formData[key] = '';
+  }
+  emit('cancel');
+};
+</script>
+
+
 <template>
     <div v-if="isVisible" id="popup-modal" tabindex="-1" class="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 flex items-center justify-center w-full md:inset-0 h-screen max-h-full">
         <div class="relative p-4 w-full max-w-5xl max-h-full">
@@ -17,7 +71,7 @@
                     </div>
                     <div>
                         <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Receipt of Request:</label>
-                        <input type="date" id="Date" v-model="formData.date_of_receipt_of_request" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
+                        <input type="date" id="Date" v-model="formData.Date" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
                     </div>
                     <div>
                         <label for="Project" class="block text-gray-700 text-sm dark:text-white mb-2">Project/Particulara:</label>
@@ -88,8 +142,11 @@
                     </div>
                 </div>
                 <div class="p-4 md:px-8">
-                    <button @click="closeModal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                    <button @click="saveChanges" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
                         Update
+                    </button>
+                    <button @click="closeModal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                    Cancel
                     </button>
                 </div>
             </div>
@@ -97,46 +154,7 @@
     </div>
 </template>
 
-<script setup>
-import { defineProps, defineEmits, ref } from 'vue';
-import { useStore } from 'vuex';
-const formData = ref({
-  status_name: '',
-  date_of_receipt_of_request: '',
-  project_particular: '',
-  endUser: '',
-  purchase_work_job_request_no: '',
-  purchase_work_job_request_date: '',
-  philgeps_posting: '',
-  price_quotation_no: '',
-  price_quotation_date: '',
-  abstract_of_canvas_no: '',
-  abstract_of_canvas_date: '',
-  amount: '',
-  supplier: '',
-  date_request_for_fund: '',
-  idel_no_of_days_to_complete: '',
-  actual_days_to_complete: '',
-  difference: '',
-  purchase_order: '',
-  delivery_status: '',
-  remarks: '',
-  // ... add all other form fields here
-});
 
-const store = useStore();
-
-const props = defineProps({
-  isVisible: Boolean,
-  message: String // example for passing custom message
-});
-
-const emit = defineEmits(['cancel']);
-
-const closeModal = () => {
-  emit('cancel');
-};
-</script>
 
 <style scoped>
 /* Your CSS here */

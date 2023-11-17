@@ -124,6 +124,6 @@ export const state = {
         isFetchingDropdownData: false,
         isSubmitting: false
     },
-    procurementData: {}, 
-    isFetchingInventoryData: false 
+    procurementData: [],
+    isLoading: false, 
 };
