@@ -118,13 +118,66 @@ class ManageInventoryController extends ResourceController
         }
     }
 
-    public function getInventoryData(){
-        $data = [
-            'procurement' => $this->procurementModel->findAll(),
-        ];
-
-        return $this->respond($data);
+    public function getInventoryData() {
+        $this->db = \Config\Database::connect();
+        $builder = $this->db->table('procurement');
+    
+        // Select fields from the procurement table and related tables, including the status name
+        $builder->select('
+            procurement.*,
+            department.department_name,
+            provincial_office.office_name AS provincial_office_name,
+            regional_office.regional_office_name,
+            CONCAT(personal_information.first_name, " ", personal_information.surname) AS end_user_name,
+            procurement_status.status_name AS procurement_status
+        ');
+    
+        // Left join with related tables to fetch additional information
+        $builder->join('department', 'procurement.department_id = department.department_id', 'left');
+        $builder->join('provincial_office', 'procurement.provincial_office_id = provincial_office.provincial_office_id', 'left');
+        $builder->join('regional_office', 'procurement.regional_office_id = regional_office.regional_office_id', 'left');
+        $builder->join('personal_information', 'procurement.EmployeeID = personal_information.EmployeeID', 'left');
+        // Join with the procurement_status table to get the status name
+        $builder->join('procurement_status', 'procurement.procurement_id = procurement_status.procurement_id', 'left'); // Ensure this join condition is correct
+    
+        // Execute the query
+        $query = $builder->get();
+        $procurements = $query->getResultArray();
+    
+        // Transform data as needed
+        $transformedData = array_map(function ($procurement) {
+            // Determine the end user and default to 'Inventory is not Assigned' if null
+            $endUser = $procurement['end_user_name'] ?? $procurement['department_name'] ?? $procurement['provincial_office_name'] ?? $procurement['regional_office_name'] ?? 'Inventory is not Assigned';
+            
+            // Add the procurement status to the transformed data, defaulting to 'Status not set' if null
+            return [
+                'Date' => $procurement['date_of_receipt_of_request'],
+                'Status' => $procurement['procurement_status'] ?? 'Status not set',
+                'Project' => $procurement['project_particulars'],
+                'End' => $endUser,
+                'PurchaseNo' => $procurement['purchase_work_job_request_no'],
+                'PurchaseDate' => $procurement['purchase_work_job_request_date'],
+                'Philgeps' => $procurement['philgeps_posting'] ? 'Registered' : 'Not Registered',
+                'PriceNo' => $procurement['price_quotation_no'],
+                'PriceDate' => $procurement['price_quotation_date'],
+                'AbstractNo' => $procurement['abstract_of_canvas_no'],
+                'AbstractDate' => $procurement['abstract_of_canvas_date'],
+                'Amount' => $procurement['amount'],
+                'Supplier' => $procurement['supplier'],
+                'Date_Request' => $procurement['date_request_for_fund'],
+                'Ideal_No' => $procurement['ideal_no_of_days_to_complete'],
+                'Actual_days' => $procurement['actual_days_to_complete'],
+                'Difference' => $procurement['difference'],
+                'Purchase' => $procurement['purchase_order'],
+                'Delivery_Status' => $procurement['delivery_status'],
+                'Remarks' => $procurement['remarks'],
+                // Add other fields as needed
+            ];
+        }, $procurements);
+    
+        return $this->respond(['procurement' => $transformedData]);
     }
-
+    
+    
 
 }
