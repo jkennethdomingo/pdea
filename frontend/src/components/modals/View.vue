@@ -9,115 +9,62 @@
                     </svg>
                     <span class="sr-only">Close modal</span>
                 </button>
-                <div class="p-4 md:p-5 text-center">
-                    <div class="relative overflow-x-auto">
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                            <thead class="text-xs text-gray-900 uppercase dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3">
-                                        Date of Receipt of Request
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Project/Particulara
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        End-User
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Purchase/Work/Job Request
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Philgeps
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Price Quotation
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Abstract of Canvass
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Amount
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Supplier
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Date Request for Fund
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Ideal No. of Days to Complete
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Actual Days Completed
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Difference
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Purchase/Work/Job Order
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Delivery Status
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Remarks
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        Apple MacBook Pro 17"
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Silver
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        Laptop
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        $2999
-                                    </td>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        Apple MacBook Pro 17"
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Silver
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        Laptop
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        $2999
-                                    </td>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        Apple MacBook Pro 17"
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Silver
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        Laptop
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        $2999
-                                    </td>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        Apple MacBook Pro 17"
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Silver
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        Laptop
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        $2999
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="p-4 md:p-5">
+                            <div class="overflow-x-auto">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="status_name" class="block text-gray-700 text-sm dark:text-white mb-2">Procurement Status:</label>
+                                    </div>          
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Receipt of Request:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Project" class="block text-gray-700 text-sm dark:text-white mb-2">Project/Particulars:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="End" class="block text-gray-700 text-sm dark:text-white mb-2">End-User:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Purchase" class="block text-gray-700 text-sm dark:text-white mb-2">Purchase/Work/Job Request:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Philgeps" class="block text-gray-700 text-sm dark:text-white mb-2">Philgeps:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Price" class="block text-gray-700 text-sm dark:text-white mb-2">Price Quotation:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Abstract" class="block text-gray-700 text-sm dark:text-white mb-2">Abstract of Canvass:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Amount" class="block text-gray-700 text-sm dark:text-white mb-2">Amount:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Supplier" class="block text-gray-700 text-sm dark:text-white mb-2">Supplier:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Date_Request" class="block text-gray-700 text-sm dark:text-white mb-2">Date Request for Fund:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Ideal_No" class="block text-gray-700 text-sm dark:text-white mb-2">Ideal No. of Days to Complete:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Actual_days" class="block text-gray-700 text-sm dark:text-white mb-2">Actual Days Completed:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Difference" class="block text-gray-700 text-sm dark:text-white mb-2">Difference:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="PurchaseOrder" class="block text-gray-700 text-sm dark:text-white mb-2">Purchase/Work/Job Order:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Delivery_Status" class="block text-gray-700 text-sm dark:text-white mb-2">Delivery Status:</label>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Remarks" class="block text-gray-700 text-sm dark:text-white mb-2">Remarks:</label>
+                                    </div>
+                                </div>
+                            </div>
                     <br>        
                     <button @click="closeModal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
                         Close

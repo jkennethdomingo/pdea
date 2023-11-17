@@ -2,6 +2,8 @@
 import { defineProps, defineEmits, reactive, watch, toRefs } from 'vue';
 import procurementStatusData from '@/assets/json/procurement_status.json';
 
+const procurementStatus = procurementStatusData.statuses;
+
 // Define props and emits
 const props = defineProps({
   isVisible: Boolean,
@@ -66,20 +68,25 @@ const closeModal = () => {
                 <br>
                 <div class="mb-4 grid grid-cols-3 gap-4">
                     <div>
-                        <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Procurement Status:</label>
-                        <input type="date" id="Date" v-model="formData.status_name" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
+                        <label for="status_name" class="block text-gray-700 text-sm dark:text-white mb-2">Procurement Status:</label>
+                        <select id="status_name" v-model="formData.procurement_status" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
+                            <option v-for="pc in procurementStatus" :key="pc.value" :value="pc.value">
+                                {{ pc.label }}
+                            </option>
+                            </select>
                     </div>
+                    
                     <div>
                         <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Receipt of Request:</label>
-                        <input type="date" id="Date" v-model="formData.Date" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
+                        <input type="date" id="Date" v-model="formData.date_of_receipt_of_request" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
                     </div>
                     <div>
                         <label for="Project" class="block text-gray-700 text-sm dark:text-white mb-2">Project/Particulara:</label>
-                        <input type="text" id="Project" v-model="formData.project_particular"  class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="text" id="Project" v-model="formData.project_particulars"  class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div>
                         <label for="End" class="block text-gray-700 text-sm dark:text-white mb-2">End-User:</label>
-                        <select type="dropdown" id="End" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+                        <select type="dropdown" id="End" v-model="formData.endUser" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
                         <option value="option1">Option 1</option>
                         <option value="option2">Option 2</option>
                         <option value="option3">Option 3</option>
@@ -92,7 +99,7 @@ const closeModal = () => {
                     </div>
                     <div>
                         <label for="Philgeps" class="block text-gray-700 text-sm dark:text-white mb-2">Philgeps:</label>
-                        <input type="checkbox" id="Philgeps" v-model="formData.philgeps_posting" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+                        <input id="Philgeps" type="checkbox" v-model="formData.philgeps_posting" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                     </div>
                     <div>
                         <label for="Price" class="block text-gray-700 text-sm dark:text-white mb-2">Price Quotation:</label>
@@ -118,7 +125,7 @@ const closeModal = () => {
                     </div>
                     <div>
                         <label for="Ideal_No" class="block text-gray-700 text-sm dark:text-white mb-2">Ideal No. of Days to Complete:</label>
-                        <input type="text" id="Ideal_No" v-model="formData.idel_no_of_days_to_complete" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="text" id="Ideal_No" v-model="formData.ideal_no_of_days_to_complete" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div>
                         <label for="Actual_days" class="block text-gray-700 text-sm dark:text-white mb-2">Actual Days Completed:</label>
