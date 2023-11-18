@@ -28,6 +28,11 @@ $routes->group('api', function($routes)
         $routes->post('getInventoryData', 'ManageInventoryController::getInventoryData');
     });
 
+    $routes->group('manageTraining', function($routes) {
+        $routes->post('insertTraining', 'AssignTrainingController::insertTraining');
+        $routes->post('getTraining', 'AssignTrainingController::getTraining');
+    });
+
     $routes->post('insert', 'TestArea::create');
 
 });

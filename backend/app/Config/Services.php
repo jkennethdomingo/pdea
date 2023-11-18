@@ -390,4 +390,24 @@ class Services extends BaseService
         return new ProcurementStatusModel();
     }
 
+    public static function TrainingModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('TrainingModel');
+        }
+
+        return new TrainingModel();
+    }
+
+    public static function InternalEmployeeTrainingModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('InternalEmployeeTrainingModel');
+        }
+
+        return new InternalEmployeeTrainingModel();
+    }
+
 }
