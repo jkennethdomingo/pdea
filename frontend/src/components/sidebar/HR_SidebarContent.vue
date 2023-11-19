@@ -53,9 +53,9 @@ const isAssignRouteActive = () => {
         </SidebarLink>
         <SidebarLink
             icon="mdi:calendar"
-            :to="{ name: 'Calendar' }"
-            title="Calendar"
-            :active="isCurrentRoute('Calendar')"
+            :to="{ name: 'Assign Training' }"
+            title="Assign Training"
+            :active="isCurrentRoute('Assign Training')"
         >
         </SidebarLink>
     </PerfrectScrollbar>

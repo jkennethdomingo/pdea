@@ -82,14 +82,14 @@ export default [
         ],
       },
       {
-        path: 'calendar',
+        path: 'assignTraining',
         component: () => import('@/layouts/AssignTrainingLayout.vue'),
         meta: { requiresRole: 'HR_ADMIN' },
         children: [
           {
             path: '',
-            name: 'Calendar',
-            component: () => import('@/views/hr/assign_training/Calendar.vue'),
+            name: 'Assign Training',
+            component: () => import('@/views/hr/assign_training/AssignTraining.vue'),
           },
         ],
       }
