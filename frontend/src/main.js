@@ -8,7 +8,7 @@ import '@/assets/css/main.css';
 import 'flowbite';
 import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
-import apiService from '@/composables/axios-setup'; // Ensure this path is correct
+import apiService from '@/composables/axios-setup';
 
 const app = createApp(App);
 

@@ -1,31 +1,72 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import { INITIAL_EVENTS } from '@/composables/event-utils';
 import { initFlowbite } from 'flowbite';
+import { useStore } from 'vuex';
+import AddTrainingModal from '@/components/modals/AddTrainingModal.vue';
 
+const store = useStore();
+const calendarRef = ref(null);
+const date = ref(new Date()); // Assuming this is your VDatePicker model
 
-onMounted(() => {
-  initFlowbite();
+// Computed property for transforming training data
+const trainingEvents = computed(() => {
+  return store.state.training.map(event => ({
+    title: event.title,
+    start: event.period_from,
+    end: event.period_to
+    // Add more fields if needed
+  }));
 });
 
+// Watch for changes in the date picker and update the calendar
+watch(date, (newDate) => {
+  if (calendarRef.value) {
+    const calendarApi = calendarRef.value.getApi();
+    calendarApi.gotoDate(newDate);
+  }
+});
+
+// Watch for changes in training events and update the calendar
+watch(trainingEvents, (newEvents) => {
+  if (calendarRef.value) {
+    const calendarApi = calendarRef.value.getApi();
+    calendarApi.removeAllEvents(); // Remove old events
+    calendarApi.addEventSource(newEvents); // Add new events
+  }
+}, { deep: true });
+
+// Fetch training data on component mount
+onMounted(async () => {
+  initFlowbite();
+  await store.dispatch('getTraining'); // Dispatch the action to fetch training data
+});
+
+// Calendar options
 const calendarOptions = ref({
   plugins: [
     dayGridPlugin,
     timeGridPlugin,
-    interactionPlugin, // needed for dateClick
+    interactionPlugin,
     listPlugin
   ],
   headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
+    left: 'addEventButton,today',
+    center: 'prev,title,next',
     right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
   },
+  customButtons: {
+    addEventButton: {
+      text: 'Add event',
+      click: () => openAddEventDialog()
+    },
+  },
   initialView: 'dayGridMonth',
+  initialEvents: trainingEvents.value, // Use training events here
   editable: true,
   selectable: true,
   selectMirror: true,
@@ -36,39 +77,45 @@ const calendarOptions = ref({
   eventsSet: handleEvents
 });
 
-
-function handleWeekendsToggle() {
+function openAddEventDialog() {
+  // Logic to open the dialog to add a new event
 }
 
 function handleDateSelect(selectInfo) {
-  
+  // Handle date selection
 }
 
 function handleEventClick(clickInfo) {
-
+  // Handle event click
 }
 
 function handleEvents(events) {
+  // Handle events set
+}
+
+function handleWeekendsToggle() {
+  // Handle weekends toggle
 }
 </script>
 
+
 <template>
+<AddTrainingModal/>
     <div class='flex min-h-full font-sans text-sm'>
         <div class="text-center section">
-
+          <div class="hidden lg:flex">
             <VDatePicker v-model="date" />
 
+      </div>
     </div>
     <div class='flex-grow p-12'>
-        <FullCalendar
-            class='demo-app-calendar'
-            :options='calendarOptions'  data-drawer-target="drawer-right-example" data-drawer-show="drawer-right-example" data-drawer-placement="right" aria-controls="drawer-right-example"
-        >
-            <template v-slot:eventContent='arg'>
-            </template>
-        </FullCalendar>
+      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+
         </div>
     </div>
 </template>
+
+
+
 
 

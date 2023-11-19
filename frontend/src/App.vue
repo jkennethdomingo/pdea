@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { gsap } from 'gsap'
 
 onMounted(() => {
+    // TODO jd
     gsap.to('#loading .logo', { y: -50, opacity: 0, duration: 0.5 })
     gsap.to('#loading .left', {
         rotateY: 45,

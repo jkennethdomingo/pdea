@@ -2,6 +2,8 @@
 import { useRouter } from 'vue-router'
 import PerfrectScrollbar from '@/components/base/PerfectScrollbar.vue'
 import SidebarLink from '@/components/sidebar/SidebarLink.vue'
+import SidebarCollapsible from '@/components/sidebar/SidebarCollapsible.vue'
+import SidebarCollapsibleItem from '@/components/sidebar/SidebarCollapsibleItem.vue'
 
 const router = useRouter();
 
@@ -51,12 +53,17 @@ const isAssignRouteActive = () => {
             :active="isCurrentPath('/human-resources/register')"
         >
         </SidebarLink>
-        <SidebarLink
-            icon="mdi:calendar"
+        <SidebarCollapsible icon="mdi:calendar" title="Calendar" :active="isCurrentPath('/human-resources/')">
+            <SidebarCollapsibleItem
             :to="{ name: 'Assign Training' }"
             title="Assign Training"
             :active="isCurrentRoute('Assign Training')"
-        >
-        </SidebarLink>
+            />
+            <SidebarCollapsibleItem
+            :to="{ name: 'Manage Leave' }"
+            title="Manage Leave"
+            :active="isCurrentRoute('Manage Leave')"
+            />
+        </SidebarCollapsible>
     </PerfrectScrollbar>
 </template>

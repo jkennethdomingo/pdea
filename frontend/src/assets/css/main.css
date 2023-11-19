@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer utilities {
   #nprogress {
     pointer-events: none;
@@ -37,3 +38,6 @@
   border: 1px solid rgb(21 24 35) !important;
   box-shadow: none !important;
 }
+
+
+

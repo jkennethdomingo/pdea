@@ -98,4 +98,46 @@ export const actions = {
     clearFormData({ commit }) {
         commit('resetFormData');
       },
+      async getTraining({ commit }) {
+        try {
+          commit('setLoading', true); // Start loading
+      
+          const response = await apiService.post('/manageTraining/getTraining');
+          
+          // Assuming the training data is directly in response.data
+          // Change the path as per your API response structure
+          commit('setTrainingData', response.data.training); 
+      
+        } catch (error) {
+          console.error('Error fetching training data:', error);
+        } finally {
+          commit('setLoading', false); // End loading
+        }
+      },
+      async addEvent({ commit }, newEvent) {
+        commit('setIsAddingEvent', true); // Set loading state
+
+        try {
+            // Transform and send data to the server
+            const transformedEvent = {  title: newEvent.title,
+                period_from: newEvent.period_from,
+                period_to: newEvent.period_to,
+                number_of_hours: newEvent.number_of_hours,
+                conducted_by: newEvent.conducted_by, };
+            const response = await apiService.post('manageTraining/insertTraining', transformedEvent);
+
+            // If successful, add the event to the state
+            commit('addEventToState', response.data);
+
+            // Additional logic for successful submission...
+        } catch (error) {
+            console.error('Event submission error:', error);
+            // Error handling...
+        } finally {
+            commit('setIsAddingEvent', false); // Reset loading state
+        }
+    },
+
+      
+      
 };

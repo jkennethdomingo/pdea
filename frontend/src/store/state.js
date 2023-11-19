@@ -126,4 +126,6 @@ export const state = {
     },
     procurementData: [],
     isLoading: false, 
+    training: [],
+    events: []
 };

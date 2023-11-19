@@ -92,7 +92,20 @@ export default [
             component: () => import('@/views/hr/assign_training/AssignTraining.vue'),
           },
         ],
-      }
+      },
+      {
+        path: 'manageLeave',
+        component: () => import('@/layouts/ManageLeaveLayout.vue'),
+        meta: { requiresRole: 'HR_ADMIN' },
+        children: [
+          {
+            path: '',
+            name: 'Manage Leave',
+            component: () => import('@/views/hr/assign_training/Calendar.vue'),
+          },
+        ],
+      },
+
 
 
       // ... other HR routes if needed ...

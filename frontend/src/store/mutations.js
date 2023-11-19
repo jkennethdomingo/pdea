@@ -74,4 +74,13 @@ export const mutations = {
       setLoading(state, isLoading) {
         state.isLoading = isLoading;
       },
+      setTrainingData(state, trainingData) {
+        state.training = trainingData;
+      },
+      setIsAddingEvent(state, isLoading) {
+        state.loadingStates.isAddingEvent = isLoading;
+    },
+    addEventToState(state, event) {
+        state.events.push(event);
+    },
 };
