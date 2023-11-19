@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class EmployeeAuthRoleModel extends Model
 {
-    protected $table            = 'employee_authrole';
+    protected $table            = 'employee_authroles';
     protected $primaryKey       = 'EmpAuthID';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
