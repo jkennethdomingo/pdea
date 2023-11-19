@@ -15,7 +15,7 @@ class AssetModel extends Model
     protected $allowedFields    = ['article', 'description', 'yr_acquired', 'serial_number', 'property_number', 'unit_of_measure', 'unit_value', 'asset_type_id', 'procurement_id'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

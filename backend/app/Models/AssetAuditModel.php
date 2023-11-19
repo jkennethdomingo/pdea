@@ -15,7 +15,7 @@ class AssetAuditModel extends Model
     protected $allowedFields    = ['asset_id', 'audit_date', 'auth_role_id'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

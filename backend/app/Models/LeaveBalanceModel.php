@@ -15,7 +15,7 @@ class LeaveBalanceModel extends Model
     protected $allowedFields    = ['EmployeeID', 'LeaveTypeID', 'NumberOfLeaves'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

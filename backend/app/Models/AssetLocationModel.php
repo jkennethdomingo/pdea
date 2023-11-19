@@ -15,7 +15,7 @@ class AssetLocationModel extends Model
     protected $allowedFields    = ['asset_id', 'remarks_whereabouts', 'EmployeeID', 'department_id', 'provincial_office_id', 'regional_office_id'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

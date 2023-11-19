@@ -15,7 +15,7 @@ class AddressModel extends Model
     protected $allowedFields    = ['province', 'city_municipality', 'barangay', 'subdivision_village', 'street', 'house_block_lot', 'zip_code'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

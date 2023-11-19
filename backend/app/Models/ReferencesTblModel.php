@@ -15,7 +15,7 @@ class ReferencesTblModel extends Model
     protected $allowedFields    = ['EmployeeID', 'name', 'address', 'telephone_no'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

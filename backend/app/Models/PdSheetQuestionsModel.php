@@ -15,7 +15,7 @@ class PdSheetQuestionsModel extends Model
     protected $allowedFields    = ['EmployeeID', 'question_code', 'question_text', 'answer', 'details', 'date_of_event', 'status_or_remarks'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

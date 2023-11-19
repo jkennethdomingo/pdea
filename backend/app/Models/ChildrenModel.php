@@ -15,7 +15,7 @@ class ChildrenModel extends Model
     protected $allowedFields    = ['family_id', 'full_name', 'date_of_birth'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

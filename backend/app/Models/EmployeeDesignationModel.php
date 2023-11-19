@@ -15,7 +15,7 @@ class EmployeeDesignationModel extends Model
     protected $allowedFields    = ['DesignationID', 'EmployeeID'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

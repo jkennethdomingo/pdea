@@ -15,7 +15,7 @@ class EducationalBackgroundModel extends Model
     protected $allowedFields    = ['EmployeeID', 'level', 'name_of_school', 'degree_course', 'period_of_attendance_from', 'period_of_attendance_to', 'highest_level_units_earned', 'year_graduated', 'scholarship_academic_honors_received'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

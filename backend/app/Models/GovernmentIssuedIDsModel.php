@@ -15,7 +15,7 @@ class GovernmentIssuedIDsModel extends Model
     protected $allowedFields    = ['EmployeeID', 'id_type', 'id_number', 'date_of_issuance', 'place_of_issuance'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

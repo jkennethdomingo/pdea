@@ -15,7 +15,7 @@ class EmployeeAddressModel extends Model
     protected $allowedFields    = ['EmployeeID', 'address_id', 'address_type'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

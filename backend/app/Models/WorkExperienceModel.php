@@ -15,7 +15,7 @@ class WorkExperienceModel extends Model
     protected $allowedFields    = ['EmployeeID', 'inclusive_dates_from', 'inclusive_dates_to', 'position_title', 'department_agency_office_company', 'monthly_salary', 'salary_grade_step_increment', 'status_of_appointment', 'govt_service'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

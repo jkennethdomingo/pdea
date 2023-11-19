@@ -15,7 +15,7 @@ class AssetStatusModel extends Model
     protected $allowedFields    = ['asset_id', 'qty_per_property_card', 'physical_count', 'shortage_overage_qty', 'shortage_overage_value', 'status'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

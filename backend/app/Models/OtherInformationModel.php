@@ -15,7 +15,7 @@ class OtherInformationModel extends Model
     protected $allowedFields    = ['EmployeeID', 'special_skills_hobbies', 'non_academic_distinctions_recognition', 'membership_association_organization'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

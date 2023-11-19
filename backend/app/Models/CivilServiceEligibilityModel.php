@@ -15,7 +15,7 @@ class CivilServiceEligibilityModel extends Model
     protected $allowedFields    = ['EmployeeID', 'career_service', 'rating', 'date_of_examination', 'place_of_examination', 'license_number', 'license_date_of_validity'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

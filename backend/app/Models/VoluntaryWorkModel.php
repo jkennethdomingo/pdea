@@ -15,7 +15,7 @@ class VoluntaryWorkModel extends Model
     protected $allowedFields    = ['EmployeeID', 'organization_name', 'position', 'period_from', 'period_to', 'number_of_hours'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
