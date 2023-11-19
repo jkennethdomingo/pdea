@@ -116,6 +116,17 @@ class PersonalInformation extends Migration
                 'constraint' => '50',
                 'null' => false,
             ],
+            'dual_citizenship_type' => [
+                'type' => 'VARCHAR',
+                'constraint' => '25',
+                'null' => true,
+            ],
+            'country' => [
+                'type' => 'VARCHAR',
+                'constraint' => '100',
+                'null' => true,
+            ],
+
             'telephone_no' => [
                 'type' => 'VARCHAR',
                 'constraint' => '15',
