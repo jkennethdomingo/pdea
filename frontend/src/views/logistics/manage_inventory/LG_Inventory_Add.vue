@@ -151,8 +151,7 @@ const submitForm = async () => {
   
   <br>
   <form @submit.prevent="submitForm">
-    <Button :to="{ name: 'LG_Inventory' }">Back</Button>
-<div class=" bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 rounded-lg ">
+    <Button class="mb-4" :to="{ name: 'LG_Inventory' }">View Details</Button>
     <div class="mb-4 grid grid-cols-4 gap-4">
       <div>
         <label for="status_name" class="block text-gray-700 text-sm dark:text-white mb-2">Procurement Status:</label>
@@ -239,12 +238,13 @@ const submitForm = async () => {
         <label for="Remarks" class="block text-gray-700 text-sm dark:text-white mb-2">Remarks:</label>
         <input type="text" id="Remarks" v-model="formData.remarks" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
+    
    </div>
-  </div>
+   <div class="flex justify-end">
+    <Button class="mb-4" @click="submitForm">Submit</Button>
+</div>
 
-   <div class="flex justify-end ">
-    <button class="bg-green-600 rounded-lg text-lg" @click="submitForm">Submit</button>
-      </div>
+
     </form>
 </PageWrapper>
         

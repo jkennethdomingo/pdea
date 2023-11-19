@@ -65,12 +65,12 @@ const handleAction = (action, item) => {
 
 <template>
   <section class="p-3 sm:p-5 rounded-lg">
-    <Button :to="{ name: 'LG_Inventory_Add' }">Next</Button>
+    
     <div v-if="isLoading" class="flex justify-center items-center">
         <span>Loading...</span> <!-- Replace with a spinner or a loading component -->
       </div>
       <div v-else class="mx-auto max-w-screen-xl px-4 max-h-[76vh] overflow-hidden">
-        <div class="relative shadow-md rounded-lg overflow-hidden">
+        <div class="relative overflow-hidden">
           <ReusableTable :headers="tableHeaders" :rows="tableRows" :actions="actions" :filters="filters" @action="handleAction" />
         </div>
       </div>
