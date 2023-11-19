@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import ReusableTable from '@/components/flowbite/ReusableTable.vue';
 import { initDropdowns } from 'flowbite';
 import { useStore } from 'vuex';
+import Button from '@/components/base/Button';
+
 
 const store = useStore();
 
@@ -62,11 +64,12 @@ const handleAction = (action, item) => {
 </script>
 
 <template>
-    <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 rounded-lg">
-      <div v-if="isLoading" class="flex justify-center items-center">
+  <section class="p-3 sm:p-5 rounded-lg">
+    <Button :to="{ name: 'LG_Inventory_Add' }">Next</Button>
+    <div v-if="isLoading" class="flex justify-center items-center">
         <span>Loading...</span> <!-- Replace with a spinner or a loading component -->
       </div>
-      <div v-else class="mx-auto max-w-screen-xl px-4 max-h-[76vh] overflow-y-scroll">
+      <div v-else class="mx-auto max-w-screen-xl px-4 max-h-[76vh] overflow-hidden">
         <div class="relative shadow-md rounded-lg overflow-hidden">
           <ReusableTable :headers="tableHeaders" :rows="tableRows" :actions="actions" :filters="filters" @action="handleAction" />
         </div>

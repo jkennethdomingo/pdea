@@ -28,29 +28,15 @@ const isCurrentPath = (path) => {
         />
 
         <SidebarLink
-            icon="carbon:report"
+            icon="material-symbols-light:folder-managed-sharp"
             :to="{ name: 'LG_Inventory' }"
-            title="Procurement Management"
-            :active="isCurrentRoute('LG_Inventory')"
+            title="Procurement"
+            :active="isCurrentPath('/logistics/lg/')"
         >
         </SidebarLink>
 
-        <SidebarCollapsible icon="material-symbols:inventory" title="Manage Inventory" :active="isCurrentPath('/logistics/lg/inventory_management')">
-            <SidebarCollapsibleItem
-            :to="{ name: 'LG_Inventory' }"
-            title="Inventory"
-            :active="isCurrentRoute('LG_Inventory')"
-            />
-            <SidebarCollapsibleItem
-            :to="{ name: 'LG_Inventory_Add' }"
-            title="Add Inventory"
-            :active="isCurrentRoute('LG_Inventory_Add')"
-            />
-        </SidebarCollapsible>
 
-        
-
-        <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/lg/material_requisition')">
+        <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/material_requisition')">
             <SidebarCollapsibleItem
                 :to="{ name: 'LG_Agent' }"
                 title="Agent"

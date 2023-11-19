@@ -123,7 +123,7 @@ export default [
       },
       {
         path: 'lg',
-        component: () => import('@/layouts/LogisticsLayout.vue'),
+        component: () => import('@/layouts/ProcurementLayout.vue'),
         children: [
           {
             path: 'inventory_management',
@@ -140,7 +140,13 @@ export default [
               },
             ],
           },
-
+          
+        ],
+      },
+      {
+        path: '',
+        component: () => import('@/layouts/LogisticsLayout.vue'),
+        children: [
           {
             path: 'reports',
             name: 'LG_Reports',
@@ -172,8 +178,8 @@ export default [
             ],
           },
         ],
-      },
-      
+
+      }
       // ... other logistics routes if needed ...
     ],
   },

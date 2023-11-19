@@ -79,7 +79,6 @@ const addRecord = () => {
 <template>
     <section class="bg-white h-full rounded-lg dark:bg-gray-900">
 <!-- component -->
-<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 <div class="flex flex-col min-h-3/6 rounded-lg bg-gray-900">
   <div class="container m-4">
     <div class="max-w-3xl w-72 ml-0 grid gap-4 grid-cols-1">
