@@ -137,7 +137,14 @@ export const actions = {
             commit('setIsAddingEvent', false); // Reset loading state
         }
     },
-
+    async fetchagentData({ commit }) {
+        try {
+          const response = await apiService.post('materialRequisition/getAgentData');
+          commit('setagentData', response.data.personal_information);
+        } catch (error) {
+          console.error(error);
+        }
+      }
       
       
 };

@@ -82,27 +82,43 @@ export default [
         ],
       },
       {
-        path: 'assignTraining',
-        component: () => import('@/layouts/AssignTrainingLayout.vue'),
-        meta: { requiresRole: 'HR_ADMIN' },
+        path: 'beta',
+        component: () => import('@/layouts/RegisterLayout.vue'),
         children: [
           {
-            path: '',
-            name: 'Assign Training',
-            component: () => import('@/views/hr/assign_training/AssignTraining.vue'),
+            path: 'beta',
+            name: 'Beta',
+            component: () => import('@/views/hr/beta/UploadProfile.vue'),
           },
         ],
       },
       {
-        path: 'manageLeave',
-        component: () => import('@/layouts/ManageLeaveLayout.vue'),
-        meta: { requiresRole: 'HR_ADMIN' },
+        path: 'calendar',
         children: [
           {
-            path: '',
-            name: 'Manage Leave',
-            component: () => import('@/views/hr/assign_training/Calendar.vue'),
-          },
+              path: 'assignTraining',
+              component: () => import('@/layouts/AssignTrainingLayout.vue'),
+              meta: { requiresRole: 'HR_ADMIN' },
+              children: [
+                {
+                  path: '',
+                  name: 'Assign Training',
+                  component: () => import('@/views/hr/assign_training/AssignTraining.vue'),
+                },
+              ],
+            },
+            {
+              path: 'manageLeave',
+              component: () => import('@/layouts/ManageLeaveLayout.vue'),
+              meta: { requiresRole: 'HR_ADMIN' },
+              children: [
+                {
+                  path: '',
+                  name: 'Manage Leave',
+                  component: () => import('@/views/hr/assign_training/Calendar.vue'),
+                },
+              ],
+            },
         ],
       },
 

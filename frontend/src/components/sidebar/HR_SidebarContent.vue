@@ -53,7 +53,7 @@ const isAssignRouteActive = () => {
             :active="isCurrentPath('/human-resources/register')"
         >
         </SidebarLink>
-        <SidebarCollapsible icon="mdi:calendar" title="Calendar" :active="isCurrentPath('/human-resources/')">
+        <SidebarCollapsible icon="mdi:calendar" title="Calendar" :active="isCurrentPath('/human-resources/calendar')">
             <SidebarCollapsibleItem
             :to="{ name: 'Assign Training' }"
             title="Assign Training"
@@ -65,5 +65,13 @@ const isAssignRouteActive = () => {
             :active="isCurrentRoute('Manage Leave')"
             />
         </SidebarCollapsible>
+
+        <SidebarLink
+            icon="ic:round-people"
+            :to="{ name: 'Beta' }"
+            title="Beta"
+            :active="isCurrentRoute('Beta')"
+        >
+        </SidebarLink>
     </PerfrectScrollbar>
 </template>

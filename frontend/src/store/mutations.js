@@ -83,4 +83,7 @@ export const mutations = {
     addEventToState(state, event) {
         state.events.push(event);
     },
+    setagentData(state, data) {
+        state.agentData = data;
+      }
 };
