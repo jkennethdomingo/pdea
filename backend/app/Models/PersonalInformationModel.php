@@ -12,7 +12,7 @@ class PersonalInformationModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'surname', 'first_name', 'name_extension', 'middle_name', 'date_of_birth', 'place_of_birth', 'sex', 'civil_status', 'height', 'weight', 'blood_type', 'gsis_id_no', 'pag_ibig_id_no', 'philhealth_no', 'sss_no', 'tin_no', 'agency_employee_no', 'citizenship', 'dual_citizenship_type', 'country', 'telephone_no', 'mobile_no', 'Email', 'Password', 'DateOfEntry', 'IPCR'];
+    protected $allowedFields    = ['EmployeeID', 'surname', 'first_name', 'name_extension', 'middle_name', 'date_of_birth', 'place_of_birth', 'sex', 'civil_status', 'height', 'weight', 'blood_type', 'gsis_id_no', 'pag_ibig_id_no', 'philhealth_no', 'sss_no', 'tin_no', 'agency_employee_no', 'citizenship', 'dual_citizenship_type', 'country', 'telephone_no', 'mobile_no', 'Email', 'Password', 'DateOfEntry', 'IPCR', 'photo'];
 
     // Dates
     protected $useTimestamps = true;
@@ -40,7 +40,7 @@ class PersonalInformationModel extends Model
 
     public function getSelectedInfo() {
         // Start the query by selecting the fields from the personal_information table.
-        $this->select('personal_information.EmployeeID, personal_information.first_name, personal_information.surname, personal_information.agency_employee_no, personal_information.telephone_no, personal_information.mobile_no, personal_information.Email');
+        $this->select('personal_information.EmployeeID, personal_information.first_name, personal_information.surname, personal_information.agency_employee_no, personal_information.telephone_no, personal_information.mobile_no, personal_information.Email, personal_information.photo');
         
         // Join with the employee_position table to get the corresponding PositionID for each employee.
         $this->join('employee_position', 'personal_information.EmployeeID = employee_position.EmployeeID', 'left');
@@ -53,6 +53,13 @@ class PersonalInformationModel extends Model
         
         // Finally, perform the query and return the results.
         return $this->findAll();
+    }
+
+    public function updatePhoto($employeeID, $photo)
+    {
+        $this->set('photo', $photo)
+             ->where('EmployeeID', $employeeID)
+             ->update();
     }
     
 }

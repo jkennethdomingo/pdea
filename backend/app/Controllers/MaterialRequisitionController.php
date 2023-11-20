@@ -149,10 +149,19 @@ class MaterialRequisitionController extends ResourceController
     }
 
 
-    public function getData()
+    public function getAgentData()
     {
         $data = [
             'personal_information' => $this->personalInformationModel->getSelectedInfo(),
+        ];
+
+        return $this->respond($data);
+    }
+
+    public function getOtherData()
+    {
+        $data = [
+            
             'asset_type' => $this->assetTypeModel->findAll(),
             'department' => $this->departmentModel->findAll(),
             'provincial_office' => $this->provincialOfficeModel->findAll(),
@@ -161,6 +170,8 @@ class MaterialRequisitionController extends ResourceController
 
         return $this->respond($data);
     }
+
+
 
 
 

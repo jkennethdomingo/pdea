@@ -20,7 +20,7 @@ $routes->group('api', function($routes)
 
     $routes->group('materialRequisition', function($routes) {
         $routes->post('insert', 'MaterialRequisitionController::assignAsset');
-        $routes->post('getData', 'MaterialRequisitionController::getData');
+        $routes->post('getAgentData', 'MaterialRequisitionController::getAgentData');
     });
 
     $routes->group('manageInventory', function($routes) {
@@ -32,6 +32,11 @@ $routes->group('api', function($routes)
     $routes->group('manageTraining', function($routes) {
         $routes->post('insertTraining', 'AssignTrainingController::insertTraining');
         $routes->post('getTraining', 'AssignTrainingController::getTraining');
+    });
+
+    // For Beta Testing
+    $routes->group('beta', function($routes) {
+        $routes->post('doUpload', 'Beta::doUpload');
     });
 
     $routes->post('insert', 'TestArea::create');
