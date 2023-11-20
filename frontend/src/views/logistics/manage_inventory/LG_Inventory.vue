@@ -56,16 +56,7 @@ const filters = ref([
 ]);
 
 const handleAction = (action, item) => {
-  if (action === 'edit') {
-    // Open edit modal with item
-  } else if (action === 'delete') {
-    if (confirm('Are you sure you want to delete this item?')) {
-      // Call Vuex action or directly manipulate state to delete the item
-      console.log("delte");
-      // store.dispatch('deleteItem', item.id);
-      // Optionally, refetch data or update UI
-    }
-  }
+  
 };
 
 
