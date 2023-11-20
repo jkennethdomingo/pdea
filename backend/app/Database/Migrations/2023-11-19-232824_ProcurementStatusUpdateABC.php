@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class ProcurementStatusUpdate extends Migration
+class ProcurementStatusUpdateABC extends Migration
 {
     public function up()
     {
