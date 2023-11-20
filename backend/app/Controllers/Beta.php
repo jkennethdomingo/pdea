@@ -29,7 +29,7 @@ class Beta extends ResourceController
             $file->move(ROOTPATH . 'public/uploads', $newName);
 
             // Get the employee ID from your session or request
-            $employeeID = 'ABC'; // Replace with your logic to get the employee ID
+            $employeeID = 'EMP'; // Replace with your logic to get the employee ID
 
             // Update the personal_information table with the file details
             $this->personalInformationModel->updatePhoto($employeeID, $newName);
