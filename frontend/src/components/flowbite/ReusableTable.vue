@@ -6,6 +6,10 @@ import { initDropdowns } from 'flowbite';
 import DeleteModal from '@/components/modals/Delete.vue';
 import EditModal from '@/components/modals/Edit.vue';
 import ViewModal from '@/components/modals/View.vue';
+import { useStore } from 'vuex';
+
+const store = useStore();
+
 
 const scrollContainerRef = ref(null);
 const props = defineProps({
@@ -81,14 +85,24 @@ function openEditModal(item) {
 
 function openViewModal(item) {
   selectedItem.value = item;
+  console.log(selectedItem.value)
   isViewModalVisible.value = true;
 }
 
-function handleConfirm() {
-  console.log('Confirm clicked');
-  emitAction('delete', selectedItem.value);
+async function handleConfirm() {
+  console.log('Confirm clicked - Deleting item', selectedItem.value);
+  try {
+    // Assuming you have a Vuex action to delete the item
+    await store.dispatch('deleteItem', selectedItem.value.procurement_id);
+    // After deletion, you might want to refresh the data in your table
+    await store.dispatch('getInventoryData');
+  } catch (error) {
+    console.error('Error deleting item:', error);
+  }
   isDeleteModalVisible.value = false;
+  selectedItem.value = null; // Reset the selected item
 }
+
 
 function handleCancel() {
   console.log('Cancel clicked');
@@ -241,6 +255,7 @@ function handleCancel() {
     @confirm="handleConfirm"
     @cancel="handleCancel"
     message="Are you sure you want to Archive this item?"
+    :item="selectedItem"
   />
   <EditModal
   :isVisible="isEditModalVisible"
@@ -253,6 +268,7 @@ function handleCancel() {
     :isVisible="isViewModalVisible"
     @cancel="handleCancel"
     message="Are you sure you want to view this item?"
+    :item="selectedItem"
   />
 </template>
 

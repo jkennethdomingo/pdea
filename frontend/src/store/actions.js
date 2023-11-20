@@ -144,7 +144,32 @@ export const actions = {
         } catch (error) {
           console.error(error);
         }
-      }
+      },
+
+      async deleteItem({ commit }, itemId) {
+        try {
+          // Call your API endpoint using Axios
+          const response = await apiService.post(`/manageInventory/archiveInventory/${itemId}`, {
+            id: itemId // Include the body if necessary
+          });
+    
+          // Check the response status and handle accordingly
+          if (response.status !== 200) {
+            throw new Error('Error archiving item');
+          }
+    
+          const data = response.data;
+    
+          // You might want to commit a mutation to update your state here
+          // For example:
+          // commit('REMOVE_ITEM_FROM_STATE', itemId);
+    
+          return data; // Or handle the response as needed
+        } catch (error) {
+          console.error('Error in deleteItem action:', error);
+          throw error; // Rethrow the error for further handling
+        }
+      },
       
       
 };

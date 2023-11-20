@@ -14,21 +14,31 @@
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                     <div class="md:col-span-1 mb-4">
                                         <label for="status_name" class="block text-gray-700 text-sm dark:text-white mb-2">Procurement Status:</label>
+                                        <div>{{ item ? item.procurement_status : 'Data not available' }}</div>
                                     </div>          
                                     <div class="md:col-span-1 mb-4">
                                         <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Receipt of Request:</label>
+                                        <div>{{ item ? item.date_of_receipt_of_request : 'Data not available' }}</div>
                                     </div>
                                     <div class="md:col-span-1 mb-4">
                                         <label for="Project" class="block text-gray-700 text-sm dark:text-white mb-2">Project/Particulars:</label>
+                                        <div>{{ item ? item. project_particulars : 'Data not available' }}</div>
                                     </div>
                                     <div class="md:col-span-1 mb-4">
                                         <label for="End" class="block text-gray-700 text-sm dark:text-white mb-2">End-User:</label>
+                                        <div>{{ item ? item.endUser : 'Data not available' }}</div>
                                     </div>
                                     <div class="md:col-span-1 mb-4">
-                                        <label for="Purchase" class="block text-gray-700 text-sm dark:text-white mb-2">Purchase/Work/Job Request:</label>
+                                        <label for="Purchase" class="block text-gray-700 text-sm dark:text-white mb-2">Purchase/Work/Job Request Number:</label>
+                                        <div>{{ item ? item.purchase_work_job_request_no : 'Data not available' }}</div>
+                                    </div>
+                                    <div class="md:col-span-1 mb-4">
+                                        <label for="Purchase" class="block text-gray-700 text-sm dark:text-white mb-2">Purchase/Work/Job Request Date:</label>
+                                        <div>{{ item ? item.purchase_work_job_request_date : 'Data not available' }}</div>
                                     </div>
                                     <div class="md:col-span-1 mb-4">
                                         <label for="Philgeps" class="block text-gray-700 text-sm dark:text-white mb-2">Philgeps:</label>
+                                        <div>{{ item ? item.philgeps_posting : 'Data not available' }}</div>
                                     </div>
                                     <div class="md:col-span-1 mb-4">
                                         <label for="Price" class="block text-gray-700 text-sm dark:text-white mb-2">Price Quotation:</label>
@@ -80,7 +90,8 @@ import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
   isVisible: Boolean,
-  message: String // example for passing custom message
+  message: String, // example for passing custom message
+  item: Object,
 });
 
 const emit = defineEmits(['cancel']);

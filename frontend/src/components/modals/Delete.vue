@@ -17,9 +17,9 @@
                     <!-- Additional content can be placed here -->
                     <div class="mb-5">
                         <!-- Placeholder for any extra details or content -->
-                        <p>Project Particular: Canvas 1
+                        <p>Project Particular: <div>{{ item ? item.project_particulars : 'Data not available' }}</div>
                         </p>
-                        <p> Supplier: Supplier X
+                        <p> Supplier: <div>{{ item ? item.supplier : 'Data not available' }}</div>
                         </p>
                     </div>
                     <!-- Confirmation and Cancellation Buttons -->
@@ -40,7 +40,8 @@ import { ref, defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
   isVisible: Boolean,
-  message: String // example for passing custom message
+  message: String, // example for passing custom message
+  item: Object,
 });
 
 const emit = defineEmits(['confirm', 'cancel']);
