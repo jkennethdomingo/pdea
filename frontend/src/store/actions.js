@@ -42,7 +42,7 @@ export const actions = {
     async getData({ commit }) {
         try {
             commit('setIsFetchingData', true);
-            const response = await apiService.post('/materialRequisition/getData');
+            const response = await apiService.post('/materialRequisition/getAgentData');
             if (response && response.data) {
                 commit('setData', response.data);
             }
