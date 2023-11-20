@@ -26,7 +26,7 @@ $routes->group('api', function($routes)
     $routes->group('manageInventory', function($routes) {
         $routes->post('addInventory', 'ManageInventoryController::addInventory');
         $routes->post('getInventoryData', 'ManageInventoryController::getInventoryData');
-        $routes->post('archiveInventory', 'ManageInventoryController::archiveInventory');
+        $routes->post('archiveInventory/(:num)', 'ManageInventoryController::archiveInventory/$1');
     });
 
     $routes->group('manageTraining', function($routes) {

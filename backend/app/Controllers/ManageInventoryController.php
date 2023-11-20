@@ -153,6 +153,7 @@ class ManageInventoryController extends ResourceController
             
             // Add the procurement status to the transformed data, defaulting to 'Status not set' if null
             return [
+                'procurement_id' => $procurement['procurement_id'],
                 'date_of_receipt_of_request' => $procurement['date_of_receipt_of_request'],
                 'procurement_status' => $procurement['procurement_status'] ?? 'Status not set',
                 'project_particulars' => $procurement['project_particulars'],
