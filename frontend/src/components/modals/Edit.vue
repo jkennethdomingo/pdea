@@ -55,26 +55,23 @@ const closeModal = () => {
 
 
 <template>
-    <div v-if="isVisible" id="popup-modal" tabindex="-1" class="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 flex items-center justify-center w-full md:inset-0 h-screen max-h-full">
-        <div class="relative p-4 w-full max-w-5xl max-h-full">
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                <button type="button" @click="closeModal" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                    <!-- SVG for 'X' -->
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Close modal</span>
-                </button>
+    <div v-if="isVisible" id="popup-modal" tabindex="-1" class="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 flex items-center justify-center w-full h-screen">
+    <div class="relative p-4 w-full max-w-2xl bg-gray-200 rounded-lg shadow dark:bg-gray-700">
+        <!-- Close Button at the top-right corner -->
+        <button type="button" @click="closeModal" class="absolute top-2 right-2 text-gray-400 bg-transparent hover:bg-gray-200 rounded-full text-sm p-2 dark:hover:bg-gray-600 dark:hover:text-white" aria-label="Close">
+            <!-- SVG for 'X' -->
+            <svg class="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 9.5l5-5m-5 5l-5-5m5 5l5 5m-5-5l-5 5" clip-rule="evenodd"/>
+            </svg>
+        </button>
                 <br>
-                <div class="mb-4 grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label for="status_name" class="block text-gray-700 text-sm dark:text-white mb-2">Procurement Status:</label>
-                        <select id="status_name" v-model="formData.procurement_status" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
-                            <option v-for="pc in procurementStatus" :key="pc.value" :value="pc.value">
-                                {{ pc.label }}
-                            </option>
-                            </select>
-                    </div>
+                    <label for="status_name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Procurement Status:</label>
+                    <select id="status_name" v-model="formData.procurement_status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        <option v-for="pc in procurementStatus" :key="pc.value" :value="pc.value">{{ pc.label }}</option>
+                    </select>
+                </div>
                     
                     <div>
                         <label for="Date" class="block text-gray-700 text-sm dark:text-white mb-2">Date of Receipt of Request:</label>
@@ -147,17 +144,17 @@ const closeModal = () => {
                         <input type="text" id="Remarks" v-model="formData.remarks" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                 </div>
-                <div class="p-4 md:px-8">
-                    <button @click="saveChanges" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                        Update
-                    </button>
-                    <button @click="closeModal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                <div class="flex justify-end gap-3 mt-4">
+                <button @click="closeModal" type="button" class="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg text-sm font-medium px-4 py-1.5 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-500 dark:focus:ring-gray-700">
                     Cancel
-                    </button>
-                </div>
+                </button>
+                <button @click="saveChanges" type="button" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-lg text-sm font-medium px-4 py-1.5 focus:z-10">
+                    Update
+                </button>
             </div>
         </div>
     </div>
+
 </template>
 
 

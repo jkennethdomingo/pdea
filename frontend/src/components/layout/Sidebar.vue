@@ -61,7 +61,7 @@ onUnmounted(() => {
             transition-duration: 150ms;
         "
         :class="[
-            'fixed inset-y-0 z-20 py-4 flex flex-col space-y-6 bg-[#F5F7F8] shadow-lg dark:bg-dark-eval-1',
+            'fixed inset-y-0 z-20 py-4 flex flex-col space-y-6 bg-[#DDE6ED] shadow-2xl dark:bg-dark-eval-1',
             {
                 'translate-x-0 w-64':
                     sidebarState.isOpen || sidebarState.isHovered,

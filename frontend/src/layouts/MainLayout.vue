@@ -6,7 +6,7 @@ import PageFooter from '@/components/layout/PageFooter.vue'
 </script>
 
 <template>
-    <div class="min-h-screen overflow-y-hidden text-green-900 bg-gray-50 dark:bg-gray-900 dark:text-green-100">
+    <div class="min-h-screen overflow-y-hidden text-green-900 bg-[#e3ecf4] dark:bg-gray-900 dark:text-green-100">
         <Sidebar />
 
         <div

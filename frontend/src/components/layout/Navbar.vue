@@ -142,7 +142,7 @@ onUnmounted(() => {
             <Dropdown align="right" width="48">
                 <template #trigger>
                     <button
-                        class="flex text-sm transition border-2 border-transparent rounded-md focus:outline-none focus:ring focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark-eval-1"
+                        class="flex text-sm transition border-2 border-transparent rounded-md focus:outline-none focus:ring focus:ring-gray-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark-eval-1"
                     >
                         <img
                             class="object-cover w-8 h-8 rounded-md"
@@ -163,7 +163,7 @@ onUnmounted(() => {
     <!-- Mobile bottom bar -->
     <div
         :class="[
-            'fixed inset-x-0 bottom-0 flex items-center justify-between px-4 py-4 sm:px-6 transition-transform duration-500 bg-white md:hidden dark:bg-dark-eval-1',
+            'fixed inset-x-0 bottom-0 flex items-center justify-between px-4 py-4 sm:px-6 transition-transform duration-500 bg-[#EEF5FF] md:hidden dark:bg-dark-eval-1',
             {
                 'translate-y-full': scrolling.down,
                 'translate-y-0': scrolling.up,
