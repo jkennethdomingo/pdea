@@ -11,11 +11,29 @@ const store = useStore();
 const isLoading = computed(() => store.state.isLoading);
 
 // Fetch and compute the table rows based on the Vuex state
-const tableRows = computed(() => store.state.procurementData);
+const filteredTableRows = computed(() => {
+  const isActiveChecked = filters.value.find(f => f.id === 'Active').checked;
+  const isArchivedChecked = filters.value.find(f => f.id === 'Archived').checked;
+
+  if (isActiveChecked && isArchivedChecked) {
+    // Combine both active and archived data
+    return [...store.state.activeProcurementData, ...store.state.archivedProcurementData];
+  } else if (isActiveChecked) {
+    // Only active data
+    return store.state.activeProcurementData;
+  } else if (isArchivedChecked) {
+    // Only archived data
+    return store.state.archivedProcurementData;
+  } else {
+    // If neither is checked, you can decide to return either empty array or all data
+    return [];
+  }
+});
+
 
 // Fetch data on component mount
 onMounted(async () => {
-  await store.dispatch('getInventoryData');
+  await store.dispatch('getInventoryData'); 
   initDropdowns();
 });
 
@@ -52,7 +70,8 @@ const actions = ref([
 
 // Define filters if needed
 const filters = ref([
-  // ... your filter definitions
+{ id: 'Active', label: 'Active', checked: true },
+  { id: 'Archived', label: 'Archived', checked: false },
 ]);
 
 const handleAction = (action, item) => {
@@ -70,7 +89,7 @@ const handleAction = (action, item) => {
       </div>
       <div v-else class="mx-auto max-w-screen-xl px-1 max-h-[76vh] overflow-hidden">
         <div class="relative overflow-hidden">
-          <ReusableTable :headers="tableHeaders" :rows="tableRows" :actions="actions" :filters="filters" @action="handleAction" />
+          <ReusableTable :headers="tableHeaders" :rows="filteredTableRows" :actions="actions" :filters="filters" @action="handleAction" />
         </div>
       </div>
     </section>

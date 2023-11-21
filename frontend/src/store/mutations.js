@@ -85,5 +85,19 @@ export const mutations = {
     },
     setagentData(state, data) {
         state.agentData = data;
-      }
+      },
+      setdepartmentData(state, data) {
+        state.departmentData = data;
+      },
+      setprovinceData(state, data) {
+        state.provinceData = data;
+      },
+      setregionData(state, data) {
+        state.regionData = data;
+      },
+
+      setFilteredProcurementData(state, { activeData, archivedData }) {
+        state.activeProcurementData = activeData;
+        state.archivedProcurementData = archivedData;
+    },
 };

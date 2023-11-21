@@ -128,5 +128,10 @@ export const state = {
     isLoading: false, 
     training: [],
     events: [],
-    agentData: []
+    agentData: [],
+    activeProcurementData: [],
+  archivedProcurementData: [],
+  departmentData: [],
+  provinceData: [],
+  regionData: [],
 };

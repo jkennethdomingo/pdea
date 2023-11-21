@@ -96,11 +96,16 @@ function handleEvents(events) {
 function handleWeekendsToggle() {
   // Handle weekends toggle
 }
+
+function onModalClose() {
+  // Logic to execute when the modal is closed
+  console.log('Modal closed');
+}
 </script>
 
 
 <template>
-<AddTrainingModal/>
+<AddTrainingModal @close="onModalClose"/>
     <div class='flex min-h-full font-sans text-sm'>
         <div class="text-center section">
           <div class="hidden lg:flex">

@@ -52,10 +52,10 @@ export const actions = {
             commit('setIsFetchingData', false);
         }
     },
-    async getInventoryData({ commit }) {
+    async getActiveInventoryData({ commit }) {
         try {
             commit('setLoading', true); 
-          const response = await apiService.post('/manageInventory/getInventoryData');
+          const response = await apiService.post('/manageInventory/getActiveInventoryData');
           commit('setProcurementData', response.data.procurement);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -145,6 +145,34 @@ export const actions = {
           console.error(error);
         }
       },
+      
+
+      async fetchdepartmentData({ commit }) {
+        try {
+          const response = await apiService.post('materialRequisition/getDepartmentData');
+          commit('setdepartmentData', response.data.department);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+
+      async fetchprovinceData({ commit }) {
+        try {
+          const response = await apiService.post('materialRequisition/getProvinceData');
+          commit('setprovinceData', response.data.provincial_office);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      
+      async fetchregionData({ commit }) {
+        try {
+          const response = await apiService.post('materialRequisition/getRegionData');
+          commit('setregionData', response.data.regional_office);
+        } catch (error) {
+          console.error(error);
+        }
+      },
 
       async deleteItem({ commit }, itemId) {
         try {
@@ -170,6 +198,25 @@ export const actions = {
           throw error; // Rethrow the error for further handling
         }
       },
+
+      async getInventoryData({ commit }) {
+        try {
+            commit('setLoading', true);
+            const response = await apiService.post('/manageInventory/getInventoryData');
+            const activeData = response.data.Active;
+            const archivedData = response.data.Archive;
+    
+            // Commit both active and archived data to a single mutation
+            commit('setFilteredProcurementData', { activeData, archivedData });
+    
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            commit('setLoading', false);
+        }
+    },
+    
+    
       
       
 };
