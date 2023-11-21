@@ -102,6 +102,11 @@ const difference = computed(() => {
     return formData.value.actual_days_to_complete - formData.value.ideal_no_of_days_to_complete;
 });
 
+watch(difference, (newDifference) => {
+    formData.value.difference = newDifference;
+});
+
+
 
 watch(formData, (newValue) => {
   console.log('Form Data Updated:', newValue);
@@ -223,9 +228,10 @@ const submitForm = async () => {
         <input type="text" id="Actual_days" :value="formData.actual_days_to_complete" @input="updateActualDays($event)" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
     </div>
     <div>
-        <label for="Difference" class="block text-gray-700 text-sm dark:text-white mb-2">Difference:</label>
-        <input type="text" id="Difference" :value="difference" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline" readonly>
-    </div>
+    <label for="Difference" class="block text-gray-700 text-sm dark:text-white mb-2">Difference:</label>
+    <input type="text" id="Difference" :value="formData.difference" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline" readonly>
+</div>
+
       <div>
         <label for="PurchaseOrder" class="block text-gray-700 text-sm dark:text-white mb-2">Purchase/Work/Job Order:</label>
         <input type="text" id="PurchaseOrder" v-model="formData.purchase_order" class="shadow border  dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
