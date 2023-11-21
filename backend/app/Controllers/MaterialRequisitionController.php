@@ -158,10 +158,37 @@ class MaterialRequisitionController extends ResourceController
         return $this->respond($data);
     }
 
-    public function getOtherData()
+    public function getDepartmentData()
     {
         $data = [
-            
+            'department' => $this->departmentModel->findAll(),
+        ];
+
+        return $this->respond($data);
+    }
+
+    public function getProvinceData()
+    {
+        $data = [
+            'provincial_office' => $this->provincialOfficeModel->findAll(),
+        ];
+
+        return $this->respond($data);
+    }
+
+    public function getRegionData()
+    {
+        $data = [
+            'regional_office' => $this->regionalOfficeModel->findAll(),
+        ];
+
+        return $this->respond($data);
+    }
+
+    public function getDropdownData()
+    {
+        $data = [
+            'personal_information' => $this->personalInformationModel->getSelectedInfo(),
             'asset_type' => $this->assetTypeModel->findAll(),
             'department' => $this->departmentModel->findAll(),
             'provincial_office' => $this->provincialOfficeModel->findAll(),

@@ -21,11 +21,17 @@ $routes->group('api', function($routes)
     $routes->group('materialRequisition', function($routes) {
         $routes->post('insert', 'MaterialRequisitionController::assignAsset');
         $routes->post('getAgentData', 'MaterialRequisitionController::getAgentData');
+        $routes->post('getDropdownData', 'MaterialRequisitionController::getDropdownData');
+        $routes->post('getDepartmentData', 'MaterialRequisitionController::getDepartmentData');
+        $routes->post('getProvinceData', 'MaterialRequisitionController::getProvinceData');
+        $routes->post('getRegionData', 'MaterialRequisitionController::getRegionData');
     });
 
     $routes->group('manageInventory', function($routes) {
         $routes->post('addInventory', 'ManageInventoryController::addInventory');
         $routes->post('getInventoryData', 'ManageInventoryController::getInventoryData');
+        $routes->post('getArchivedInventoryData', 'ManageInventoryController::getArchivedInventoryData');
+        $routes->post('getActiveInventoryData', 'ManageInventoryController::getActiveInventoryData');
         $routes->post('archiveInventory/(:num)', 'ManageInventoryController::archiveInventory/$1');
     });
 
