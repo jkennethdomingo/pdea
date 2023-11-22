@@ -7,11 +7,11 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
-import AddTrainingModal from '@/components/modals/AddTrainingModal.vue';
 
 const store = useStore();
 const calendarRef = ref(null);
 const date = ref(new Date()); // Assuming this is your VDatePicker model
+const drawerRef = ref(null);
 
 // Computed property for transforming training data
 const trainingEvents = computed(() => {
@@ -77,15 +77,25 @@ const calendarOptions = ref({
   eventsSet: handleEvents
 });
 
+function openRightDrawer() {
+  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
+  drawerRef.value.classList.remove('translate-x-full');
+  drawerRef.value.classList.add('translate-x-0');
+}
+
 function openAddEventDialog() {
   // Logic to open the dialog to add a new event
 }
 
 function handleDateSelect(selectInfo) {
+  date.value = selectInfo.startStr;
+  newEvent.period_from = selectInfo.startStr;
+  openRightDrawer();
+
 }
 
 function handleEventClick(clickInfo) {
-  // Handle event click
+  console.log('click event: ' + clickInfo);
 }
 
 function handleEvents(events) {
@@ -111,6 +121,7 @@ const addEvent = async () => {
   newEvent.value = { title: '', period_from: '', period_to: '', number_of_hours: '', conducted_by: '' };
 };
 
+
 </script>
 
 
@@ -130,7 +141,7 @@ const addEvent = async () => {
     </div>
 
     <!-- dynamic drawer component -->
-    <div 
+    <div ref="drawerRef"
         id="dynamic-drawer" 
         class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
         tabindex="-1" 
