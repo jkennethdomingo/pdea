@@ -25,7 +25,7 @@ class AssignTrainingController extends ResourceController
 
         // Validate the request data
         $validationRules = [
-            'title' => 'required',
+            'title' => 'required|is_unique[training.title]',
             'period_from' => 'required|valid_date',
             'period_to' => 'required|valid_date',
             'number_of_hours' => 'required|integer',
@@ -73,4 +73,16 @@ class AssignTrainingController extends ResourceController
 
         return $this->respond($data);
     }
+
+    public function getTrainingbyTitle($title)
+    {
+            $training = $this->trainingModel->where('title', $title)->findAll();
+
+        $data = [
+            'training' => $training,
+        ];
+
+        return $this->respond($data);
+    }
+
 }

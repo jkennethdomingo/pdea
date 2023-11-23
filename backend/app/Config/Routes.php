@@ -38,6 +38,7 @@ $routes->group('api', function($routes)
     $routes->group('manageTraining', function($routes) {
         $routes->post('insertTraining', 'AssignTrainingController::insertTraining');
         $routes->post('getTraining', 'AssignTrainingController::getTraining');
+        $routes->get('getTrainingByTitle/(:any)', 'AssignTrainingController::getTrainingbyTitle/$1');
     });
 
     // For Beta Testing
