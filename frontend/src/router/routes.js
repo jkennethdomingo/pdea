@@ -156,6 +156,16 @@ export default [
               },
             ],
           },
+          {
+            path: 'property_management',
+            children: [
+              {
+                path: 'add',
+                name: 'LG_Property_Monitoring',
+                component: () => import('@/views/logistics/manage_inventory/LG_Property_Monitoring.vue'),
+                },
+            ],
+          },
           
         ],
       },

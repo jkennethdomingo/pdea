@@ -31,7 +31,15 @@ const isCurrentPath = (path) => {
             icon="material-symbols-light:folder-managed-sharp"
             :to="{ name: 'LG_Inventory' }"
             title="Procurement"
-            :active="isCurrentPath('/logistics/lg/')"
+            :active="isCurrentPath('/logistics/lg/inventory_management')"
+        >
+        </SidebarLink>
+
+        <SidebarLink
+            icon="material-symbols-light:folder-managed-sharp"
+            :to="{ name: 'LG_Property_Monitoring' }"
+            title="Property"
+            :active="isCurrentPath('/logistics/lg/property_management')"
         >
         </SidebarLink>
 
