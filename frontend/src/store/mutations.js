@@ -100,4 +100,9 @@ export const mutations = {
         state.activeProcurementData = activeData;
         state.archivedProcurementData = archivedData;
     },
+
+    SET_TRAINING(state, trainingDatabyTitle) {
+      state.trainingbyTitle = trainingDatabyTitle;
+    },
+    
 };

@@ -127,6 +127,7 @@ export const state = {
     procurementData: [],
     isLoading: false, 
     training: [],
+    trainingbyTitle: [],
     events: [],
     agentData: [],
     activeProcurementData: [],

@@ -215,6 +215,15 @@ export const actions = {
             commit('setLoading', false);
         }
     },
+
+    async getTrainingByTitle({ commit }, title) {
+      try {
+        const response = await apiService.get(`manageTraining/getTrainingByTitle/${title}`);
+        commit('SET_TRAINING', response.data.training);
+      } catch (error) {
+        console.error('Error fetching training data:', error);
+      }
+    },
     
     
       
