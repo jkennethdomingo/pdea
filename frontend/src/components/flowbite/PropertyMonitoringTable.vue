@@ -3,9 +3,9 @@ import { ref, reactive, computed, onMounted, watch } from 'vue';
 import PerfectScrollbar from '@/components/base/PerfectScrollbar.vue';
 import Button from '@/components/base/Button.vue';
 import { initDropdowns } from 'flowbite';
-import DeleteModal from '@/components/modals/Delete.vue';
-import EditModal from '@/components/modals/Edit.vue';
-import ViewModal from '@/components/modals/View.vue';
+import DeleteModal from '@/components/modals/Property_Delete.vue';
+import EditModal from '@/components/modals/Property_Edit.vue';
+import ViewModal from '@/components/modals/Property_View.vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
@@ -133,7 +133,7 @@ function handleCancel() {
     </div>
   </form>
   <!-- Right side: Button -->
-  <Button class="bg-green-700 dark:bg-green-600 ml-4" :to="{ name: 'LG_Inventory_Add' }">Input Details</Button>
+  <Button class="bg-green-700 dark:bg-green-600 ml-4" :to="{ name: 'LG_Property_Add' }">Input Details</Button>
 </div>
 
       </form>
