@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import ReusableTable from '@/components/flowbite/ReusableTable.vue';
 import { initDropdowns } from 'flowbite';
 import { useStore } from 'vuex';
-import Button from '@/components/base/Button';
+
 
 
 const store = useStore();
