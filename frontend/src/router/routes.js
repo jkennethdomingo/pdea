@@ -160,10 +160,15 @@ export default [
             path: 'property_management',
             children: [
               {
-                path: 'add',
+                path: 'property',
                 name: 'LG_Property_Monitoring',
                 component: () => import('@/views/logistics/manage_inventory/LG_Property_Monitoring.vue'),
                 },
+                {
+                  path: 'add',
+                  name: 'LG_Property_Add',
+                  component: () => import('@/views/logistics/manage_inventory/LG_Property_Add.vue'),
+                  },
             ],
           },
           

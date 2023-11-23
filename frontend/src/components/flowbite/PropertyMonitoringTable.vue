@@ -133,7 +133,7 @@ function handleCancel() {
     </div>
   </form>
   <!-- Right side: Button -->
-  <Button class="bg-green-700 dark:bg-green-600 ml-4" :to="{ name: 'LG_Inventory_Add' }">Input Details</Button>
+  <Button class="bg-green-700 dark:bg-green-600 ml-4" :to="{ name: 'LG_Property_Add' }">Input Details</Button>
 </div>
 
       </form>

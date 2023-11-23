@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import ReusableTable from '@/components/flowbite/ReusableTable.vue';
+import ReusableTable from '@/components/flowbite/PropertyMonitoringTable.vue';
 import { initDropdowns } from 'flowbite';
 import { useStore } from 'vuex';
 
