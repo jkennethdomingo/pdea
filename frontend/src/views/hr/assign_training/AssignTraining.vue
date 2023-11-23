@@ -355,7 +355,7 @@ const editEvent = async () => {
      <!--Read Modal-->
 
      <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-  Toggle modal
+  Choose Employee
 </button>
 
      <!-- Main modal -->
@@ -378,7 +378,7 @@ const editEvent = async () => {
             <!-- Modal body -->
             <div class="p-4 md:p-5 space-y-4">
               <!-- JD-->
-              <div class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
+              <div class=" mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
         <!-- Avatar -->
         <div class="shrink-0">
           <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
@@ -437,7 +437,7 @@ const editEvent = async () => {
       </div>
       <!-- Footer -->
       <div class="items-center px-4 py-3">
-        <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+        <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
           save
         </button>
       </div>
