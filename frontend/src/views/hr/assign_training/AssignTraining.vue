@@ -9,6 +9,7 @@ import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
 import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
+import userAvatar from '@/assets/images/avatar.jpg'
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -254,10 +255,12 @@ const editEvent = async () => {
   </svg>Add</button>
         </div>
       <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" src="/docs/images/people/profile-picture-5.jpg" alt="">
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" src="/docs/images/people/profile-picture-2.jpg" alt="">
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" src="/docs/images/people/profile-picture-3.jpg" alt="">
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" src="/docs/images/people/profile-picture-4.jpg" alt="">
+        
+         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
+         
+         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
+         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
+         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
       </div>
 
         <!-- Submit Button -->
@@ -347,6 +350,39 @@ const editEvent = async () => {
     </div>
 
      <!--Read Modal-->
+
+     <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+  Toggle modal
+</button>
+
+     <!-- Main modal -->
+<div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Choose Employee
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+              <!-- JD-->
+              Hello
+            </div>
+            <!-- Modal footer -->
+        </div>
+    </div>
+</div>
+
+<!--Bawal-->
     <div class='flex min-h-full font-sans text-sm'>
         <div class="text-center section">
           <div class="hidden lg:flex">

@@ -3,9 +3,9 @@ import { ref, reactive, computed, onMounted, watch } from 'vue';
 import PerfectScrollbar from '@/components/base/PerfectScrollbar.vue';
 import Button from '@/components/base/Button.vue';
 import { initDropdowns } from 'flowbite';
-import DeleteModal from '@/components/modals/Delete.vue';
-import EditModal from '@/components/modals/Edit.vue';
-import ViewModal from '@/components/modals/View.vue';
+import DeleteModal from '@/components/modals/Property_Delete.vue';
+import EditModal from '@/components/modals/Property_Edit.vue';
+import ViewModal from '@/components/modals/Property_View.vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
