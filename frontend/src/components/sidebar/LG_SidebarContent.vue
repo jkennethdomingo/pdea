@@ -36,7 +36,7 @@ const isCurrentPath = (path) => {
         </SidebarLink>
 
         <SidebarLink
-            icon="material-symbols-light:folder-managed-sharp"
+            icon="mdi:property-tag"
             :to="{ name: 'LG_Property_Monitoring' }"
             title="Property"
             :active="isCurrentPath('/logistics/lg/property_management')"

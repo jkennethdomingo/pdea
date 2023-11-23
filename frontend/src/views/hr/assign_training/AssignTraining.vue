@@ -375,7 +375,69 @@ const editEvent = async () => {
             <!-- Modal body -->
             <div class="p-4 md:p-5 space-y-4">
               <!-- JD-->
-              Hello
+              <div class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
+        <!-- Avatar -->
+        <div class="shrink-0">
+          <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
+        </div>
+        <!-- Name and details -->
+        <div class="flex-grow ml-4">
+          <div class="text-lg text-white font-bold">JD Anyayahan</div>
+          <div class="text-sm text-gray-400">
+            <p>ID: 123456</p>
+            <p>IPCR: 123456</p>
+          </div>
+        </div>
+        <!-- Checkbox -->
+        <div class="ml-4 flex items-center">
+          <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
+        </div>
+      </div>
+
+      <div class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
+        <!-- Avatar -->
+        <div class="shrink-0">
+          <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
+        </div>
+        <!-- Name and details -->
+        <div class="flex-grow ml-4">
+          <div class="text-lg text-white font-bold">JD Anyayahan</div>
+          <div class="text-sm text-gray-400">
+            <p>ID: 123456</p>
+            <p>IPCR: 123456</p>
+          </div>
+        </div>
+        <!-- Checkbox -->
+        <div class="ml-4 flex items-center">
+          <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
+        </div>
+      </div>
+      
+
+      <div class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
+        <!-- Avatar -->
+        <div class="shrink-0">
+          <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
+        </div>
+        <!-- Name and details -->
+        <div class="flex-grow ml-4">
+          <div class="text-lg text-white font-bold">JD Anyayahan</div>
+          <div class="text-sm text-gray-400">
+            <p>ID: 123456</p>
+            <p>IPCR: 123456</p>
+          </div>
+        </div>
+        <!-- Checkbox -->
+        <div class="ml-4 flex items-center">
+          <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="items-center px-4 py-3">
+        <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+          save
+        </button>
+      </div>
             </div>
             <!-- Modal footer -->
         </div>
