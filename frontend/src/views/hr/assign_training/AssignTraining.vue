@@ -132,6 +132,7 @@ watch(trainingbyTitle, (newTraining) => {
   if (newTraining && newTraining.length > 0) {
     const trainingData = newTraining[0]; // Assuming you want the first item
     newEvent.value = {
+      training_id: trainingData.training_id,
       title: trainingData.title,
       period_from: trainingData.period_from,
       period_to: trainingData.period_to,
@@ -176,6 +177,8 @@ const addEvent = async () => {
 };
 
 const editEvent = async () => {
+  await store.dispatch('editEvent', newEvent.value);
+  await store.dispatch('getTraining');
   // Reset newEvent here
   resetNewEvent();
 };

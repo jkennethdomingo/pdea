@@ -104,5 +104,23 @@ export const mutations = {
     SET_TRAINING(state, trainingDatabyTitle) {
       state.trainingbyTitle = trainingDatabyTitle;
     },
+    setEmployeeInfo(state, employeeInfo) {
+      state.employeeInfo = employeeInfo;
+    },
+
+    updateEventInState(state, updatedTraining) {
+      const index = state.events.findIndex(event => event.title === updatedTraining.title);
+      if (index !== -1) {
+        // Assuming the response data includes the full updated training record
+        state.events.splice(index, 1, updatedTraining);
+      }
+    },
+    setIsEditingEvent(state, isEditing) {
+      state.isEditingEvent = isEditing;
+    },
+    addEventToState(state, eventData) {
+      state.events.push(eventData);
+      // If your eventData includes employee assignments, handle them appropriately here
+  },
     
 };

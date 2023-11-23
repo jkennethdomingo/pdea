@@ -116,27 +116,66 @@ export const actions = {
       },
       async addEvent({ commit }, newEvent) {
         commit('setIsAddingEvent', true); // Set loading state
-
+    
         try {
-            // Transform and send data to the server
-            const transformedEvent = {  title: newEvent.title,
+            // Prepare the event data, including any employee assignments
+            const transformedEvent = {  
+                title: newEvent.title,
                 period_from: newEvent.period_from,
                 period_to: newEvent.period_to,
                 number_of_hours: newEvent.number_of_hours,
-                conducted_by: newEvent.conducted_by, };
+                conducted_by: newEvent.conducted_by,
+                employees: newEvent.employees || [], // Include an empty array if no employees are assigned
+            };
+    
+            // Send the new event data to the server
             const response = await apiService.post('manageTraining/insertTraining', transformedEvent);
-
+    
             // If successful, add the event to the state
             commit('addEventToState', response.data);
-
-            // Additional logic for successful submission...
+    
+            // Handle any additional logic for successful submission here...
+    
         } catch (error) {
             console.error('Event submission error:', error);
-            // Error handling...
+            // Handle the error here...
+    
         } finally {
             commit('setIsAddingEvent', false); // Reset loading state
         }
     },
+    
+
+    async editEvent({ commit }, updatedEvent) {
+      commit('setIsEditingEvent', true); // Set loading state
+  
+      try {
+        // Prepare the payload for the API request. Include 'title' for lookup and optional 'employees'.
+        const payload = { 
+          training_id: updatedEvent.training_id,
+          title: updatedEvent.title,
+          period_from: updatedEvent.period_from,
+          period_to: updatedEvent.period_to,
+          number_of_hours: updatedEvent.number_of_hours,
+          conducted_by: updatedEvent.conducted_by,
+          employees: updatedEvent.employees, // This can be an array of employee IDs or omitted if no changes
+        };
+  
+        // Send the update request to the server
+        const response = await apiService.post('manageTraining/editTraining', payload);
+  
+        // If successful, update the event in the state
+        commit('updateEventInState', response.data);
+  
+        // Additional logic for successful update...
+      } catch (error) {
+        console.error('Event update error:', error);
+        // Error handling...
+      } finally {
+        commit('setIsEditingEvent', false); // Reset loading state
+      }
+    },
+    
     async fetchagentData({ commit }) {
         try {
           const response = await apiService.post('materialRequisition/getAgentData');
@@ -225,7 +264,15 @@ export const actions = {
       }
     },
     
-    
+    async fetchEmployeeInfo({ commit }) {
+      try {
+        // Replace `apiService.post` with the actual API call to your CI4 backend.
+        const response = await apiService.post('manageTraining/getEmployeeInfo');
+        commit('setEmployeeInfo', response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
       
       
 };

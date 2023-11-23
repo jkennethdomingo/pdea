@@ -135,4 +135,5 @@ export const state = {
   departmentData: [],
   provinceData: [],
   regionData: [],
+  employeeInfo: [],
 };
