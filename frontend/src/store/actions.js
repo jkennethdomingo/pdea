@@ -272,7 +272,23 @@ export const actions = {
       } catch (error) {
         console.error(error);
       }
-    }
+    },
+    async getEmployeeOnLeave({ commit }) {
+      try {
+        commit('setLoading', true); // Start loading
+    
+        const response = await apiService.post('/manageLeave/getEmployeeOnLeave');
+        
+        // Assuming the training data is directly in response.data
+        // Change the path as per your API response structure
+        commit('setEmployeeOnLeave', response.data.EmployeeOnLeave); 
+    
+      } catch (error) {
+        console.error('Error fetching employee on leave data:', error);
+      } finally {
+        commit('setLoading', false); // End loading
+      }
+    },
       
       
 };

@@ -16,6 +16,8 @@ const calendarRef = ref(null);
 const date = ref(new Date()); // Assuming this is your VDatePicker model
 const drawerRef = ref(null);
 const editdrawerRef = ref(null);
+const openAssignModalRef = ref(null);
+
 
 const trainingbyTitle = computed(() => store.state.trainingbyTitle);
 
@@ -102,6 +104,11 @@ function openEditRightDrawer() {
   editdrawerRef.value.classList.add('translate-x-0');
 }
 
+function openAssignTrainingModal() {
+  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
+  openAssignModalRef.value.classList.remove('hidden');
+}
+
 function openRightDrawer() {
   // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
   drawerRef.value.classList.remove('translate-x-full');
@@ -110,6 +117,16 @@ function openRightDrawer() {
 
 function openAddEventDialog() {
   // Logic to open the dialog to add a new event
+  
+  newEvent.value = {
+    title: '',
+    period_from: '',
+    period_to: '',
+    number_of_hours: null,
+    conducted_by: ''
+  };
+
+  openRightDrawer();
 }
 
 function handleDateSelect(selectInfo) {
@@ -253,7 +270,7 @@ const editEvent = async () => {
         </div>
 
         <div class="mb-4">
-          <button type="button" class="items-center px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded-lg end-2 bottom-2 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="w-3 h-3 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+          <button @click="openAssignTrainingModal" type="button" class="items-center px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded-lg end-2 bottom-2 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="w-3 h-3 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
     <path d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Zm11-3h-2V5a1 1 0 0 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 0 0 2 0V9h2a1 1 0 1 0 0-2Z"/>
   </svg>Add</button>
         </div>
@@ -354,12 +371,12 @@ const editEvent = async () => {
 
      <!--Read Modal-->
 
-     <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+     <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
   Choose Employee
 </button>
 
      <!-- Main modal -->
-<div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div ref="openAssignModalRef" id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">

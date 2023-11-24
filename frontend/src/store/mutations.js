@@ -122,5 +122,8 @@ export const mutations = {
       state.events.push(eventData);
       // If your eventData includes employee assignments, handle them appropriately here
   },
+  setEmployeeOnLeave(state, empOnLeaveData) {
+    state.EmployeeOnLeave = empOnLeaveData;
+  },
     
 };

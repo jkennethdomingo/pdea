@@ -115,7 +115,7 @@ export default [
                 {
                   path: '',
                   name: 'Manage Leave',
-                  component: () => import('@/views/hr/assign_training/Calendar.vue'),
+                  component: () => import('@/views/hr/assign_training/ManageLeave.vue'),
                 },
               ],
             },
