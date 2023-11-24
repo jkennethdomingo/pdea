@@ -43,6 +43,10 @@ $routes->group('api', function($routes)
         $routes->post('editTraining', 'AssignTrainingController::editTraining');
     });
 
+    $routes->group('manageLeave', function($routes) {
+        $routes->post('getEmployeeOnLeave', 'ManageLeaveController::getEmployeeOnLeave');
+    });
+
     // For Beta Testing
     $routes->group('beta', function($routes) {
         $routes->post('doUpload', 'Beta::doUpload');

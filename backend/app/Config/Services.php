@@ -35,6 +35,7 @@ use App\Models\RegionalOfficeModel;
 use App\Models\DepartmentModel;
 use App\Models\ProcurementModel;
 use App\Models\ProcurementStatusModel;
+use App\Models\EmployeeLeavesModel;
 
 /**
  * Services Configuration file.
@@ -408,6 +409,16 @@ class Services extends BaseService
         }
 
         return new InternalEmployeeTrainingModel();
+    }
+
+    public static function EmployeeLeavesModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('EmployeeLeavesModel');
+        }
+
+        return new EmployeeLeavesModel();
     }
 
 }
