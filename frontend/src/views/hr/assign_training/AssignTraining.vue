@@ -10,6 +10,8 @@ import { useStore } from 'vuex';
 import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
+import { usePhotoUrl } from '@/composables/usePhotoUrl';
+
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -17,6 +19,8 @@ const date = ref(new Date()); // Assuming this is your VDatePicker model
 const drawerRef = ref(null);
 const editdrawerRef = ref(null);
 const openAssignModalRef = ref(null);
+
+const { getPhotoUrl } = usePhotoUrl(); 
 
 
 const trainingbyTitle = computed(() => store.state.trainingbyTitle);
@@ -31,6 +35,19 @@ const trainingEvents = computed(() => {
     // Add more fields if needed
   }));
 });
+
+const employeeInfo = computed(() => {
+  return store.state.employeeInfo.map(employee => ({
+    EmployeeID: employee.EmployeeID,
+    first_name: employee.first_name,
+    surname: employee.surname,
+    photo: employee.photo,
+    DateOfEntry: employee.DateOfEntry,
+    IPCR: employee.IPCR,
+    // Add more fields if needed
+  }));
+});
+
 
 const resetNewEvent = () => {
   newEvent.value = {
@@ -65,6 +82,7 @@ watch(trainingEvents, (newEvents) => {
 onMounted(async () => {
   initFlowbite();
   await store.dispatch('getTraining'); // Dispatch the action to fetch training data
+  await store.dispatch('fetchEmployeeInfo');
 });
 
 // Calendar options
@@ -104,10 +122,6 @@ function openEditRightDrawer() {
   editdrawerRef.value.classList.add('translate-x-0');
 }
 
-function openAssignTrainingModal() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  openAssignModalRef.value.classList.remove('hidden');
-}
 
 function openRightDrawer() {
   // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
@@ -270,9 +284,11 @@ const editEvent = async () => {
         </div>
 
         <div class="mb-4">
-          <button @click="openAssignTrainingModal" type="button" class="items-center px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded-lg end-2 bottom-2 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="w-3 h-3 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-    <path d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Zm11-3h-2V5a1 1 0 0 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 0 0 2 0V9h2a1 1 0 1 0 0-2Z"/>
-  </svg>Add</button>
+          
+
+          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+        Choose Employee
+      </button>
         </div>
       <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
         
@@ -371,12 +387,8 @@ const editEvent = async () => {
 
      <!--Read Modal-->
 
-     <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-  Choose Employee
-</button>
-
      <!-- Main modal -->
-<div ref="openAssignModalRef" id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -394,71 +406,39 @@ const editEvent = async () => {
             </div>
             <!-- Modal body -->
             <div class="p-4 md:p-5 space-y-4">
-              <!-- JD-->
-              <div class=" mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
-        <!-- Avatar -->
-        <div class="shrink-0">
-          <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
-        </div>
-        <!-- Name and details -->
-        <div class="flex-grow ml-4">
-          <div class="text-lg text-white font-bold">JD Anyayahan</div>
-          <div class="text-sm text-gray-400">
-            <p>ID: 123456</p>
-            <p>IPCR: 123456</p>
-          </div>
-        </div>
-        <!-- Checkbox -->
-        <div class="ml-4 flex items-center">
-          <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
-        </div>
+  <!-- Dynamic Employee Data -->
+  <div v-for="employee in employeeInfo" :key="employee.EmployeeID" class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
+    <!-- Avatar -->
+    <div class="shrink-0">
+      <template v-if="employee.photo">
+        <img :src="getPhotoUrl(employee.photo)" class="h-16 w-16 object-cover rounded-full" :alt="employee.first_name + ' ' + employee.surname + ' Avatar'">
+      </template>
+      <template v-else>
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M16 9a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-2 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z"/><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1ZM3 12c0 2.09.713 4.014 1.908 5.542A8.986 8.986 0 0 1 12.065 14a8.984 8.984 0 0 1 7.092 3.458A9 9 0 1 0 3 12Zm9 9a8.963 8.963 0 0 1-5.672-2.012A6.992 6.992 0 0 1 12.065 16a6.991 6.991 0 0 1 5.689 2.92A8.964 8.964 0 0 1 12 21Z"/></g></svg>
+      </template>
+    </div>
+    <!-- Name and details -->
+    <div class="flex-grow ml-4">
+      <div class="text-lg text-white font-bold">{{ employee.first_name + ' ' + employee.surname }}</div>
+      <div class="text-sm text-gray-400">
+        <p>ID: {{ employee.EmployeeID }}</p>
+        <p>Date of Entry: {{ employee.DateOfEntry }}</p>
+        <p>IPCR: {{ employee.IPCR }}</p>
       </div>
+    </div>
+    <!-- Checkbox -->
+    <div class="ml-4 flex items-center">
+      <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600">
+    </div>
+  </div>
+  <!-- Footer -->
+  <div class="items-center px-4 py-3">
+    <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+      save
+    </button>
+  </div>
+</div>
 
-      <div class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
-        <!-- Avatar -->
-        <div class="shrink-0">
-          <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
-        </div>
-        <!-- Name and details -->
-        <div class="flex-grow ml-4">
-          <div class="text-lg text-white font-bold">JD Anyayahan</div>
-          <div class="text-sm text-gray-400">
-            <p>ID: 123456</p>
-            <p>IPCR: 123456</p>
-          </div>
-        </div>
-        <!-- Checkbox -->
-        <div class="ml-4 flex items-center">
-          <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
-        </div>
-      </div>
-      
-
-      <div class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
-        <!-- Avatar -->
-        <div class="shrink-0">
-          <img class="h-16 w-16 object-cover rounded-full" src="https://tailwindcomponents.com/storage/avatars/njkIbPhyZCftc4g9XbMWwVsa7aGVPajYLRXhEeoo.jpg" alt="Employee Avatar">
-        </div>
-        <!-- Name and details -->
-        <div class="flex-grow ml-4">
-          <div class="text-lg text-white font-bold">JD Anyayahan</div>
-          <div class="text-sm text-gray-400">
-            <p>ID: 123456</p>
-            <p>IPCR: 123456</p>
-          </div>
-        </div>
-        <!-- Checkbox -->
-        <div class="ml-4 flex items-center">
-          <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
-        </div>
-      </div>
-      <!-- Footer -->
-      <div class="items-center px-4 py-3">
-        <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-          save
-        </button>
-      </div>
-            </div>
             <!-- Modal footer -->
         </div>
     </div>

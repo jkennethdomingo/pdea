@@ -125,5 +125,6 @@ export const mutations = {
   setEmployeeOnLeave(state, empOnLeaveData) {
     state.EmployeeOnLeave = empOnLeaveData;
   },
+  
     
 };
