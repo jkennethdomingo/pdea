@@ -173,7 +173,7 @@ class AssignTrainingController extends ResourceController
 
     public function getEmployeeInfo()
     {
-        $data = $this->personalInformationModel->select('EmployeeID, first_name, surname, photo, IPCR')->findAll();
+        $data = $this->personalInformationModel->select('EmployeeID, first_name, surname, photo, DateOfEntry, IPCR')->findAll();
         // Return the data as a JSON response.
         return $this->response->setJSON($data);
     }
