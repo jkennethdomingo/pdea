@@ -23,6 +23,19 @@ const openAssignModalRef = ref(null);
 const { getPhotoUrl } = usePhotoUrl(); 
 
 
+const newEvent = ref({
+  title: '',
+  period_from: '',
+  period_to: '',
+  number_of_hours: '',
+  conducted_by: '',
+  employees: [],
+  photos: [],
+  employee_ids:[],
+});
+
+
+
 const trainingbyTitle = computed(() => store.state.trainingbyTitle);
 
 // Computed property for transforming training data
@@ -35,6 +48,15 @@ const trainingEvents = computed(() => {
     // Add more fields if needed
   }));
 });
+
+const employeeCheckboxes = ref([]);
+
+const clearCheckboxes = () => {
+  employeeCheckboxes.value.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+};
+
 
 const employeeInfo = computed(() => {
   return store.state.employeeInfo.map(employee => ({
@@ -55,8 +77,10 @@ const resetNewEvent = () => {
     period_from: '',
     period_to: '',
     number_of_hours: '',
-    conducted_by: ''
+    conducted_by: '',
+    employees: [],
   };
+  clearCheckboxes();
 };
 
 
@@ -137,7 +161,7 @@ function openAddEventDialog() {
     period_from: '',
     period_to: '',
     number_of_hours: null,
-    conducted_by: ''
+    conducted_by: '',
   };
 
   openRightDrawer();
@@ -150,7 +174,8 @@ function handleDateSelect(selectInfo) {
     period_from: selectInfo.startStr,
     period_to: selectInfo.startStr,
     number_of_hours: null,
-    conducted_by: ''
+    conducted_by: '',
+    employees: [],
   };
 
   date.value = selectInfo.startStr;
@@ -168,7 +193,9 @@ watch(trainingbyTitle, (newTraining) => {
       period_from: trainingData.period_from,
       period_to: trainingData.period_to,
       number_of_hours: trainingData.number_of_hours,
-      conducted_by: trainingData.conducted_by
+      conducted_by: trainingData.conducted_by,
+      photo: trainingData.photos,
+      employee_ids: trainingData.employee_ids,
     };
   }
 }, { immediate: true });
@@ -192,13 +219,21 @@ function handleWeekendsToggle() {
   // Handle weekends toggle
 }
 
-const newEvent = ref({
-  title: '',
-  period_from: '',
-  period_to: '',
-  number_of_hours: '',
-  conducted_by: ''
-});
+const updateEmployeeList = (employeeId) => {
+  // Initialize employees as an array if it's undefined
+  if (!Array.isArray(newEvent.value.employees)) {
+    newEvent.value.employees = [];
+  }
+
+  // Now proceed with the logic
+  const index = newEvent.value.employees.indexOf(employeeId);
+  if (index > -1) {
+    newEvent.value.employees.splice(index, 1);
+  } else {
+    newEvent.value.employees.push(employeeId);
+  }
+};
+
 
 const addEvent = async () => {
   await store.dispatch('addEvent', newEvent.value);
@@ -290,14 +325,6 @@ const editEvent = async () => {
         Choose Employee
       </button>
         </div>
-      <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
-        
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
-         
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
-         <img class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" :src="userAvatar" alt="">
-      </div>
 
         <!-- Submit Button -->
         <button type="submit" class="text-white justify-center flex items-center bg-blue-700 hover:bg-blue-800 w-full focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
@@ -374,6 +401,28 @@ const editEvent = async () => {
             <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
         </div>
 
+        <div class="mb-4">
+          
+
+          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+        Choose Employee
+      </button>
+        </div>
+        <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0">
+          <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
+          <img v-for="(photo, index) in newEvent.photo" :key="index" :src="getPhotoUrl(photo)" class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" alt="Employee photo not found">
+          
+            
+        </div>
+        </div>
+
+        <div v-else>
+              <!-- Show text if no employees are assigned -->
+              <p>Training not assigned to any employee.</p>
+            </div>
+        
+
+
         <!-- Submit Button -->
         <button type="submit" class="text-white justify-center flex items-center bg-blue-700 hover:bg-blue-800 w-full focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
             <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -428,13 +477,13 @@ const editEvent = async () => {
     </div>
     <!-- Checkbox -->
     <div class="ml-4 flex items-center">
-      <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600">
+      <input ref="employeeCheckboxes" @change="updateEmployeeList(employee.EmployeeID)" type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" :value="employee.EmployeeID">
     </div>
   </div>
   <!-- Footer -->
   <div class="items-center px-4 py-3">
     <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-      save
+      Update Event
     </button>
   </div>
 </div>
