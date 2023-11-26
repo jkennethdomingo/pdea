@@ -215,6 +215,18 @@ export default [
     ],
   },
   {
+    path: '/employees',
+    component: () => import('@/layouts/DashboardLayout.vue'),
+    children: [
+      {
+        path: 'dashboard',
+        name: 'User Dashboard',
+        component: () => import('@/views/user/Index.vue'),
+        meta: { requiresRole: 'NON_ADMIN' },
+      },
+    ],
+  },
+  {
     path: '/auth',
     component: () => import('@/layouts/AuthenticationLayout.vue'),
     children: [

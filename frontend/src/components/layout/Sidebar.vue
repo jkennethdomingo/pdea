@@ -5,6 +5,7 @@ import { sidebarState } from '@/composables'
 import SidebarHeader from '@/components/sidebar/SidebarHeader.vue'
 import HR_SidebarContent from '@/components/sidebar/HR_SidebarContent.vue'
 import LG_SidebarContent from '@/components/sidebar/LG_SidebarContent.vue'
+import USER_SidebarContent from '@/components/sidebar/USER_SidebarContent.vue'
 import SidebarFooter from '@/components/sidebar/SidebarFooter.vue'
 
 const store = useStore()
@@ -18,6 +19,8 @@ const sidebarComponent = computed(() => {
       return HR_SidebarContent;
     case 'LOGISTICS_ADMIN':
       return LG_SidebarContent;
+    case 'NON_ADMIN':
+      return USER_SidebarContent;
     default:
       return null;
   }

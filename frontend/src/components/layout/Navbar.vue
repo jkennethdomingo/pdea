@@ -34,6 +34,8 @@ const roleDisplayName = computed(() => {
       return 'Human Resource';
     case 'LOGISTICS_ADMIN':
       return 'Logistics';
+    case 'NON_ADMIN':
+        return 'Employee';
     // You can add more cases as necessary
     default:
       return 'Unauthorized User';
