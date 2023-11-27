@@ -55,7 +55,9 @@ $routes->group('api', function($routes)
 
     $routes->group('database', function($routes) {
         $routes->get('backup', 'BackupDatabaseController::backup');
+        $routes->get('restore', 'RestoreDatabaseController::restore');
     });
+
 
     $routes->post('insert', 'TestArea::create');
 
