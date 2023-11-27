@@ -46,6 +46,12 @@ $routes->group('api', function($routes)
     $routes->group('manageLeave', function($routes) {
         $routes->post('getEmployeeOnLeave', 'ManageLeaveController::getEmployeeOnLeave');
         $routes->post('getAvailableLeave', 'ManageLeaveController::getAvailableLeave');
+        $routes->post('getAllLeaveTypes', 'ManageLeaveController::getAllLeaveTypes');
+        $routes->post('getAllEmployees', 'ManageLeaveController::getAllEmployees');
+        $routes->post('requestLeave', 'ManageLeaveController::requestLeave');
+        $routes->post('manualInputLeave', 'ManageLeaveController::manualInputLeave');
+        $routes->post('getPendingLeavesWithDetails', 'ManageLeaveController::getPendingLeavesWithDetails');
+        $routes->post('updateLeaveStatus', 'ManageLeaveController::updateLeaveStatus');
     });
 
     // For Beta Testing
@@ -56,6 +62,12 @@ $routes->group('api', function($routes)
     $routes->group('database', function($routes) {
         $routes->get('backup', 'BackupDatabaseController::backup');
         $routes->get('restore', 'RestoreDatabaseController::restore');
+    });
+
+    $routes->group('hrDashboard', function($routes) {
+        $routes->post('getTodaysLeavesCount', 'HumanResourceDashboardController::getTodaysLeavesCount');
+        $routes->post('getTodayTrainingCount', 'HumanResourceDashboardController::getTodayTrainingCount');
+        $routes->post('getTodayOnTrainingCount', 'HumanResourceDashboardController::getTodayOnTrainingCount');
     });
 
 

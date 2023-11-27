@@ -36,6 +36,8 @@ use App\Models\DepartmentModel;
 use App\Models\ProcurementModel;
 use App\Models\ProcurementStatusModel;
 use App\Models\EmployeeLeavesModel;
+use App\Models\InternalEmployeeTrainingModel;
+use App\Models\TrainingModel;
 
 /**
  * Services Configuration file.
