@@ -45,6 +45,7 @@ $routes->group('api', function($routes)
 
     $routes->group('manageLeave', function($routes) {
         $routes->post('getEmployeeOnLeave', 'ManageLeaveController::getEmployeeOnLeave');
+        $routes->post('getAvailableLeave', 'ManageLeaveController::getAvailableLeave');
     });
 
     // For Beta Testing

@@ -10,8 +10,12 @@ use Config\Services;
 
 class PropertyMonitoringController extends ResourceController
 {
-    public function index()
+    use ResponseTrait;
+
+    protected $assetModel;
+
+    public function __construct()
     {
-        //
+        
     }
 }

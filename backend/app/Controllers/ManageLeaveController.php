@@ -51,4 +51,51 @@ class ManageLeaveController extends ResourceController
 
         return $this->respond($data);
     }
+
+    public function getAvailableLeave()
+{
+    $employeeId = $this->request->getPost('EmployeeID');
+
+    if (!$employeeId) {
+        return $this->fail('Employee ID is required.', 400);
+    }
+
+    // Get the total leave balances for the employee, grouped by leave type
+    $leaveBalances = $this->leaveBalanceModel
+        ->select('leave_type.LeaveTypeName, leave_balance.LeaveTypeID, leave_balance.NumberOfLeaves as TotalLeave')
+        ->join('leave_type', 'leave_balance.LeaveTypeID = leave_type.LeaveTypeID')
+        ->where('leave_balance.EmployeeID', $employeeId)
+        ->findAll();
+
+    $availableLeavesPerType = [];
+
+    foreach ($leaveBalances as $leaveBalance) {
+        // Get the total leave taken by the employee for each leave type
+        $leavesTaken = $this->employeeLeavesModel
+            ->select('SUM(DATEDIFF(end_date, start_date) + 1) as LeavesTaken') // +1 to include both start and end dates
+            ->where('EmployeeID', $employeeId)
+            ->where('leave_type_id', $leaveBalance['LeaveTypeID'])
+            ->where('status', 'approved')
+            ->first();
+
+        $leavesTakenCount = $leavesTaken['LeavesTaken'] ?? 0;
+
+        // Calculate available leave for each type
+        $availableLeave = $leaveBalance['TotalLeave'] - $leavesTakenCount;
+
+        // Add to the result array
+        $availableLeavesPerType[] = [
+            'LeaveType' => $leaveBalance['LeaveTypeName'],
+            'LeaveTypeID' => $leaveBalance['LeaveTypeID'], // Include LeaveTypeID in the result
+            'AvailableLeave' => $availableLeave
+        ];
+    }
+
+    return $this->respond(['availableLeavesPerType' => $availableLeavesPerType]);
+}
+
+
+
+
+
 }
