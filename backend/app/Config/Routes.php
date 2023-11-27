@@ -53,6 +53,10 @@ $routes->group('api', function($routes)
         $routes->post('doUpload', 'Beta::doUpload');
     });
 
+    $routes->group('database', function($routes) {
+        $routes->get('backup', 'BackupDatabaseController::backup');
+    });
+
     $routes->post('insert', 'TestArea::create');
 
 });
