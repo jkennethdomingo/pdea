@@ -18,39 +18,39 @@ const growthData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
             result="12.4k"
             percentage="32.40%"
             :actions="[{ title: 'View', to: '#' }]"
-            icon="mdi:account-group-outline"
+            icon="clarity:employee-group-solid"
         />
 
         <!-- Visits card -->
         <QuiclStatisticsCard
-            title="Visits"
+            title="In Training"
             :chartData="visitsData"
             result="-2.6k"
             status="danger"
             percentage="-2.10%"
             :actions="[{ title: 'View', to: '#' }]"
-            icon="mdi:eye-outline"
+            icon="healthicons:i-training-class"
         />
 
         <!-- Orders card -->
         <QuiclStatisticsCard
-            title="Orders"
+            title="On Leave Today"
             :chartData="ordersData"
             result="34.4k"
             status="warning"
             percentage="0.60%"
             :actions="[{ title: 'View', to: '#' }]"
-            icon="mdi:cart-outline"
+            icon="fluent-mdl2:leave-user"
         />
 
         <!-- Growth card -->
         <QuiclStatisticsCard
-            title="Growth"
+            title="Absent"
             :chartData="growthData"
             result="15.6%"
             percentage="7.20%"
             :actions="[{ title: 'View', to: '#' }]"
-            icon="mdi:chart-pie"
+            icon="fa-solid:users"
         />
     </section>
 </template>
