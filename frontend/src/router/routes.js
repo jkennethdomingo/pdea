@@ -224,6 +224,18 @@ export default [
         component: () => import('@/views/user/Index.vue'),
         meta: { requiresRole: 'NON_ADMIN' },
       },
+      {
+        path: 'requestLeave',
+        component: () => import('@/layouts/ManageLeaveLayout.vue'),
+        meta: { requiresRole: 'NON_ADMIN' },
+        children: [
+          {
+            path: '',
+            name: 'Leave Request',
+            component: () => import('@/views/user/RequestLeave.vue'),
+          },
+        ],
+      },
     ],
   },
   {

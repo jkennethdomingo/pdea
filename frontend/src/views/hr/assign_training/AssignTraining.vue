@@ -257,6 +257,7 @@ const editEvent = async () => {
 
 <template>
 
+    <!-- Add Modal Start-->
     <!-- drawer init and toggle -->
     <div class="text-center hidden">
         <button 
@@ -338,7 +339,9 @@ const editEvent = async () => {
         
     </div>
 
-    <!--Edit-->
+    <!-- Add Modal End-->
+
+    <!--Edit Modal Start-->
 
     <!-- drawer init and toggle -->
     <div class="text-center hidden">
@@ -434,7 +437,9 @@ const editEvent = async () => {
         
     </div>
 
-     <!--Read Modal-->
+    <!--Edit Modal End-->
+
+     <!--Read Modal Start-->
 
      <!-- Main modal -->
 <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -492,6 +497,8 @@ const editEvent = async () => {
         </div>
     </div>
 </div>
+
+<!--Read Modal End-->
 
 <!--Bawal-->
     <div class='flex min-h-full font-sans text-sm'>

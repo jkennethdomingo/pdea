@@ -38,6 +38,13 @@ const isAssignRouteActive = () => {
             icon="mdi:view-dashboard"
         />
 
+        <SidebarLink
+            title="Request Leave"
+            :to="{ name: 'Leave Request' }"
+            :active="isCurrentRoute('Leave Request')"
+            icon="mdi:calendar"
+        />
+
         
     </PerfrectScrollbar>
 </template>
