@@ -125,6 +125,20 @@ export const mutations = {
   setEmployeeOnLeave(state, empOnLeaveData) {
     state.EmployeeOnLeave = empOnLeaveData;
   },
-  
+  SET_TODAYS_LEAVES_COUNT(state, count) {
+    state.todaysLeavesCount = count;
+},
+SET_TODAYS_TRAINING_COUNT(state, count) {
+    state.todaysTrainingCount = count;
+},
+SET_TODAYS_ON_TRAINING_COUNT(state, count) {
+  state.todaysOnTrainingCount = count;
+},
+SET_TODAYS_Active_Employees_Count(state, count) {
+  state.ActiveEmployeesCount = count;
+},
+SET_EMPLOYEE_STATUS_PERCENTAGES(state, percentages) {
+  state.employeeStatusPercentages = percentages;
+},
     
 };

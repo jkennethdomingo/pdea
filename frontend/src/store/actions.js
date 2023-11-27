@@ -289,6 +289,47 @@ export const actions = {
         commit('setLoading', false); // End loading
       }
     },
+
+    async fetchTodaysLeavesCount({ commit }) {
+      try {
+          const response = await apiService.post('/hrDashboard/getTodaysLeavesCount');
+          commit('SET_TODAYS_LEAVES_COUNT', response.data.todaysLeavesCount);
+      } catch (error) {
+          console.error('Error fetching today\'s leaves count:', error);
+      }
+  },
+  async fetchTodaysTrainingCount({ commit }) {
+      try {
+          const response = await apiService.post('/hrDashboard/getTodayTrainingCount');
+          commit('SET_TODAYS_TRAINING_COUNT', response.data.todaysTrainingCount);
+      } catch (error) {
+          console.error('Error fetching today\'s training count:', error);
+      }
+  },
+  async fetchTodaysOnTrainingCount({ commit }) {
+    try {
+        const response = await apiService.post('/hrDashboard/getTodayOnTrainingCount');
+        commit('SET_TODAYS_ON_TRAINING_COUNT', response.data.todaysOnTrainingCount);
+    } catch (error) {
+        console.error('Error fetching today\'s on training count:', error);
+    }
+},
+  async fetchTodaysActiveEmployeeCount({ commit }) {
+    try {
+        const response = await apiService.post('/hrDashboard/getActiveEmployeesCount');
+        commit('SET_TODAYS_Active_Employees_Count', response.data.activeEmployeesCount);
+    } catch (error) {
+        console.error('Error fetching today\'s active employee count:', error);
+    }
+},
+async fetchEmployeeStatusPercentages({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/getEmployeeStatusPercentages');
+    commit('SET_EMPLOYEE_STATUS_PERCENTAGES', response.data);
+  } catch (error) {
+    console.error('There was an error fetching the employee status percentages:', error);
+  }
+},
       
       
 };
