@@ -29,7 +29,7 @@ class Database extends Config
         'hostname'     => 'localhost',
         'username'     => 'pdea',
         'password'     => 'capstonepdea',
-        'database'     => 'pdea_capstone',
+        'database'     => 'mainappdev',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
