@@ -146,6 +146,11 @@ export const state = {
         onTrainingPercentage: 0,
         onLeavePercentage: 0,
       },
-      activeEmployeesLast13Days: [],
-  activeEmployeesPercentagesLast13Days: [],
+    activeEmployeesLast13Days: [],
+    activeEmployeesPercentagesLast13Days: [],
+    combinedEvents: {
+        employeeBirthdays: [],
+        training: [],
+        employeeOnLeave: []
+      }
 };

@@ -338,7 +338,16 @@ async fetchActiveEmployeesLast13Days({ commit }) {
   } catch (error) {
     console.error('There was an error fetching the active employees during the last 13days:', error);
   }
+},
+async fetchCombinedEvents({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/getCombinedEvents');
+    commit('SET_COMBINED_EVENTS', response.data);
+  } catch (error) {
+    console.error('Error fetching combined events:', error);
+  }
 }
+
 
       
       

@@ -88,7 +88,7 @@ watch(employeeStatusPercentages, (newVal) => {
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
             <!-- Recent contacts -->
             <BaseCard
-                title="Recent Contacts"
+                title="Recently Approved Leaves"
                 :actions="[{ title: 'View', to: '#' }]"
             >
                 <div
@@ -124,7 +124,7 @@ watch(employeeStatusPercentages, (newVal) => {
 
             <!-- Recent transactions -->
             <BaseCard
-                title="Recent Transactions"
+                title="Unassigned Trainings"
                 :actions="[{ title: 'View', to: '#' }]"
             >
                 <div class="mt-4 flex items-center justify-between">
