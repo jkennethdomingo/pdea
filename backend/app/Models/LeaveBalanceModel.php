@@ -12,7 +12,7 @@ class LeaveBalanceModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['EmployeeID', 'LeaveTypeID', 'NumberOfLeaves'];
+    protected $allowedFields    = ['EmployeeID', 'LeaveTypeID', 'NumberofLeaves'];
 
     // Dates
     protected $useTimestamps = true;

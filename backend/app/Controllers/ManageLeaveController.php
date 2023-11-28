@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use Config\Services;
+use DateTime;
 
 class ManageLeaveController extends ResourceController
 {
@@ -62,7 +63,7 @@ class ManageLeaveController extends ResourceController
 
         // Get the total leave balances for the employee, grouped by leave type
         $leaveBalances = $this->leaveBalanceModel
-            ->select('leave_type.LeaveTypeName, leave_balance.LeaveTypeID, leave_balance.NumberOfLeaves as TotalLeave')
+            ->select('leave_type.LeaveTypeName, leave_balance.LeaveTypeID, leave_balance.NumberofLeaves as TotalLeave')
             ->join('leave_type', 'leave_balance.LeaveTypeID = leave_type.LeaveTypeID')
             ->where('leave_balance.EmployeeID', $employeeId)
             ->findAll();
@@ -157,7 +158,7 @@ class ManageLeaveController extends ResourceController
                                         ->where('LeaveTypeID', $data['leave_type_id'])
                                         ->first();
 
-        if (!$leaveBalance || $leaveBalance['NumberOfLeaves'] <= 0) {
+        if (!$leaveBalance || $leaveBalance['NumberofLeaves'] <= 0) {
             return $this->fail('No available leave balance for the requested type.', 400);
         }
 
@@ -167,7 +168,7 @@ class ManageLeaveController extends ResourceController
         $daysRequested = $endDate->diff($startDate)->days + 1; // +1 to include the start date
 
         // Validate if the employee has enough days left
-        if ($daysRequested > $leaveBalance['NumberOfLeaves']) {
+        if ($daysRequested > $leaveBalance['NumberofLeaves']) {
             return $this->fail('Insufficient leave balance for the requested dates.', 400);
         }
 
@@ -200,63 +201,81 @@ class ManageLeaveController extends ResourceController
 
     public function manualInputLeave()
     {
-        $employeeLeavesModel = $this->employeeLeavesModel;
-        $leaveBalanceModel = $this->leaveBalanceModel; // Ensure this is set up in your constructor
-
         $data = $this->request->getJSON(true);
 
-        // Basic validation for required fields
+        // Start a transaction using the employeeLeavesModel's database connection
+        $this->employeeLeavesModel->db->transStart();
+
         if (!isset($data['EmployeeID'], $data['leave_type_id'], $data['start_date'], $data['end_date'], $data['reason'])) {
+            $this->employeeLeavesModel->db->transComplete();
             return $this->fail('All fields are required.', 400);
         }
 
-        // Additional validation such as date format, range, etc.
-        // ...
-
-        // Check if the employee has sufficient leave balance for the requested type
-        $leaveBalance = $leaveBalanceModel->where('EmployeeID', $data['EmployeeID'])
-                                        ->where('LeaveTypeID', $data['leave_type_id'])
-                                        ->first();
-
-        // Calculate the number of days for the leave
         $startDate = new \DateTime($data['start_date']);
         $endDate = new \DateTime($data['end_date']);
-        $daysRequested = $endDate->diff($startDate)->days + 1; // +1 to include the start date
 
-        // No need to check for insufficient balance since it's an HR manual input, but you can log or notify if the balance goes negative.
+        if ($endDate < $startDate) {
+            $this->employeeLeavesModel->db->transComplete();
+            return $this->fail('End date must be after the start date.', 400);
+        }
 
-        // Prepare the data for insertion
+        $daysRequested = $endDate->diff($startDate)->days + 1;
+
+        $leaveBalance = $this->leaveBalanceModel->where('EmployeeID', $data['EmployeeID'])
+                                                ->where('LeaveTypeID', $data['leave_type_id'])
+                                                ->first();
+
+        if (!$leaveBalance) {
+            $this->employeeLeavesModel->db->transComplete();
+            return $this->fail('Employee does not have a leave balance record.', 400);
+        }
+
+        // Check if the employee has sufficient leave balance for the requested leave
+        if ($leaveBalance['NumberofLeaves'] < $daysRequested) {
+            $this->employeeLeavesModel->db->transComplete();
+            return $this->fail('Employee does not have sufficient leave balance for the requested leave.', 400);
+        }
+
         $leaveRequestData = [
             'EmployeeID' => $data['EmployeeID'],
             'leave_type_id' => $data['leave_type_id'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date'],
             'reason' => $data['reason'],
-            'status' => 'approved' // Since it's HR input, we set the status to approved directly
+            'status' => 'approved' // Assuming HR has approved this manually
         ];
 
-        // Insert the approved leave into the database
-        $result = $employeeLeavesModel->insert($leaveRequestData);
+        $result = $this->employeeLeavesModel->insert($leaveRequestData);
 
-        if ($result === false) {
-            return $this->fail($employeeLeavesModel->errors(), 400);
+        if (!$result) {
+            $this->employeeLeavesModel->db->transRollback();
+            return $this->fail($this->employeeLeavesModel->errors(), 400);
         }
 
-        // Update the leave balance if necessary
-        if ($leaveBalance && isset($leaveBalance['NumberOfLeaves']) && $leaveBalance['NumberOfLeaves'] > 0) {
-            $newBalance = $leaveBalance['NumberOfLeaves'] - $daysRequested;
-            $leaveBalanceModel->update($leaveBalance['LeaveBalanceID'], ['NumberOfLeaves' => $newBalance]);
+        // Deduct the requested days from the leave balance
+        $newBalance = $leaveBalance['NumberofLeaves'] - $daysRequested;
+        $leaveBalanceUpdateResult = $this->leaveBalanceModel->update($leaveBalance['LeaveBalanceID'], ['NumberofLeaves' => $newBalance]);
+
+        if (!$leaveBalanceUpdateResult) {
+            $this->employeeLeavesModel->db->transRollback();
+            return $this->fail($this->leaveBalanceModel->errors(), 400);
         }
 
-        // Return success response
-        $response = [
-            'status' => 201,
-            'message' => 'Leave entry added successfully.',
-            'data' => $leaveRequestData
-        ];
-
-        return $this->respondCreated($response);
+        if ($this->employeeLeavesModel->db->transStatus() === FALSE) {
+            $this->employeeLeavesModel->db->transRollback();
+            return $this->fail('Transaction failed: Unable to input leave and update balance.', 400);
+        } else {
+            $this->employeeLeavesModel->db->transComplete();
+            $response = [
+                'status' => 201,
+                'message' => 'Leave entry added and balance updated successfully.',
+                'data' => $leaveRequestData
+            ];
+            return $this->respondCreated($response);
+        }
     }
+
+
 
     public function getPendingLeavesWithDetails()
     {
@@ -279,7 +298,7 @@ class ManageLeaveController extends ResourceController
             personal_information.first_name,
             personal_information.middle_name,
             leave_type.LeaveTypeName,
-            leave_balance.NumberOfLeaves as RemainingLeaveBalance
+            leave_balance.NumberofLeaves as RemainingLeaveBalance
         ');
         $builder->join('personal_information', 'employee_leaves.EmployeeID = personal_information.EmployeeID', 'inner');
         $builder->join('leave_type', 'employee_leaves.leave_type_id = leave_type.LeaveTypeID', 'inner');
