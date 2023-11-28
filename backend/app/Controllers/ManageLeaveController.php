@@ -243,7 +243,7 @@ class ManageLeaveController extends ResourceController
         }
 
         // Update the leave balance if necessary
-        if ($leaveBalance && $leaveBalance['NumberOfLeaves'] > 0) {
+        if ($leaveBalance && isset($leaveBalance['NumberOfLeaves']) && $leaveBalance['NumberOfLeaves'] > 0) {
             $newBalance = $leaveBalance['NumberOfLeaves'] - $daysRequested;
             $leaveBalanceModel->update($leaveBalance['LeaveBalanceID'], ['NumberOfLeaves' => $newBalance]);
         }

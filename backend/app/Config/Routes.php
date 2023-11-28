@@ -71,6 +71,7 @@ $routes->group('api', function($routes)
         $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardController::getActiveEmployeesCount');
         $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages');
         $routes->post('getTrainingCountsForLast13Days', 'HumanResourceDashboardController::getTrainingCountsForLast13Days');
+        $routes->post('getActiveEmployeesCountForLast13Days', 'HumanResourceDashboardController::getActiveEmployeesCountForLast13Days');
     });
 
 

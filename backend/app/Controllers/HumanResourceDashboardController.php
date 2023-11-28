@@ -162,6 +162,64 @@ class HumanResourceDashboardController extends ResourceController
         return (int)$result['NumberOfActiveEmployees'];
     }
     
+    public function getActiveEmployeesCountForLast13Days()
+    {
+        $totalEmployeesCount = $this->personalInformationModel->countAllResults(); // Total number of employees
+        $activeCounts = []; // Array to store active counts for each day
+        $activePercentages = []; // Array to store active percentages for each day
+
+        for ($i = 12; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days")); // Calculate the date for each day
+            $activeCount = $this->countActiveEmployeesForDate($date);
+
+            // Calculate the percentage of active employees for the day
+            $percentage = $totalEmployeesCount > 0 ? ($activeCount / $totalEmployeesCount) * 100 : 0;
+
+            // Add the count and percentage for this date to the arrays
+            $activeCounts[] = [
+                'date' => $date,
+                'activeCount' => $activeCount
+            ];
+            $activePercentages[] = [
+                'date' => $date,
+                'activePercentage' => round($percentage, 2)
+            ];
+        }
+
+        // Return the counts and percentages for the last 14 days
+        return $this->respond([
+            'activeCounts' => $activeCounts,
+            'activePercentages' => $activePercentages
+        ]);
+    }
+
+    private function countActiveEmployeesForDate($date)
+    {
+        $builder = $this->personalInformationModel->builder();
+        $builder->select('COUNT(*) as NumberOfActiveEmployees');
+        
+        // Exclude employees on leave
+        $builder->whereNotIn('EmployeeID', function($subQuery) use ($date) {
+            $subQuery->select('EmployeeID')
+                     ->from('employee_leaves')
+                     ->where('start_date <=', $date)
+                     ->where('end_date >=', $date)
+                     ->where('status', 'approved');
+        });
+
+        // Exclude employees in training
+        $builder->whereNotIn('EmployeeID', function($subQuery) use ($date) {
+            $subQuery->select('EmployeeID')
+                     ->from('internal_employee_training')
+                     ->join('training', 'internal_employee_training.training_id = training.training_id')
+                     ->where('training.period_from <=', $date)
+                     ->where('training.period_to >=', $date);
+        });
+
+        $query = $builder->get();
+        $result = $query->getRowArray();
+        return (int)$result['NumberOfActiveEmployees'];
+    }
 
 
 
