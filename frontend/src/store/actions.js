@@ -330,6 +330,16 @@ async fetchEmployeeStatusPercentages({ commit }) {
     console.error('There was an error fetching the employee status percentages:', error);
   }
 },
+
+async fetchActiveEmployeesLast13Days({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/getActiveEmployeesCountForLast13Days');
+    commit('SET_ACTIVE_EMPLOYEES_LAST_13_DAYS', response.data);
+  } catch (error) {
+    console.error('There was an error fetching the active employees during the last 13days:', error);
+  }
+}
+
       
       
 };

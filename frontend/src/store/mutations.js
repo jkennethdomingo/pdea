@@ -140,5 +140,9 @@ SET_TODAYS_Active_Employees_Count(state, count) {
 SET_EMPLOYEE_STATUS_PERCENTAGES(state, percentages) {
   state.employeeStatusPercentages = percentages;
 },
+SET_ACTIVE_EMPLOYEES_LAST_13_DAYS(state, data) {
+  state.activeEmployeesLast13Days = data.activeCounts;
+  state.activeEmployeesPercentagesLast13Days = data.activePercentages;
+},
     
 };

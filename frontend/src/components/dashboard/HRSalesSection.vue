@@ -35,7 +35,7 @@ watch(employeeStatusPercentages, (newVal) => {
     dataLabels: {
       enabled: true,
       formatter: function(val) {
-        return `${val}%`;
+        return `${parseFloat(val).toFixed(2)}%`;
       },
     },
     plotOptions: {
@@ -49,16 +49,15 @@ watch(employeeStatusPercentages, (newVal) => {
             },
             value: {
               formatter: function(val) {
-                return `${parseInt(val)}%`;
+                return `${parseFloat(val).toFixed(2)}%`;
               },
             },
             total: {
               show: true,
               label: 'Employees',
               formatter: function (w) {
-                return w.globals.seriesTotals.reduce((a, b) => {
-                  return a + b;
-                }, 0) + '%'
+                const totalPercentage = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+              return `${totalPercentage.toFixed(2)}%`;
               }
             },
           },
