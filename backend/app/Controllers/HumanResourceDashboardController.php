@@ -221,6 +221,46 @@ class HumanResourceDashboardController extends ResourceController
         return (int)$result['NumberOfActiveEmployees'];
     }
 
+    public function getCombinedEvents()
+    {
+        // Fetch employee birthdays
+        $birthdays = $this->personalInformationModel->getAllBirthdays();
+
+        // Fetch training data
+        $training = $this->trainingModel->findAll();
+
+        // Fetch employee on leave data
+        $builder = $this->employeeLeavesModel->builder();
+        $builder->select('
+            employee_leaves.id,
+            employee_leaves.EmployeeID,
+            employee_leaves.leave_type_id,
+            employee_leaves.start_date,
+            employee_leaves.end_date,
+            employee_leaves.reason,
+            employee_leaves.status,
+            personal_information.surname,
+            personal_information.first_name,
+            leave_type.LeaveTypeName
+        ');
+        $builder->join('personal_information', 'employee_leaves.EmployeeID = personal_information.EmployeeID', 'inner');
+        $builder->join('leave_type', 'employee_leaves.leave_type_id = leave_type.LeaveTypeID', 'inner');
+        $employeeOnLeave = $builder->get()->getResult();
+
+        // Combine the datasets
+        $data = [
+            'employeeBirthdays' => $birthdays,
+            'training' => $training,
+            'EmployeeOnLeave' => $employeeOnLeave,
+        ];
+
+        // Return the combined response
+        return $this->respond($data);
+    }
+
+
+    
+
 
 
 

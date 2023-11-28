@@ -61,5 +61,13 @@ class PersonalInformationModel extends Model
              ->where('EmployeeID', $employeeID)
              ->update();
     }
+
+    public function getAllBirthdays() {
+        // Select only the date_of_birth field along with EmployeeID for identification
+        $this->select('personal_information.EmployeeID, personal_information.date_of_birth, personal_information.surname, personal_information.first_name');
+        
+        // Perform the query and return the results
+        return $this->findAll();
+    }
     
 }
