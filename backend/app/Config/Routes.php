@@ -73,6 +73,10 @@ $routes->group('api', function($routes)
         $routes->post('getTrainingCountsForLast13Days', 'HumanResourceDashboardController::getTrainingCountsForLast13Days');
         $routes->post('getActiveEmployeesCountForLast13Days', 'HumanResourceDashboardController::getActiveEmployeesCountForLast13Days');
         $routes->post('getCombinedEvents', 'HumanResourceDashboardController::getCombinedEvents');
+        $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents');
+        $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardController::fetchRecentlyApprovedLeaves');
+        $routes->post('fetchUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchUpcomingTrainingsWithNoAssignedEmployees');
+        $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
     });
 
 

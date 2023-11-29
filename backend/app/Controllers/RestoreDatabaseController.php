@@ -12,7 +12,7 @@ class RestoreDatabaseController extends BaseController
 
     // Specify the exact path to your backup file. 
     // This should match the location and file name of the backup file you want to restore.
-    $backupFilePath = WRITEPATH . 'backups/db-backup-2023-11-27_05-27-47.sql';
+    $backupFilePath = WRITEPATH . 'backups/db-backup-today.sql';
     
     // Make sure the file exists
     if (!file_exists($backupFilePath)) {

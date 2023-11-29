@@ -14,7 +14,7 @@ class BackupDatabaseController extends BaseController
         $password = escapeshellarg($dbConfig->default['password']);
         $database = escapeshellarg($dbConfig->default['database']);
         $backupDir = WRITEPATH . 'backups/';
-        $backupFile = 'db-backup-' . date('Y-m-d_H-i-s') . '.sql';
+        $backupFile = 'db-backup-today' . '.sql';
         $backupPath = escapeshellarg($backupDir . $backupFile);
 
         // Ensure the backup directory exists

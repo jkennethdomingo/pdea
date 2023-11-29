@@ -69,5 +69,18 @@ class PersonalInformationModel extends Model
         // Perform the query and return the results
         return $this->findAll();
     }
+
+    public function getUpcomingBirthdays($fromDate) {
+        // Prepare the query to select users with upcoming birthdays from the given date
+        $query = $this->db->table('personal_information');
+        $query->select('EmployeeID, first_name, surname, date_of_birth, DATE_FORMAT(date_of_birth, "%m-%d") as formatted_dob');
+        $query->where('DATE_FORMAT(date_of_birth, "%m-%d") >=', date('m-d', strtotime($fromDate)));
+        $query->orderBy('formatted_dob', 'ASC'); // Order by upcoming dates using the alias
+    
+        // Execute the query and return the result
+        return $query->get()->getResultArray();
+    }
+    
+    
     
 }
