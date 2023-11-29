@@ -146,6 +146,20 @@ SET_ACTIVE_EMPLOYEES_LAST_13_DAYS(state, data) {
 },
 SET_COMBINED_EVENTS(state, data) {
   state.combinedEvents = data;
-}
+},
+SET_UPCOMING_COMBINED_EVENTS(state, { upcomingEmployeeBirthdays, upcomingTraining, upcomingEmployeeOnLeave }) {
+  state.upcomingEmployeeBirthdays = upcomingEmployeeBirthdays;
+  state.upcomingTraining = upcomingTraining;
+  state.upcomingEmployeeOnLeave = upcomingEmployeeOnLeave;
+},
+SET_APPROVED_LEAVES(state, leaves) {
+  state.approvedLeaves = leaves;
+},
+SET_UNASSIGNED_UPCOMING_TRAININGS(state, trainings) {
+  state.unassignedUpcomingTrainings = trainings;
+},
+SET_CountOfUpcomingTrainingsWithNoAssignedEmployees(state, trainings) {
+  state.countOfUnassignedUpcomingTrainings = trainings;
+},
     
 };

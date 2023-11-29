@@ -346,7 +346,40 @@ async fetchCombinedEvents({ commit }) {
   } catch (error) {
     console.error('Error fetching combined events:', error);
   }
-}
+},
+async fetchUpcomingCombinedEvents({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/getUpcomingEvents');
+    commit('SET_UPCOMING_COMBINED_EVENTS', response.data);
+  } catch (error) {
+    console.error('Error fetching combined events:', error);
+  }
+},
+async fetchApprovedLeaves({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/fetchRecentlyApprovedLeaves');
+    commit('SET_APPROVED_LEAVES', response.data.data);
+  } catch (error) {
+    console.error('Error fetching approved leaves:', error);
+  }
+},
+async fetchUnassignedUpcomingTrainings({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/fetchUpcomingTrainingsWithNoAssignedEmployees');
+    commit('SET_UNASSIGNED_UPCOMING_TRAININGS', response.data.data);
+  } catch (error) {
+    console.error('Error fetching upcoming trainings:', error);
+  }
+},
+
+async fetchCountOfUpcomingTrainingsWithNoAssignedEmployees({ commit }) {
+  try {
+    const response = await apiService.post('/hrDashboard/fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
+    commit('SET_CountOfUpcomingTrainingsWithNoAssignedEmployees', response.data.data);
+  } catch (error) {
+    console.error('Error fetching upcoming trainings:', error);
+  }
+},
 
 
       

@@ -11,6 +11,7 @@ onMounted(() => {
     store.dispatch('fetchTodaysOnTrainingCount');
     store.dispatch('fetchTodaysActiveEmployeeCount');
     store.dispatch('fetchActiveEmployeesLast13Days');
+    store.dispatch('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
 });
 
 const todaysLeavesCount = computed(() => store.state.todaysLeavesCount);
@@ -19,6 +20,7 @@ const todaysOnTrainingCount = computed(() => store.state.todaysOnTrainingCount);
 const todaysActiveEmployeeCount = computed(() => store.state.ActiveEmployeesCount);
 const activeEmployeesLast13Days = computed(() => store.state.activeEmployeesLast13Days);
 const activeEmployeesPercentagesLast13Days = computed(() => store.state.activeEmployeesPercentagesLast13Days);
+const countOfUnassignedUpcomingTrainings = computed(() => store.state.countOfUnassignedUpcomingTrainings);
 
 const transformedActiveEmployeeData = computed(() => {
   return activeEmployeesLast13Days.value.map(data => data.activeCount);
@@ -113,9 +115,9 @@ const trainingData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
 
         <!-- Growth card -->
         <QuiclStatisticsCard
-            title="Today's Training Schedule"
+            title="Unassigned Training"
             :chartData="trainingData"
-            :result="todaysTrainingCount"
+            :result="countOfUnassignedUpcomingTrainings"
             percentage="7.20%" 
             :actions="[{ title: 'View', to: '#' }]"
             icon="fa-solid:users"

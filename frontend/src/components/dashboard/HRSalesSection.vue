@@ -3,14 +3,27 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import ApexCharts from 'apexcharts';
 import BaseCard from '@/components/ui/BaseCard.vue';
+import { usePhotoUrl } from '@/composables/usePhotoUrl';
 
 const store = useStore();
 const employeeStatusChartEl = ref(null); // Updated reference name
 const employeeStatusPercentages = computed(() => store.state.employeeStatusPercentages);
 let employeeStatusChart; // Updated variable name for the chart
+const { getPhotoUrl } = usePhotoUrl();
+const approvedLeaves = computed(() => store.state.approvedLeaves);
+const unassignedUpcomingTrainings = computed(() => store.state.unassignedUpcomingTrainings);
 
-onMounted(() => {
-  store.dispatch('fetchEmployeeStatusPercentages');
+onMounted(async () => {
+  try {
+    await Promise.all([
+      store.dispatch('fetchEmployeeStatusPercentages'),
+      store.dispatch('fetchApprovedLeaves'),
+      store.dispatch('fetchUnassignedUpcomingTrainings'),
+    ]);
+    initializeChart();
+  } catch (error) {
+    console.error('Error in fetching data:', error);
+  }
 });
 
 watch(employeeStatusPercentages, (newVal) => {
@@ -72,9 +85,11 @@ watch(employeeStatusPercentages, (newVal) => {
 
   employeeStatusChart.render();
 }, { immediate: true });
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 </script>
-
-
 
 
 <template>
@@ -87,117 +102,76 @@ watch(employeeStatusPercentages, (newVal) => {
             </BaseCard>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
             <!-- Recent contacts -->
-            <BaseCard
-                title="Recently Approved Leaves"
-                :actions="[{ title: 'View', to: '#' }]"
-            >
-                <div
-                    class="mt-4 flex items-center justify-between"
-                    v-for="i in 4"
-                    :key="i"
-                >
-                    <div class="flex items-center gap-2">
-                        <img
-                            class="w-10 h-10 rounded-md object-cover"
-                            src="https://placekitten.com/200/300"
-                        />
-                        <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                Name
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                email@example.com
+            <BaseCard title="Recently Approved Leaves" :actions="[{ title: 'View', to: '#' }]">
+                <div v-if="approvedLeaves && approvedLeaves.length" class="mt-4">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <tbody>
+                        <tr class="border-b dark:border-gray-700" v-for="leave in approvedLeaves" :key="leave.id">
+                        <!-- Employee Details -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                            <template v-if="leave.photo">
+                                <img class="w-10 h-10 rounded-md object-cover" :src="getPhotoUrl(leave.photo)" alt="Employee Photo" />
+                            </template>
+                            <template v-else>
+                                <svg class="w-10 h-10 text-gray-400 rounded-md" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                            </template>
+                            <div>
+                                <h5 class="text-xs text-gray-600 dark:text-gray-300">
+                                {{ leave.first_name }} {{ leave.middle_name }} {{ leave.surname }}
+                                </h5>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">
+                                {{ leave.Email }}
+                                </p>
+                            </div>
+                            </div>
+                        </td>
+                        
+                        <!-- Leave Details -->
+                        <td class="px-6 py-4">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ leave.LeaveTypeName }}: {{ leave.start_date }} - {{ leave.end_date }}
                             </p>
-                        </div>
-                    </div>
-                    <Button
-                        sr-text="Actions"
-                        size="sm"
-                        icon-only
-                        icon="mdi:dots-vertical"
-                        variant="secondary"
-                    />
+                        </td>
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+                </div>
+                <div v-else class="text-center">
+                <p>No approved leaves available.</p>
                 </div>
             </BaseCard>
 
             <!-- Recent transactions -->
-            <BaseCard
-                title="Unassigned Trainings"
-                :actions="[{ title: 'View', to: '#' }]"
-            >
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            icon="mdi:plus-circle-outline"
-                            aria-hidden="true"
-                            class="w-6 h-6 text-green-500"
-                        />
-                        <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                Gillette
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                17 Oct, 2021
-                            </p>
-                        </div>
-                    </div>
-
-                    <span class="text-base font-medium text-green-500"
-                        >+$360.00</span
-                    >
+            <BaseCard title="Unassigned Trainings" :actions="[{ title: 'View', to: '#' }]">
+            <div v-if="unassignedUpcomingTrainings.length > 0">
+            <div v-for="training in unassignedUpcomingTrainings" :key="training.training_id" class="mt-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                <!-- Your icon component might be different -->
+                <Icon icon="mdi:checkbox-blank-circle-outline" aria-hidden="true" class="w-6 h-6 text-gray-500" />
+                <div>
+                    <h5 class="text-xs text-gray-600 dark:text-gray-300">
+                    {{ training.title }}
+                    </h5>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">
+                    {{ formatDate(training.period_from) }}
+                    </p>
                 </div>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            icon="mdi:minus-circle-outline"
-                            aria-hidden="true"
-                            class="w-6 h-6 text-red-500"
-                        />
-                        <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                IBM
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                01 Oct, 2021
-                            </p>
-                        </div>
-                    </div>
-
-                    <span class="text-base font-medium text-red-500"
-                        >-$254.00</span
-                    >
                 </div>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            icon="mdi:checkbox-blank-circle-outline"
-                            aria-hidden="true"
-                            class="w-6 h-6 text-gray-500"
-                        />
-
-                        <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                Louis Vuitton
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                8 Oct, 2021
-                            </p>
-                        </div>
-                    </div>
-
-                    <span class="text-base font-medium text-gray-500"
-                        >Pending</span
-                    >
-                </div>
-            </BaseCard>
+                <!-- This could be a placeholder for future functionality like status or actions -->
+                <span class="text-base font-medium text-gray-500">
+                Pending
+                </span>
+            </div>
+            </div>
+            <div v-else class="text-center">
+            <p>No unassigned trainings available.</p>
+            </div>
+        </BaseCard>
         </div>
             
         </div>

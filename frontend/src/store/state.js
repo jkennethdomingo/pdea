@@ -152,5 +152,11 @@ export const state = {
         employeeBirthdays: [],
         training: [],
         employeeOnLeave: []
-      }
+      },
+      upcomingEmployeeBirthdays: [],
+    upcomingTraining: [],
+    upcomingEmployeeOnLeave: [],
+    approvedLeaves: [],
+  unassignedUpcomingTrainings: [],
+  countOfUnassignedUpcomingTrainings: 0,
 };

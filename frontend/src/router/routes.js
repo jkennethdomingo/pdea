@@ -90,6 +90,11 @@ export default [
             name: 'Beta',
             component: () => import('@/views/hr/beta/UploadProfile.vue'),
           },
+          {
+            path: 'backup',
+            name: 'Backup and Restore',
+            component: () => import('@/views/hr/beta/Backup.vue'),
+          },
         ],
       },
       {
