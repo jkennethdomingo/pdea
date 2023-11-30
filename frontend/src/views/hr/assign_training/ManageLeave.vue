@@ -11,6 +11,58 @@ import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import apiService from '@/composables/axios-setup';
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+
+const categories = ref({
+  Pending: [
+    {
+      id: 1,
+      title: 'Does drinking coffee make you smarter?',
+      date: '5h ago',
+      commentCount: 5,
+      shareCount: 2,
+    },
+    {
+      id: 2,
+      title: "So you've bought coffee... now what?",
+      date: '2h ago',
+      commentCount: 3,
+      shareCount: 2,
+    },
+  ],
+  Approved: [
+    {
+      id: 1,
+      title: 'Is tech making coffee better or worse?',
+      date: 'Jan 7',
+      commentCount: 29,
+      shareCount: 16,
+    },
+    {
+      id: 2,
+      title: 'The most innovative things happening in coffee',
+      date: 'Mar 19',
+      commentCount: 24,
+      shareCount: 12,
+    },
+  ],
+  Denied: [
+    {
+      id: 1,
+      title: 'Ask Me Anything: 10 answers to your questions about coffee',
+      date: '2d ago',
+      commentCount: 9,
+      shareCount: 5,
+    },
+    {
+      id: 2,
+      title: "The worst advice we've ever heard about coffee",
+      date: '4d ago',
+      commentCount: 1,
+      shareCount: 2,
+    },
+  ],
+})
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -139,9 +191,9 @@ const calendarOptions = ref({
     listPlugin
   ],
   headerToolbar: {
-    left: 'addEventButton,today',
-    center: 'prev,title,next',
-    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    left: 'prev,next,addEventButton',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek,today'
   },
   customButtons: {
     addEventButton: {
@@ -150,15 +202,17 @@ const calendarOptions = ref({
     },
   },
   initialView: 'dayGridMonth',
-  initialEvents: leaveEvents.value, // Use training events here
+  initialEvents: leaveEvents.value, // Assuming trainingEvents is a reactive ref
   editable: true,
   selectable: true,
   selectMirror: true,
   dayMaxEvents: true,
   weekends: true,
-  select: handleDateSelect,
-  eventClick: handleEventClick,
-  eventsSet: handleEvents
+  select: handleDateSelect, // Assuming handleDateSelect is a method
+  eventClick: handleEventClick, // Assuming handleEventClick is a method
+  eventsSet: handleEvents, // Assuming handleEvents is a method
+  height: 'auto', // or set a specific numeric value
+  contentHeight: 'auto', // or set a specific numeric value
 });
 
 
@@ -288,18 +342,80 @@ function handleWeekendsToggle() {
     <!-- Add Modal End-->
     
 <!--Bawal-->
-    <div class='flex min-h-full font-sans text-sm'>
-        <div class="text-center section">
-          <div class="hidden lg:flex">
-            <VDatePicker v-model="date" />
-
-      </div>
+<div class='flex flex-wrap min-h-full font-sans text-sm'>
+  <!-- Left sidebar for mini calendar and TabGroup -->
+  <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
+    <!-- Mini calendar (VDatePicker) -->
+    <div class="mb-4">
+      <VDatePicker class="px-4" v-model="date" />
     </div>
-    <div class='flex-grow p-12'>
+
+    <!-- TabGroup Component -->
+    <div class="max-w-xs px-2 py-4 sm:px-0">
+      <TabGroup>
+        <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+          <Tab
+              v-for="category in Object.keys(categories)"
+              as="template"
+              :key="category"
+              v-slot="{ selected }"
+          >
+              <button
+                  :class="[
+                      'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                      'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+                      selected
+                          ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                          : 'text-blue-100 hover:bg-white/[0.12] hover:text-white',
+                  ]"
+              >
+                  {{ category }}
+              </button>
+          </Tab>
+        </TabList>
+        <TabPanels class="mt-2">
+          <TabPanel
+              v-for="(posts, idx) in Object.values(categories)"
+              :key="idx"
+              class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+          >
+              <ul>
+                  <li
+                      v-for="post in posts"
+                      :key="post.id"
+                      class="relative rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+                  >
+                      <h3 class="text-sm font-medium leading-5">
+                          {{ post.title }}
+                      </h3>
+                      <ul
+                          class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500"
+                      >
+                          <li>{{ post.date }}</li>
+                          <li>&middot;</li>
+                          <li>{{ post.commentCount }} comments</li>
+                          <li>&middot;</li>
+                          <li>{{ post.shareCount }} shares</li>
+                      </ul>
+                      <a
+                          href="#"
+                          class="absolute inset-0 rounded-md"
+                      ></a>
+                  </li>
+              </ul>
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
+    </div>
+  </div>
+
+  <!-- Main content area for FullCalendar -->
+  <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
+    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-3 rounded-xl'>
       <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
-
-        </div>
     </div>
+  </div>
+</div>
 </template>
 
 
