@@ -38,6 +38,35 @@
   border: 1px solid rgb(21 24 35) !important;
   box-shadow: none !important;
 }
+/* Add this to your global CSS file */
+.fc .fc-button-group > button.fc-button {
+  margin-right: 4px; /* Adjust the value as needed */
+}
+
+/* To target only specific buttons, you can use their unique class names, if available */
+.fc .fc-addEventButton-button {
+  margin-right: 4px; /* Adjust the value as needed */
+}
+
+/* Remove the margin from the last button to maintain alignment */
+.fc .fc-button-group > button.fc-button:last-child {
+  margin-right: 0;
+}
+/* Target the day grid cells */
+.fc .fc-daygrid-day {
+  border-color: aqua; /* Replace with your desired border color */
+}
+
+/* If you only want to target the day grid borders and not event borders */
+.fc .fc-daygrid-day-frame {
+  border-color: aqua; /* Replace with your desired border color */
+}
+
+/* If the border is on the individual day numbers */
+.fc .fc-daygrid-day-number {
+  border-color: aqua; /* Replace with your desired border color */
+}
+
 
 
 

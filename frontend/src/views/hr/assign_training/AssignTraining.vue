@@ -17,49 +17,38 @@ const categories = ref({
   Pending: [
     {
       id: 1,
-      title: 'Does drinking coffee make you smarter?',
+      title: 'John Smith requesting a leave',
       date: '5h ago',
-      commentCount: 5,
-      shareCount: 2,
+
     },
     {
       id: 2,
-      title: "So you've bought coffee... now what?",
+      title: "Samantha Doe requesting a leave",
       date: '2h ago',
-      commentCount: 3,
-      shareCount: 2,
     },
   ],
   Approved: [
     {
       id: 1,
-      title: 'Is tech making coffee better or worse?',
-      date: 'Jan 7',
-      commentCount: 29,
-      shareCount: 16,
+      title: '',
+      date: '',
     },
     {
       id: 2,
-      title: 'The most innovative things happening in coffee',
-      date: 'Mar 19',
-      commentCount: 24,
-      shareCount: 12,
+      title: '',
+      date: '',
     },
   ],
   Denied: [
     {
       id: 1,
-      title: 'Ask Me Anything: 10 answers to your questions about coffee',
-      date: '2d ago',
-      commentCount: 9,
-      shareCount: 5,
+      title: '',
+      date: '',
     },
     {
       id: 2,
-      title: "The worst advice we've ever heard about coffee",
-      date: '4d ago',
-      commentCount: 1,
-      shareCount: 2,
+      title: "",
+      date: '',
     },
   ],
 })
@@ -175,7 +164,7 @@ const calendarOptions = ref({
   },
   customButtons: {
     addEventButton: {
-      text: 'Add event',
+      text: 'Assign Training',
       click: () => openAddEventDialog()
     },
   },
@@ -302,7 +291,15 @@ const editEvent = async () => {
   resetNewEvent();
 };
 
+const approveRequest = (postId) => {
+  // Logic to approve the request
+  console.log('Approved request:', postId);
+};
 
+const denyRequest = (postId) => {
+  // Logic to deny the request
+  console.log('Denied request:', postId);
+};
 
 
 </script>
@@ -333,7 +330,7 @@ const editEvent = async () => {
         
         <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>New event</h5>
+        </svg>Assign Training</h5>
         <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
@@ -375,18 +372,22 @@ const editEvent = async () => {
         <div class="mb-4">
           
 
-          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
         Choose Employee
       </button>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="text-white justify-center flex items-center bg-blue-700 hover:bg-blue-800 w-full focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
-                <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-            </svg> Create event
+        <div class="flex justify-start space-x-2">
+        <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
+          </svg> Save
         </button>
+        <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg> Delete
+        </button>
+      </div>
     </form>
         <!-- Dynamic content goes here -->
         
@@ -459,16 +460,9 @@ const editEvent = async () => {
 
         <div class="mb-4">
           
-
-          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-        Choose Employee
-      </button>
-        </div>
-        <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0">
+          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0">
           <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
           <img v-for="(photo, index) in newEvent.photo" :key="index" :src="getPhotoUrl(photo)" class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" alt="Employee photo not found">
-          
-            
         </div>
         </div>
 
@@ -476,16 +470,29 @@ const editEvent = async () => {
               <!-- Show text if no employees are assigned -->
               <p>Training not assigned to any employee.</p>
             </div>
+
+          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+        Choose Employee
+      </button>
+        </div>
         
 
 
         <!-- Submit Button -->
-        <button type="submit" class="text-white justify-center flex items-center bg-blue-700 hover:bg-blue-800 w-full focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+        <div class="flex justify-start space-x-2">
+        <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
             <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
                 <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-            </svg> Update event
+            </svg> Update
         </button>
+        <button type="submit" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
+            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
+                <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
+            </svg> Delete
+        </button>
+      </div>
     </form>
         
     </div>
@@ -559,12 +566,11 @@ const editEvent = async () => {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker class="px-4" v-model="date" />
-      
+      <VDatePicker class="px-4 my-datepicker" v-model="date" />
     </div>
 
     <!-- TabGroup Component -->
-    <div class="max-w-xs px-2 py-4 sm:px-0">
+    <div class="max-w-xs px-2 py-1 sm:px-0">
       <TabGroup>
         <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
           <Tab
@@ -587,37 +593,45 @@ const editEvent = async () => {
           </Tab>
         </TabList>
         <TabPanels class="mt-2">
-          <TabPanel
-              v-for="(posts, idx) in Object.values(categories)"
-              :key="idx"
-              class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+  <TabPanel
+      v-for="(posts, category) in categories"
+      :key="category"
+      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+  >
+      <ul>
+          <li
+              v-for="post in posts"
+              :key="post.id"
+              class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
           >
-              <ul>
-                  <li
-                      v-for="post in posts"
-                      :key="post.id"
-                      class="relative rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
-                  >
-                      <h3 class="text-sm font-medium leading-5">
-                          {{ post.title }}
-                      </h3>
-                      <ul
-                          class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500"
-                      >
-                          <li>{{ post.date }}</li>
-                          <li>&middot;</li>
-                          <li>{{ post.commentCount }} comments</li>
-                          <li>&middot;</li>
-                          <li>{{ post.shareCount }} shares</li>
-                      </ul>
-                      <a
-                          href="#"
-                          class="absolute inset-0 rounded-md"
-                      ></a>
-                  </li>
+              <h3 class="text-sm font-medium leading-5">
+                  {{ post.title }}
+              </h3>
+              <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+                  <li>{{ post.date }}</li>
               </ul>
-          </TabPanel>
-        </TabPanels>
+              <!-- Conditionally render Approval and Denial Buttons -->
+              <div 
+                  class="flex justify-end space-x-2 mt-2" 
+                  v-if="category === 'Pending'"
+              >
+                  <button
+                      @click="approveRequest(post.id)"
+                      class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
+                  >
+                      Approve
+                  </button>
+                  <button
+                      @click="denyRequest(post.id)"
+                      class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+                  >
+                      Deny
+                  </button>
+              </div>
+          </li>
+      </ul>
+  </TabPanel>
+</TabPanels>
       </TabGroup>
     </div>
   </div>
