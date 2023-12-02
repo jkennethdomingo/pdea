@@ -341,7 +341,7 @@ function handleWeekendsToggle() {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker class="px-4" v-model="date" />
+      <VDatePicker is-dark="system" class="px-4" v-model="date" />
     </div>
 
     <!-- TabGroup Component -->

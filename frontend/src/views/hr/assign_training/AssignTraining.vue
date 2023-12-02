@@ -13,6 +13,8 @@ import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
+const isDark = ref(false);
+
 const categories = ref({
   Pending: [
     {
@@ -566,7 +568,7 @@ const denyRequest = (postId) => {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker class="px-4 my-datepicker" v-model="date" />
+      <VDatePicker is-dark="system" class="px-4 my-datepicker" v-model="date" />
     </div>
 
     <!-- TabGroup Component -->
@@ -582,10 +584,10 @@ const denyRequest = (postId) => {
               <button
                   :class="[
                       'w-full rounded-lg py-1 text-sm font-medium leading-5', 
-                      'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+                      'ring-gray-800 ring-offset-black focus:outline-none focus:ring-2',
                       selected
                           ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                          : 'text-blue-100 hover:bg-white/[0.12] hover:text-white',
+                          : 'text-gray-800 dark:text-gray-100 hover:bg-green-400 hover:text-white',
                   ]"
               >
                   {{ category }}
@@ -596,7 +598,7 @@ const denyRequest = (postId) => {
   <TabPanel
       v-for="(posts, category) in categories"
       :key="category"
-      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
   >
       <ul>
           <li
