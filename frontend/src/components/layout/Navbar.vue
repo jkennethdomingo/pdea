@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useFullscreen } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import {
@@ -18,6 +18,50 @@ import userAvatar from '@/assets/images/avatar.jpg'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+
+const categories = ref({
+  all: [
+    {
+      id: 1,
+      title: 'John Smith requesting a leave',
+      date: '5h ago',
+
+    },
+    {
+      id: 2,
+      title: "Samantha Doe requesting a leave",
+      date: '2h ago',
+    },
+    {
+      id: 3,
+      title: "Samantha Doe requesting a leave",
+      date: '2h ago',
+    },
+    {
+      id: 4,
+      title: "Samantha Doe requesting a leave",
+      date: '2h ago',
+    },
+    {
+      id: 5,
+      title: "Samantha Doe requesting a leave",
+      date: '2h ago',
+    },
+  ],
+  unread: [
+    {
+      id: 1,
+      title: '',
+      date: '',
+    },
+    {
+      id: 2,
+      title: '',
+      date: '',
+    },
+  ],
+})
 
 const store = useStore();
 const router = useRouter();
@@ -90,22 +134,98 @@ onUnmounted(() => {
         <div class="flex items-center gap-2">
 
              <!-- Notif -->
-             <Button
-                iconOnly
-                variant="secondary"
-                @click=""
-                v-slot="{ iconSizeClasses }"
-                class="hidden md:inline-flex"
-                srText="Toggle dark mode"
-            >
-                <Icon
-                    icon="mingcute:notification-fill"
-                    v-show="!isFullscreen"
-                    aria-hidden="true"
-                    :class="iconSizeClasses"
-                />
-                <Icon icon="mdi:arrow-collapse-all" v-show="isFullscreen" aria-hidden="true" :class="iconSizeClasses" />
-            </Button>
+             <Dropdown align="right" width="48">
+                <template #trigger>
+                    <div
+                        class="absolute bottom-auto left-auto right-0 top-0 z-10 inline-block -translate-y-1/2 translate-x-2/4 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 whitespace-nowrap rounded-full bg-green-700 px-2.5 py-1 text-center align-baseline text-xs font-bold leading-none text-white">
+                        99+
+                    </div>
+                    <Button
+                        iconOnly
+                        variant="secondary"
+                        @click="toggleDropdown"
+                        v-slot="{ iconSizeClasses }"
+                        class="hidden md:inline-flex"
+                        srText="Notifications"
+                    >
+                        <Icon
+                            icon="mingcute:notification-fill"
+                            v-show="!isFullscreen"
+                            aria-hidden="true"
+                            :class="iconSizeClasses"
+                        />
+                        <Icon icon="mdi:arrow-collapse-all" v-show="isFullscreen" aria-hidden="true" :class="iconSizeClasses" />
+                    </Button>
+                </template>
+
+                <template #content>
+                    <TabGroup>
+                            <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+                            <Tab
+                                v-for="category in Object.keys(categories)"
+                                as="template"
+                                :key="category"
+                                v-slot="{ selected }"
+                            >
+                                <button
+                                    :class="[
+                                        'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                                        'ring-gray-800 ring-offset-black focus:outline-none focus:ring-2',
+                                        selected
+                                            ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                                            : 'text-gray-800 dark:text-gray-100 hover:bg-green-400 hover:text-white',
+                                    ]"
+                                >
+                                    {{ category }}
+                                </button>
+                            </Tab>
+                            </TabList>
+                            <TabPanels class="mt-2">
+                    <TabPanel
+                        v-for="(posts, category) in categories"
+                        :key="category"
+                        :class="posts.length > 2 ? 'max-h-56 overflow-y-auto' : ''"
+                        class="rounded-b-lg  bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
+                    >
+                        <ul>
+                            <li
+                                v-for="post in posts"
+                                :key="post.id"
+                                class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+                            >
+                                <h3 class="text-sm font-medium leading-5">
+                                    {{ post.title }}
+                                </h3>
+                                <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+                                    <li>{{ post.date }}</li>
+                                </ul>
+                                <!-- Conditionally render Approval and Denial Buttons -->
+                                <div 
+                                    class="flex justify-end space-x-2 mt-2" 
+                                    v-if="category === 'all'"
+                                >
+                                    <button
+                                        @click="approveRequest(post.id)"
+                                        class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
+                                    >
+                                        Approve
+                                    </button>
+                                    <button
+                                        @click="denyRequest(post.id)"
+                                        class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+                                    >
+                                        Deny
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </TabPanel>
+                    </TabPanels>
+                        </TabGroup>
+                </template>
+
+            </Dropdown>
+            
             <Button
                 iconOnly
                 variant="secondary"
