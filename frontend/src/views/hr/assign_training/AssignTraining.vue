@@ -12,8 +12,8 @@ import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { isDark } from '@/composables';
 
-const isDark = ref(false);
 
 const categories = ref({
   Pending: [
@@ -305,7 +305,9 @@ const denyRequest = (postId) => {
 };
 
 function moveToday() {
+  const calendarApi = calendarRef.value.getApi();
   calendar.value.move(new Date());
+    calendarApi.gotoDate(new Date());
 }
 
 </script>
@@ -572,7 +574,7 @@ function moveToday() {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker ref="calendar" v-model="date" >
+      <VDatePicker ref="calendar" v-model="date" :is-dark="isDark">
         <template #footer>
           <div class="w-full px-4 pb-3">
             <button

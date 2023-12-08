@@ -25,9 +25,10 @@ app.use(Toast, {
   closeOnClick: false,
   closeButton: false,
   icon: false,
-  timeout: false,
-  transition: 'Vue-Toastification__fade',
+  timeout: 3000, 
+  transition: 'Vue-Toastification__fade'
 });
+
 
 // Dispatch the initializeAuth action to set auth state on app load
 store.dispatch('initializeAuth');
