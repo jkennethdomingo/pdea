@@ -16,6 +16,7 @@ class ManageLeaveController extends ResourceController
     protected $leavetypeModel;
     protected $leaveBalanceModel;
     protected $employeeLeavesModel;
+    protected $leaveRequestNotesModel;
 
     public function __construct()
     {
@@ -23,6 +24,7 @@ class ManageLeaveController extends ResourceController
         $this->leavetypeModel = Services::leavetypeModel();
         $this->leaveBalanceModel = Services::leaveBalanceModel();
         $this->employeeLeavesModel = Services::EmployeeLeavesModel();
+        $this->leaveRequestNotesModel = Services::LeaveRequestNotesModel();
     }
 
     public function getEmployeeOnLeave()
@@ -355,6 +357,156 @@ class ManageLeaveController extends ResourceController
         return $this->respondUpdated(['message' => $responseMessage]);
     }
 
+    public function validateAndDeductLeave($leaveRequestId)
+    {
+        $employeeLeavesModel = $this->employeeLeavesModel;
+        $leaveBalanceModel = $this->leaveBalanceModel; // Ensure this is set up in your constructor
+
+        // Fetch the leave request by ID
+        $leaveRequest = $employeeLeavesModel->find($leaveRequestId);
+
+        if (!$leaveRequest) {
+            return $this->fail('Leave request not found.', 404);
+        }
+
+        // Check if the leave request is already processed
+        if ($leaveRequest['status'] !== 'pending') {
+            return $this->fail('Leave request is already processed.', 400);
+        }
+
+        // Fetch the leave balance
+        $leaveBalance = $leaveBalanceModel->where('EmployeeID', $leaveRequest['EmployeeID'])
+                                        ->where('LeaveTypeID', $leaveRequest['leave_type_id'])
+                                        ->first();
+
+        if (!$leaveBalance || $leaveBalance['NumberofLeaves'] <= 0) {
+            return $this->fail('No available leave balance for the requested type.', 400);
+        }
+
+        // Calculate the number of days requested
+        $startDate = new \DateTime($leaveRequest['start_date']);
+        $endDate = new \DateTime($leaveRequest['end_date']);
+        $daysRequested = $endDate->diff($startDate)->days + 1; // +1 to include the start date
+
+        // Validate if the employee has enough days left
+        if ($daysRequested > $leaveBalance['NumberofLeaves']) {
+            return $this->fail('Insufficient leave balance for the requested dates.', 400);
+        }
+
+        // Start a transaction
+        $employeeLeavesModel->db->transStart();
+
+        // Deduct the requested days from the leave balance
+        $newBalance = $leaveBalance['NumberofLeaves'] - $daysRequested;
+        $leaveBalanceUpdateResult = $leaveBalanceModel->update($leaveBalance['LeaveBalanceID'], ['NumberofLeaves' => $newBalance]);
+
+        if (!$leaveBalanceUpdateResult) {
+            $employeeLeavesModel->db->transRollback();
+            return $this->fail($leaveBalanceModel->errors(), 400);
+        }
+
+        // Update the status of the leave request to 'approved'
+        $leaveRequestUpdateResult = $employeeLeavesModel->update($leaveRequestId, ['status' => 'approved']);
+
+        if (!$leaveRequestUpdateResult) {
+            $employeeLeavesModel->db->transRollback();
+            return $this->fail($employeeLeavesModel->errors(), 400);
+        }
+
+        // Complete the transaction
+        if ($employeeLeavesModel->db->transStatus() === FALSE) {
+            $employeeLeavesModel->db->transRollback();
+            return $this->fail('Transaction failed: Unable to approve leave and update balance.', 400);
+        } else {
+            $employeeLeavesModel->db->transComplete();
+            $response = [
+                'status' => 200,
+                'message' => 'Leave approved and balance updated successfully.',
+                'data' => [
+                    'leaveRequestId' => $leaveRequestId,
+                    'newBalance' => $newBalance
+                ]
+            ];
+            return $this->respond($response);
+        }
+    }
+
+    public function getEmployeeLeaveTypesWithBalance()
+    {
+        $leavetypeModel = $this->leavetypeModel; // Your leave type model
+        $leaveBalanceModel = $this->leaveBalanceModel; // Your leave balance model
+
+        $data = $this->request->getJSON(true);
+        $employeeID = $data['EmployeeID'] ?? null; // Get the EmployeeID from the JSON payload
+
+        if (!$employeeID) {
+            return $this->fail('Employee ID is required.', 400);
+        }
+
+        // Query the database for all leave types
+        $leaveTypes = $leavetypeModel->findAll();
+
+        // Prepare the response array
+        $response = [];
+        foreach ($leaveTypes as $type) {
+            // For each leave type, get the corresponding leave balance for the employee
+            $balance = $leaveBalanceModel->where('EmployeeID', $employeeID)
+                                        ->where('LeaveTypeID', $type['LeaveTypeID'])
+                                        ->first();
+
+            // If there's no balance record for the type, it could mean the employee has not been allocated that type of leave
+            $numberofLeaves = $balance['NumberofLeaves'] ?? 0; // Default to 0 if no record found
+
+            $response[] = [
+                'LeaveTypeID' => $type['LeaveTypeID'],
+                'LeaveTypeName' => $type['LeaveTypeName'],
+                'RemainingBalance' => $numberofLeaves
+            ];
+        }
+
+        // Return the response as JSON
+        return $this->respond($response);
+    }
+
+    public function fetchPendingLeaveRequests()
+    {
+        $employeeLeavesModel = $this->employeeLeavesModel;
+        $personalInformationModel = $this->personalInformationModel;
+        $leavetypeModel = $this->leavetypeModel; // Your leave type model
+        $leaveBalanceModel = $this->leaveBalanceModel; // Your leave balance model
+
+        // Fetch pending leave requests along with employee and leave type information
+        $pendingLeaves = $employeeLeavesModel
+            ->select('employee_leaves.*, personal_information.first_name, personal_information.surname, personal_information.photo, leave_type.LeaveTypeName, leave_balance.NumberofLeaves')
+            ->join('personal_information', 'personal_information.EmployeeID = employee_leaves.EmployeeID')
+            ->join('leave_type', 'leave_type.LeaveTypeID = employee_leaves.leave_type_id')
+            ->join('leave_balance', 'leave_balance.EmployeeID = employee_leaves.EmployeeID AND leave_balance.LeaveTypeID = employee_leaves.leave_type_id')
+            ->where('employee_leaves.status', 'pending')
+            ->findAll();
+
+        // Prepare the response array
+        $response = array_map(function ($leave) {
+            return [
+                'LeaveID' => $leave['id'], // Include the LeaveID from the employee_leaves table
+                'EmployeeID' => $leave['EmployeeID'],
+                'EmployeeName' => $leave['first_name'] . ' ' . $leave['surname'],
+                'EmployeePhoto' => $leave['photo'], // Assuming the photo field contains the URL/path to the employee's photo
+                'LeaveTypeName' => $leave['LeaveTypeName'],
+                'RemainingBalance' => $leave['NumberofLeaves'], // Number of leaves remaining for this type
+                'StartDate' => $leave['start_date'],
+                'EndDate' => $leave['end_date'],
+                'Reason' => $leave['reason'],
+                'TimeRequested' => $leave['created_at'],
+                // 'HRNote' field would be added here once you have that implemented
+            ];
+        }, $pendingLeaves);
+
+        // Return the response as JSON
+        return $this->respond($response);
+    }
+
+
+    
 
 
 

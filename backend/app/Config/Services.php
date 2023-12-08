@@ -38,6 +38,7 @@ use App\Models\ProcurementStatusModel;
 use App\Models\EmployeeLeavesModel;
 use App\Models\InternalEmployeeTrainingModel;
 use App\Models\TrainingModel;
+use App\Models\LeaveRequestNotesModel;
 
 /**
  * Services Configuration file.
@@ -421,6 +422,16 @@ class Services extends BaseService
         }
 
         return new EmployeeLeavesModel();
+    }
+    
+    public static function LeaveRequestNotesModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('LeaveRequestNotesModel');
+        }
+
+        return new LeaveRequestNotesModel();
     }
 
 }
