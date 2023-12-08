@@ -7,10 +7,11 @@ export function useAuth(router, store) {
         const response = await apiService.post('/auth/login', { email, password });
         const decodedToken = jwtDecode(response.data.token);
 
-        store.commit('setAuth', { token: response.data.token, role: decodedToken.role });
+        store.commit('setAuth', { token: response.data.token, role: decodedToken.role, employeeID: decodedToken.sub });
         const authData = {
             token: response.data.token,
-            role: decodedToken.role
+            role: decodedToken.role,
+            employeeID: decodedToken.sub
         };
 
         const storage = remember ? localStorage : sessionStorage;

@@ -9,6 +9,7 @@ const vuexLocal = new VuexPersist({
     reducer: state => ({
         token: state.token,
         userRole: state.userRole,
+        employeeID: state.employeeID,
     })
 });
 

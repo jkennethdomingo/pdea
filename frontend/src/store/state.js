@@ -1,6 +1,7 @@
 export const state = {
     token: null,
     userRole: null,
+    employeeID: null,
     formData: {
         page1: {
             EmployeeID: '',

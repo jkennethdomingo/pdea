@@ -92,7 +92,7 @@ export const actions = {
     initializeAuth({ commit }) {
         const authData = getStoredAuthData();
         if (authData) {
-            commit('setAuth', { token: authData.token, role: authData.role });
+            commit('setAuth', { token: authData.token, role: authData.role, employeeID: authData.employeeID });
         }
     },
     clearFormData({ commit }) {

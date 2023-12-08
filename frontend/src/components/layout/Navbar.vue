@@ -66,7 +66,6 @@ const categories = ref({
 const store = useStore();
 const router = useRouter();
 
-store.dispatch('initializeAuth');
 const authState = computed(() => ({
   token: store.state.token,
   role: store.state.userRole

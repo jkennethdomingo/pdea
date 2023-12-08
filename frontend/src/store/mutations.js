@@ -1,8 +1,10 @@
 export const mutations = {
-    setAuth(state, payload) {
-        state.token = payload.token;
-        state.userRole = payload.role;
-    },
+  setAuth(state, payload) {
+    console.log('setAuth mutation called with payload:', payload);
+    state.token = payload.token;
+    state.userRole = payload.role;
+    state.employeeID = payload.employeeID;
+},
     clearAuth(state) {
         state.token = null;
         state.userRole = null;
