@@ -670,5 +670,41 @@ class AccountInformationController extends ResourceController
         return $this->respond($data);
     }
 
+    public function getEmployeeInformation() {
+        // Retrieve JSON data from the request
+        $json = $this->request->getJSON();
+    
+        // Decode JSON to get the Employee ID
+        $employeeID = $json->employeeID ?? null;
+    
+        // Check if Employee ID is provided
+        if ($employeeID) {
+            // Fetch the specific employee's information using the model
+            $employeeInfo = $this->personalInformationModel->find($employeeID);
+    
+            // Check if employee exists
+            if ($employeeInfo) {
+                $response = [
+                    'status' => 'success',
+                    'employee' => $employeeInfo,
+                ];
+            } else {
+                $response = [
+                    'status' => 'fail',
+                    'message' => 'Employee not found',
+                ];
+            }
+        } else {
+            $response = [
+                'status' => 'fail',
+                'message' => 'No Employee ID provided',
+            ];
+        }
+    
+        // Return the data as JSON
+        return $this->response->setJSON($response);
+    }
+    
+
 
 }
