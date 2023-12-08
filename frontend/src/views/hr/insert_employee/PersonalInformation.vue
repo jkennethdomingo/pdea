@@ -9,6 +9,7 @@ import countriesData from '@/assets/json/countries.json';
 import useZipCodes from '@/composables/useZipCodes';
 
 
+const showPassword = ref(false);
 const store = useStore();
 const bloodTypes = bloodTypesData.bloodTypes;
 const jsonData = computed(() => addressData);
@@ -353,33 +354,27 @@ const handleSubmit = async () => {
 <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
 
 
+
     <!-- Address Section -->
-    <div class="mb-4">
-    <span class="block text-gray-700 text-sm dark:text-white mb-2">Residential Address:</span>
-    <div class="grid grid-cols-6 gap-4">
-      <!-- House/Block/Lot No. -->
-      <div class="col-span-2">
-        <input type="text" placeholder="House/Block/Lot No." v-model="formData.residentialForm.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- Street -->
-      <div class="col-span-3">
-        <input type="text" placeholder="Street" v-model="formData.residentialForm.street" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
-      </div>
-      <!-- Subdivision/Village -->
-      <div class="col-span-1">
-        <input type="text" placeholder="Subdivision/Village" v-model="formData.residentialForm.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
-      </div>
+<div class="mb-4">
+  <span class="block text-gray-700 text-sm dark:text-white mb-2">Residential Address:</span>
+  <div class="flex flex-nowrap gap-2">
+    <!-- House/Block/Lot No. -->
+    <input type="text" placeholder="House/Block/Lot No." v-model="formData.residentialForm.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline flex-1">
 
-      <!-- Region -->
-      <div>
-          <label for="residential_region" class="block text-sm mb-2 dark:text-white">Region:</label>
-          <select id="residential_region" v-model="formData.residentialForm.region" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-              <option value="" disabled selected>Select Region</option>
-              <option v-for="(region, regionCode) in jsonData" :key="regionCode" :value="regionCode">{{ region.region_name }}</option>
-          </select>
-      </div>
+    <!-- Street -->
+    <input type="text" placeholder="Street" v-model="formData.residentialForm.street" class="shadow appearance-none dark:bg-dark-eval-2 border rounded py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline flex-1">
 
-      <div v-if="formData.residentialForm.region">
+    <!-- Subdivision/Village -->
+    <input type="text" placeholder="Subdivision/Village" v-model="formData.residentialForm.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline flex-1">
+
+    <!-- Region -->
+    <select id="residential_region" v-model="formData.residentialForm.region" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline flex-1">
+        <option value="" disabled selected>Select Region</option>
+        <option v-for="(region, regionCode) in jsonData" :key="regionCode" :value="regionCode">{{ region.region_name }}</option>
+    </select>
+
+    <div v-if="formData.residentialForm.region">
           <label for="residential_province" class="block text-sm mb-2 dark:text-white">Province:</label>
           <select id="residential_province" v-model="formData.residentialForm.province" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
               <option value="" disabled selected>Select Province</option>
@@ -403,12 +398,11 @@ const handleSubmit = async () => {
           </select>
       </div>
 
-      <!-- ZIP Code -->
-      <div class="col-span-1">
-        <input type="text" placeholder="ZIP Code" v-model="formData.residentialForm.zip_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-      </div>
-    </div>
-    </div>
+    <!-- ZIP Code -->
+    <input type="text" placeholder="ZIP Code" v-model="formData.residentialForm.zip_code" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight dark:text-white dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline flex-1">
+  </div>
+</div>
+
 
     <hr class="my-12 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
 
@@ -419,7 +413,7 @@ const handleSubmit = async () => {
   <input type="checkbox" id="sameAsResidential" v-model="isSameAsResidential" class="mr-2">
   <label for="sameAsResidential" class="text-sm dark:text-white">Same as residential address</label>
 </div>
-      <div class="grid grid-cols-6 gap-4">
+      <div class="flex flex-nowrap gap-2">
           <!-- House/Block/Lot No. -->
           <div class="col-span-2">
             <input type="text" placeholder="House/Block/Lot No." v-model="formData.permanentForm.house_block_lot_no" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline">
@@ -432,13 +426,10 @@ const handleSubmit = async () => {
           <div class="col-span-1">
             <input type="text" placeholder="Subdivision/Village" v-model="formData.permanentForm.subdivision_village" class="shadow appearance-none dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-700 leading-tight dark:text-white focus:outline-none focus:shadow-outline">
           </div>
-          <div>
-              <label for="permanent_region" class="block text-sm mb-2 dark:text-white">Region:</label>
-              <select id="permanent_region" v-model="formData.permanentForm.region" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-                  <option value="" disabled selected>Select Region</option>
-                  <option v-for="(region, regionCode) in jsonData" :key="regionCode" :value="regionCode">{{ region.region_name }}</option>
-              </select>
-          </div>
+          <select id="residential_region" v-model="formData.residentialForm.region" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline flex-1">
+        <option value="" disabled selected>Select Region</option>
+        <option v-for="(region, regionCode) in jsonData" :key="regionCode" :value="regionCode">{{ region.region_name }}</option>
+    </select>
 
           <div v-if="formData.permanentForm.region">
               <label for="permanent_province" class="block text-sm mb-2 dark:text-white">Province:</label>
@@ -491,58 +482,69 @@ const handleSubmit = async () => {
       
       <!-- Other sections... -->
     <!-- Dropdowns for Designation, Position, and Section -->
-    <div>
-      <label for="designation" class="block text-sm mb-2 dark:text-white">Designation:</label>
-      <select id="designation" v-model="formData.designation" class="dark:text-white shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="" disabled>Select Designation</option>
-        <option v-for="designation in designationsDropdown" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
-      </select>
-    </div>
+    <div class="flex flex-row items-end gap-4">
+  <!-- Designation -->
+  <div class="flex flex-col w-1/3">
+    <label for="designation" class="text-sm mb-1 dark:text-white">Designation:</label>
+    <select id="designation" v-model="formData.designation" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
+      <option value="" disabled>Select Designation</option>
+      <option v-for="designation in designationsDropdown" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
+    </select>
+  </div>
+
+  <!-- Position -->
+  <div class="flex flex-col w-1/3">
+    <label for="position" class="text-sm mb-1 dark:text-white">Position:</label>
+    <select id="position" v-model="formData.position" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
+      <option value="" disabled selected>Select Position</option>
+      <option v-for="position in positionsDropdown" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
+    </select>
+  </div>
+
+  <!-- Section -->
+  <div class="flex flex-col w-1/3">
+    <label for="section" class="text-sm mb-1 dark:text-white">Section:</label>
+    <select id="section" v-model="formData.section" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
+      <option value="" disabled selected>Select Section</option>
+      <option v-for="section in sectionsDropdown" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
+    </select>
+  </div>
+</div>
 
 
-    <!-- Position -->
-    <div>
-      <label for="position" class="block text-sm mb-2  dark:text-white ">Position:</label>
-      <select id="position" v-model="formData.position" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="" disabled selected>Select Position</option>
-        <option v-for="position in positionsDropdown" :key="position.PositionID" :value="position.PositionID">{{ position.PositionName }}</option>
-      </select>
-    </div>
-
-    <!-- Section -->
-    <div>
-      <label for="section" class="block text-sm mb-2  dark:text-white ">Section:</label>
-      <select id="section" v-model="formData.section" class=" dark:text-white  shadow border rounded w-full py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-        <option value="" disabled selected>Select Section</option>
-        <option v-for="section in sectionsDropdown" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
-      </select>
-    </div>
 
     <div class="mb-4 grid grid-cols-3 gap-4 py-5 items-end">
-      <!-- Date Picker for Date of Entry -->
-      <div>
-        <label for="date_of_entry" class="block text-sm mb-2  dark:text-white ">Date of Entry:</label>
-        <input type="date" id="date_of_entry" v-model="formData.DateOfEntry" class=" dark:text-white  shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
-      </div>
+  <!-- Date Picker for Date of Entry -->
+  <div>
+    <label for="date_of_entry" class="block text-sm mb-2 dark:text-white">Date of Entry:</label>
+    <input type="date" id="date_of_entry" v-model="formData.DateOfEntry" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline">
+  </div>
 
-      <!-- Password Input -->
-      <div>
-        <label for="password" class="block text-sm mb-2  dark:text-white ">Password:</label>
-        <input type="password" id="password" v-model="formData.Password" class="shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline" placeholder="Enter password">
-      </div>
-
-      <!-- IPCR Input -->
-      <div>
-        <label for="ipcr" class="block text-sm mb-2  dark:text-white ">IPCR:</label>
-        <input type="text" id="ipcr" v-model="formData.IPCR" class=" dark:text-white  shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline" placeholder="Enter IPCR value">
+  <!-- Password Input -->
+  <div>
+    <label for="password" class="block text-sm mb-2 dark:text-white">Password:</label>
+    <div class="flex items-center gap-2">
+      <input :type="showPassword ? 'text' : 'password'" id="password" v-model="formData.Password" class="shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline flex-grow" placeholder="Enter password">
+      <div class="flex items-center">
+        <input type="checkbox" id="show_password" v-model="showPassword" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" />
+        <label for="show_password" class="ml-2 block text-xs dark:text-white">Show Password</label>
       </div>
     </div>
-
-    <div class="flex justify-end">
-    <Button :to="{ name: 'Family Background' }">
-      Next
-    </Button>
-
   </div>
+
+  <!-- IPCR Input -->
+  <div>
+    <label for="ipcr" class="block text-sm mb-2 dark:text-white">IPCR:</label>
+    <input type="text" id="ipcr" v-model="formData.IPCR" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline" placeholder="Enter IPCR value">
+  </div>
+</div>
+
+
+<div class="flex justify-end">
+  <Button :to="{ name: 'Family Background' }" class="bg-green-500 text-white hover:bg-green-600">
+    Next
+  </Button>
+</div>
+
   </form>
 </template>

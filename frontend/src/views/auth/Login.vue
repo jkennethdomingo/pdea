@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
@@ -12,6 +12,17 @@ import {
     isDark,
     toggleDarkMode,
 } from '@/composables';
+
+const passwordType = ref('password');
+
+const togglePasswordVisibility = () => {
+  passwordType.value = passwordType.value === 'password' ? 'text' : 'password';
+};
+
+const iconClass = computed(() => ({
+  'opacity-50': passwordType.value === 'text',
+  'opacity-100': passwordType.value === 'password'
+}));
 
 const router = useRouter();
 const store = useStore();
@@ -69,11 +80,20 @@ onMounted(() => {
                                     <label for="email" class="block mb-2 text-sm font-medium text-black dark:text-white">Your email</label>
                                     <input v-model="loginForm.email" type="email" id="email" class="shadow-md bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-700 focus:border-green-700 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-700 dark:focus:border-green-700 dark:shadow-md-light" placeholder="name@pdea.gov.ph" required>
                                 </div>
-                                <div class="mb-6">
-                                    <label for="password" class="block mb-2 text-sm font-medium text-black dark:text-white">Your password</label>
-                                    <input v-model="loginForm.password" type="password" id="password" class="shadow-md bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-700 focus:border-green-700 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-700 dark:focus:border-green-700 dark:shadow-md-light" required
-                                     placeholder="Your password">
+
+                                <div class="mb-6 relative">
+                                <label for="password" class="block mb-2 text-sm font-medium text-black dark:text-white">Your password</label>
+                                <input v-model="loginForm.password" :type="passwordType" id="password" class="shadow-md bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-700 focus:border-green-700 block w-full pl-2.5 pr-10 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-700 dark:focus:border-green-700 dark:shadow-md-light" required placeholder="Your password">
+                                <div class="absolute inset-y-9 right-0 pr-2 flex items-center">
+                                    <button type="button" @click="togglePasswordVisibility" class="focus:outline-none h-full">
+                                    <!-- SVG Icon -->
+                                    <svg :class="iconClass" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5Z"/>
+                                    </svg>
+                                    </button>
                                 </div>
+                                </div>
+
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start">
                                         <div class="flex items-center h-5 mb-6">

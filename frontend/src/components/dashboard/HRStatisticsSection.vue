@@ -84,6 +84,7 @@ const trainingData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
         <!-- Customers card -->
         <QuiclStatisticsCard
         title="Active Employees"
+        class="dark:text-green-300"
         :chartData="transformedActiveEmployeeData"
         :result="todaysActiveEmployeeCount"
         :percentage="percentageChangeFromLastDay" 
@@ -95,6 +96,7 @@ const trainingData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
        <!-- Training card -->
        <QuiclStatisticsCard
             title="Training Participation"
+            class="dark:text-green-300"
             :chartData="trainingData"
             :result="todaysOnTrainingCount"
             status="danger"
@@ -106,6 +108,7 @@ const trainingData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
         <!-- Orders card -->
         <QuiclStatisticsCard
         title="Leave Status Today"
+        class="dark:text-green-300"
         :chartData="onLeaveData"
         :result="todaysLeavesCount"
         percentage="0.60%" 
@@ -116,6 +119,7 @@ const trainingData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
         <!-- Growth card -->
         <QuiclStatisticsCard
             title="Unassigned Training"
+            class="dark:text-green-300"
             :chartData="trainingData"
             :result="countOfUnassignedUpcomingTrainings"
             percentage="7.20%" 

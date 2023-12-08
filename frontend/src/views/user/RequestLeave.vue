@@ -9,6 +9,48 @@ import { INITIAL_EVENTS } from '@/composables/event-utils';
 import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
 import apiService from '@/composables/axios-setup';
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+
+
+const categories = ref({
+  Pending: [
+    {
+      id: 1,
+      title: 'Request for leave sent successfully',
+      date: '5h ago',
+
+    },
+    {
+      id: 2,
+      title: "Request for leave sent successfully",
+      date: '10h ago',
+    },
+  ],
+  Approved: [
+    {
+      id: 1,
+      title: '',
+      date: '',
+    },
+    {
+      id: 2,
+      title: '',
+      date: '',
+    },
+  ],
+  Denied: [
+    {
+      id: 1,
+      title: '',
+      date: '',
+    },
+    {
+      id: 2,
+      title: "",
+      date: '',
+    },
+  ],
+})
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -153,7 +195,9 @@ const calendarOptions = ref({
   weekends: true,
   select: handleDateSelect,
   eventClick: handleEventClick,
-  eventsSet: handleEvents
+  eventsSet: handleEvents,
+  height: 'auto', // or set a specific numeric value
+  contentHeight: 'auto', // or set a specific numeric value
 });
 
 
@@ -262,12 +306,18 @@ function handleEvents(events) {
   <!-- Conducted By Field (Removed as it's not in the DB schema) -->
 
   <!-- Submit Button -->
-  <button type="submit" class="text-white justify-center flex items-center bg-blue-700 hover:bg-blue-800 w-full focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-    <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
-      <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-    </svg> Create event
+    <!-- Submit Button -->
+    <div class="flex justify-start space-x-2">
+  <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
+          </svg> Save
   </button>
+  <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg> Delete
+  </button>
+
+</div>
 </form>
         <!-- Dynamic content goes here -->
         
@@ -276,22 +326,77 @@ function handleEvents(events) {
     <!-- Add Modal End-->
 
 
-    <div class='flex min-h-full font-sans text-sm'>
-        <div class="text-center section">
-
-            <VDatePicker v-model="date" />
-
+    <!--Bawal-->
+<div class='flex flex-wrap min-h-full font-sans text-sm'>
+  <!-- Left sidebar for mini calendar and TabGroup -->
+  <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
+    <!-- Mini calendar (VDatePicker) -->
+    <div class="mb-4">
+      <VDatePicker is-dark="system" class="px-4" v-model="date" />
     </div>
-    <div class='flex-grow p-12'>
-        <FullCalendar
-            class='demo-app-calendar'
-            :options='calendarOptions'  data-drawer-target="drawer-right-example" data-drawer-show="drawer-right-example" data-drawer-placement="right" aria-controls="drawer-right-example"
-        >
-            <template v-slot:eventContent='arg'>
-            </template>
-        </FullCalendar>
-        </div>
+
+    <!-- TabGroup Component -->
+    <div class="max-w-xs px-2 py-1 sm:px-0">
+      <TabGroup>
+        <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+          <Tab
+              v-for="category in Object.keys(categories)"
+              as="template"
+              :key="category"
+              v-slot="{ selected }"
+          >
+              <button
+                  :class="[
+                      'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                      'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+                      selected
+                          ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                          : 'text-blue-100 hover:bg-white/[0.12] hover:text-white',
+                  ]"
+              >
+                  {{ category }}
+              </button>
+          </Tab>
+        </TabList>
+        <TabPanels class="mt-2">
+  <TabPanel
+      v-for="(posts, category) in categories"
+      :key="category"
+      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+  >
+      <ul>
+          <li
+              v-for="post in posts"
+              :key="post.id"
+              class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+          >
+              <h3 class="text-sm font-medium leading-5">
+                  {{ post.title }}
+              </h3>
+              <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+                  <li>{{ post.date }}</li>
+              </ul>
+              <!-- Conditionally render Approval and Denial Buttons -->
+              <div 
+                  class="flex justify-end space-x-2 mt-2" 
+                  v-if="category === 'Pending'"
+              >
+              </div>
+          </li>
+      </ul>
+  </TabPanel>
+</TabPanels>
+      </TabGroup>
     </div>
+  </div>
+
+  <!-- Main content area for FullCalendar -->
+  <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
+    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-3 rounded-xl'>
+      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+    </div>
+  </div>
+</div>
 </template>
 
 

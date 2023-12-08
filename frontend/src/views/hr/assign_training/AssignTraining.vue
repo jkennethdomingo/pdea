@@ -58,6 +58,7 @@ const categories = ref({
 
 const store = useStore();
 const calendarRef = ref(null);
+const calendar = ref(null);
 const date = ref(new Date()); // Assuming this is your VDatePicker model
 const drawerRef = ref(null);
 const editdrawerRef = ref(null);
@@ -303,6 +304,9 @@ const denyRequest = (postId) => {
   console.log('Denied request:', postId);
 };
 
+function moveToday() {
+  calendar.value.move(new Date());
+}
 
 </script>
 
@@ -568,7 +572,18 @@ const denyRequest = (postId) => {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker is-dark="system" class="px-4 my-datepicker" v-model="date" />
+      <VDatePicker ref="calendar" v-model="date" >
+        <template #footer>
+          <div class="w-full px-4 pb-3">
+            <button
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold w-full px-3 py-1 rounded-md"
+              @click="moveToday"
+            >
+              Today
+            </button>
+          </div>
+        </template>
+     </VDatePicker>
     </div>
 
     <!-- TabGroup Component -->

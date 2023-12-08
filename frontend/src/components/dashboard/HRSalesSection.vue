@@ -80,7 +80,7 @@ watch(employeeStatusPercentages, (newVal) => {
     legend: {
       position: 'bottom',
     },
-    colors: ['#f59e0b', '#10b981', '#3b82f6'],
+    colors: ['#00FFCA', '#FCE22A', '#F6BA6F'],
   });
 
   employeeStatusChart.render();
@@ -120,7 +120,7 @@ const formatDate = (dateString) => {
                                 </svg>
                             </template>
                             <div>
-                                <h5 class="text-xs text-gray-600 dark:text-gray-300">
+                                <h5 class="text-md text-green-600 dark:text-green-300">
                                 {{ leave.first_name }} {{ leave.middle_name }} {{ leave.surname }}
                                 </h5>
                                 <p class="text-xs text-gray-400 dark:text-gray-500">

@@ -154,7 +154,7 @@ onUnmounted(() => {
                             aria-hidden="true"
                             :class="iconSizeClasses"
                         />
-                        <Icon icon="mdi:arrow-collapse-all" v-show="isFullscreen" aria-hidden="true" :class="iconSizeClasses" />
+                        <Icon icon="mingcute:notification-fill" v-show="isFullscreen" aria-hidden="true" :class="iconSizeClasses" />
                     </Button>
                 </template>
 
