@@ -5,7 +5,6 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import { INITIAL_EVENTS } from '@/composables/event-utils';
 import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
 import apiService from '@/composables/axios-setup';
@@ -54,16 +53,16 @@ const categories = ref({
 
 const store = useStore();
 const calendarRef = ref(null);
-const date = ref(new Date()); // Assuming this is your VDatePicker model
+const date = ref(new Date());
 const drawerRef = ref(null);
 const leaveTypes = ref([]);
-// Reactive form data
 const employeeId = ref('');
 const leaveTypeId = ref('');
 const startDate = ref('');
 const endDate = ref('');
 const reason = ref('');
-const employeesOnLeave = ref([]);
+const EmployeeID = computed(() => store.state.employeeID);
+
 
 
 function openRightDrawer() {
@@ -73,17 +72,7 @@ function openRightDrawer() {
 }
 
 
-const employees = ref([]);
-
 // Fetch employees data
-async function fetchEmployees() {
-  try {
-    const response = await apiService.post('/manageLeave/getAllEmployees'); // Update the endpoint if needed
-    employees.value = response.data;
-  } catch (error) {
-    console.error('Error fetching employees:', error);
-  }
-}
 
 async function fetchLeaveTypes() {
   try {
@@ -94,14 +83,14 @@ async function fetchLeaveTypes() {
   }
 }
 
-const EmployeeID = computed(() => store.state.employeeID);
+
 
 
 // Function to handle form submission
 async function submitLeaveRequest() {
   try {
-    const response = await apiService.post('/manageLeave/manualInputLeave', {
-      EmployeeID: employeeId.value,
+    const response = await apiService.post('/manageLeave/requestLeave', {
+      EmployeeID: EmployeeID.value,
       leave_type_id: leaveTypeId.value,
       start_date: startDate.value,
       end_date: endDate.value,
@@ -118,7 +107,6 @@ async function submitLeaveRequest() {
       endDate.value = '';
       reason.value = '';
 
-      await fetchEmployeesOnLeave();
     }
   } catch (error) {
     // Handle errors
@@ -128,32 +116,6 @@ async function submitLeaveRequest() {
   }
 }
 
-async function fetchEmployeesOnLeave() {
-  try {
-    const response = await apiService.post('/manageLeave/getEmployeeOnLeave');
-    employeesOnLeave.value = response.data.EmployeeOnLeave;
-  } catch (error) {
-    console.error('Error fetching employees on leave:', error);
-  }
-}
-
-const leaveEvents = computed(() => {
-  return employeesOnLeave.value.map(leave => ({
-    id: leave.id,
-    title: `${leave.surname}, ${leave.first_name} - ${leave.LeaveTypeName}`,
-    start: leave.start_date,
-    end: leave.end_date
-    // Add more fields if needed
-  }));
-});
-
-watch(leaveEvents, (newEvents) => {
-  if (calendarRef.value) {
-    const calendarApi = calendarRef.value.getApi();
-    calendarApi.removeAllEvents(); // Remove old events
-    calendarApi.addEventSource(newEvents); // Add new events
-  }
-}, { deep: true });
 
 // Watch for changes in the date picker and update the calendar
 watch(date, (newDate) => {
@@ -167,16 +129,19 @@ watch(date, (newDate) => {
 // Fetch training data on component mount
 onMounted(async () => {
   initFlowbite();
-  await store.dispatch('getEmployeeOnLeave'); // Dispatch the action to fetch employee leave data
-  await fetchEmployees(); // Fetch the employees data
+  
+  if (EmployeeID.value) {
+        try {
+          await store.dispatch('fetchEmployeeInformation', EmployeeID.value);
+          updateEmployeeName(response.employee);
+        } catch (error) {
+          console.error('Failed to fetch employee information:', error);
+          // Handle the error appropriately
+        }
+      }
   await fetchLeaveTypes();
-  await fetchEmployeesOnLeave();
 });
 
-
-onMounted(() => {
-  initFlowbite();
-});
 
 const calendarOptions = ref({
   plugins: [
@@ -213,8 +178,6 @@ startDate.value = selectInfo.startStr;
 date.value = selectInfo.startStr;
 openRightDrawer();
 
-console.log(leaveEvents.value)
-console.log(EmployeeID.value)
 }
 
 function handleEventClick(clickInfo) {
@@ -253,7 +216,7 @@ function handleEvents(events) {
         
         <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>Add Leave</h5>
+        </svg>Request Leave</h5>
         <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
@@ -264,16 +227,13 @@ function handleEvents(events) {
         <form class="mb-6" @submit.prevent="submitLeaveRequest">
         <!-- Title Field -->
         <div class="mb-4">
-  <label for="employeeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Employee</label>
-  <select v-model="employeeId" id="employeeSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    <!-- Non-selectable placeholder option -->
-    <option disabled selected value="">Please select an employee</option>
-
-    <!-- Employee options -->
-    <option v-for="employee in employees" :key="employee.EmployeeID" :value="employee.EmployeeID">
-      {{ employee.FirstName }} {{ employee.MiddleName }} {{ employee.Surname }}
-    </option>
-  </select>
+    <input 
+  type="hidden" 
+  id="employeeName" 
+  v-model="EmployeeID"
+  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+  readonly
+>
 </div>
 
 <div class="mb-4">

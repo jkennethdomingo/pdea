@@ -273,6 +273,19 @@ export const actions = {
         console.error(error);
       }
     },
+    async fetchEmployeeInformation({ commit }, employeeID) {
+      try {
+          const response = await apiService.post('/employee/getEmployeeInformation', { employeeID });
+          if (response.data && response.data.status === 'success') {
+              commit('SET_EMPLOYEE_INFO', response.data.employee);
+          } else {
+              throw new Error(response.data.message || 'Failed to fetch employee information');
+          }
+      } catch (error) {
+          console.error(error.message);
+          // Handle the error appropriately
+      }
+  },
     async getEmployeeOnLeave({ commit }) {
       try {
         commit('setLoading', true); // Start loading

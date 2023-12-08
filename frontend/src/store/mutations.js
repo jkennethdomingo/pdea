@@ -1,6 +1,5 @@
 export const mutations = {
   setAuth(state, payload) {
-    console.log('setAuth mutation called with payload:', payload);
     state.token = payload.token;
     state.userRole = payload.role;
     state.employeeID = payload.employeeID;
@@ -162,6 +161,9 @@ SET_UNASSIGNED_UPCOMING_TRAININGS(state, trainings) {
 },
 SET_CountOfUpcomingTrainingsWithNoAssignedEmployees(state, trainings) {
   state.countOfUnassignedUpcomingTrainings = trainings;
+},
+SET_EMPLOYEE_INFO(state, employeeInfo) {
+  state.employeeInformation = employeeInfo;
 },
     
 };

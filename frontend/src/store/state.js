@@ -160,4 +160,5 @@ export const state = {
     approvedLeaves: [],
   unassignedUpcomingTrainings: [],
   countOfUnassignedUpcomingTrainings: 0,
+  employeeInformation: null,
 };
