@@ -9,7 +9,7 @@
   }
 
   #nprogress .bar {
-    @apply bg-purple-600;
+    @apply bg-green-600;
 
     position: fixed;
     z-index: 1031;
@@ -54,17 +54,17 @@
 }
 /* Target the day grid cells */
 .fc .fc-daygrid-day {
-  border-color: aqua; /* Replace with your desired border color */
+  border-color: #00c896; /* Replace with your desired border color */
 }
 
 /* If you only want to target the day grid borders and not event borders */
 .fc .fc-daygrid-day-frame {
-  border-color: aqua; /* Replace with your desired border color */
+  border-color: #00c896; /* Replace with your desired border color */
 }
 
 /* If the border is on the individual day numbers */
 .fc .fc-daygrid-day-number {
-  border-color: aqua; /* Replace with your desired border color */
+  border-color: #00c896; /* Replace with your desired border color */
 }
 
 
