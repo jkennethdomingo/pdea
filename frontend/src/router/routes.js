@@ -13,12 +13,12 @@ export default [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/hr/Index.vue'),
-
+        meta: { requiresRole: 'HR_ADMIN' },
       },
       {
         path: 'company',
         component: () => import('@/layouts/CompanyStructureLayout.vue'),
-
+        meta: { requiresRole: 'HR_ADMIN' },
         children: [
           {
             path: '',
@@ -31,7 +31,7 @@ export default [
       {
         path: 'register',
         component: () => import('@/layouts/RegisterLayout.vue'),
-
+        meta: { requiresRole: 'HR_ADMIN' },
         children: [
           {
             path: 'page1',
@@ -103,7 +103,7 @@ export default [
           {
               path: 'assignTraining',
               component: () => import('@/layouts/AssignTrainingLayout.vue'),
-      
+              meta: { requiresRole: 'HR_ADMIN' },
               children: [
                 {
                   path: '',
@@ -115,7 +115,7 @@ export default [
             {
               path: 'manageLeave',
               component: () => import('@/layouts/ManageLeaveLayout.vue'),
-      
+              meta: { requiresRole: 'HR_ADMIN' },
               children: [
                 {
                   path: '',
@@ -135,7 +135,7 @@ export default [
   {
     path: '/logistics',
     component: () => import('@/layouts/MainLayout.vue'),
-
+    meta: { requiresRole: 'LOGISTICS_ADMIN' },
     children: [
       {
         path: 'dashboard',
@@ -227,12 +227,12 @@ export default [
         path: 'dashboard',
         name: 'User Dashboard',
         component: () => import('@/views/user/Index.vue'),
-
+        meta: { requiresRole: 'NON_ADMIN' },
       },
       {
         path: 'requestLeave',
         component: () => import('@/layouts/ManageLeaveLayout.vue'),
-
+        meta: { requiresRole: 'NON_ADMIN' },
         children: [
           {
             path: '',
