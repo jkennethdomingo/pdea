@@ -165,5 +165,12 @@ SET_CountOfUpcomingTrainingsWithNoAssignedEmployees(state, trainings) {
 SET_EMPLOYEE_INFO(state, employeeInfo) {
   state.employeeInformation = employeeInfo;
 },
+
+SET_EMPLOYEE_LEAVE_TYPES_WITH_BALANCE(state, leaveTypesWithBalance) {
+  state.employeeLeaveTypesWithBalance = leaveTypesWithBalance;
+},
+SET_PENDING_LEAVE_REQUESTS(state, leaveRequests) {
+  state.pendingLeaveRequests = leaveRequests;
+},
     
 };

@@ -13,45 +13,6 @@ import userAvatar from '@/assets/images/avatar.jpg'
 import apiService from '@/composables/axios-setup';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
-const categories = ref({
-  Pending: [
-    {
-      id: 1,
-      title: 'John Smith requesting a leave',
-      date: '5h ago',
-
-    },
-    {
-      id: 2,
-      title: "Samantha Doe requesting a leave",
-      date: '2h ago',
-    },
-  ],
-  Approved: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: '',
-      date: '',
-    },
-  ],
-  Denied: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: "",
-      date: '',
-    },
-  ],
-})
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -65,6 +26,7 @@ const startDate = ref('');
 const endDate = ref('');
 const reason = ref('');
 const employeesOnLeave = ref([]);
+const isLoading = ref(true); 
 
 
 function openRightDrawer() {
@@ -162,10 +124,14 @@ watch(date, (newDate) => {
 });
 
 
-// Fetch training data on component mount
 onMounted(async () => {
   initFlowbite();
   await store.dispatch('getEmployeeOnLeave'); // Dispatch the action to fetch employee leave data
+  isLoading.value = true; // Start loading
+  await store.dispatch('fetchPendingLeaveRequests');
+  setTimeout(() => {
+    isLoading.value = false; // Stop loading after a delay
+  }, 2000);
   await fetchEmployees(); // Fetch the employees data
   await fetchLeaveTypes();
   await fetchEmployeesOnLeave();
@@ -204,6 +170,23 @@ const calendarOptions = ref({
   contentHeight: 'auto', // or set a specific numeric value
 });
 
+const categories = computed(() => ({
+  Pending: isLoading.value ? [] : store.state.pendingLeaveRequests.map(request => ({
+    id: request.LeaveID,
+    title: `${request.EmployeeName} requesting a leave`,
+    date: request.TimeRequested // Format this date as needed
+  })),
+  Approved: [], // Populate these based on your Vuex state or API calls
+  Denied: [],   // Populate these based on your Vuex state or API calls
+}));
+
+const approveRequest = (id) => {
+  console.log(id);
+};
+
+const denyRequest = (id) => {
+  // Implement request denial logic
+};
 
 
 function openAddEventDialog() {
@@ -368,43 +351,46 @@ function handleWeekendsToggle() {
           </Tab>
         </TabList>
         <TabPanels class="mt-2">
-  <TabPanel
-      v-for="(posts, category) in categories"
-      :key="category"
-      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+          <TabPanel
+    v-for="(posts, category) in categories"
+    :key="category"
+    class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
   >
-      <ul>
-          <li
-              v-for="post in posts"
-              :key="post.id"
-              class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+    <div v-if="isLoading && category === 'Pending'">
+      Loading...
+    </div>
+    <ul v-else>
+      <li
+        v-for="post in posts"
+        :key="post.id"
+        class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+      >
+        <h3 class="text-sm font-medium leading-5">
+          {{ post.title }}
+        </h3>
+        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+          <li>{{ post.date }}</li>
+        </ul>
+        <!-- Conditionally render Approval and Denial Buttons -->
+        <div 
+          class="flex justify-end space-x-2 mt-2" 
+          v-if="category === 'Pending'"
+        >
+          <button
+            @click="approveRequest(post.id)"
+            class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
           >
-              <h3 class="text-sm font-medium leading-5">
-                  {{ post.title }}
-              </h3>
-              <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                  <li>{{ post.date }}</li>
-              </ul>
-              <!-- Conditionally render Approval and Denial Buttons -->
-              <div 
-                  class="flex justify-end space-x-2 mt-2" 
-                  v-if="category === 'Pending'"
-              >
-                  <button
-                      @click="approveRequest(post.id)"
-                      class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
-                  >
-                      Approve
-                  </button>
-                  <button
-                      @click="denyRequest(post.id)"
-                      class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
-                  >
-                      Deny
-                  </button>
-              </div>
-          </li>
-      </ul>
+            Approve
+          </button>
+          <button
+            @click="denyRequest(post.id)"
+            class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+          >
+            Deny
+          </button>
+        </div>
+      </li>
+    </ul>
   </TabPanel>
 </TabPanels>
       </TabGroup>

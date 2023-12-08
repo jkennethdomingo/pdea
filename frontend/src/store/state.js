@@ -161,4 +161,6 @@ export const state = {
   unassignedUpcomingTrainings: [],
   countOfUnassignedUpcomingTrainings: 0,
   employeeInformation: null,
+  employeeLeaveTypesWithBalance: [],
+  pendingLeaveRequests: [],
 };

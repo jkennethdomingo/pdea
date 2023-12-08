@@ -62,7 +62,7 @@ const startDate = ref('');
 const endDate = ref('');
 const reason = ref('');
 const EmployeeID = computed(() => store.state.employeeID);
-
+const leaveTypesWithBalance = computed(() => store.state.employeeLeaveTypesWithBalance);
 
 
 function openRightDrawer() {
@@ -73,15 +73,6 @@ function openRightDrawer() {
 
 
 // Fetch employees data
-
-async function fetchLeaveTypes() {
-  try {
-    const response = await apiService.post('/manageLeave/getAllLeaveTypes'); // Adjust the endpoint if needed
-    leaveTypes.value = response.data;
-  } catch (error) {
-    console.error('Error fetching leave types:', error);
-  }
-}
 
 
 
@@ -133,13 +124,13 @@ onMounted(async () => {
   if (EmployeeID.value) {
         try {
           await store.dispatch('fetchEmployeeInformation', EmployeeID.value);
+          await store.dispatch('fetchEmployeeLeaveTypesWithBalance', EmployeeID.value);
           updateEmployeeName(response.employee);
         } catch (error) {
           console.error('Failed to fetch employee information:', error);
           // Handle the error appropriately
         }
       }
-  await fetchLeaveTypes();
 });
 
 
@@ -239,14 +230,12 @@ function handleEvents(events) {
 <div class="mb-4">
     <label for="leaveTypeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Leave Type</label>
     <select v-model="leaveTypeId" id="leaveTypeSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-      <!-- Non-selectable placeholder option -->
-      <option disabled selected value="">Please select a leave type</option>
+  <option disabled value="">Please select a leave type</option>
+  <option v-for="type in leaveTypesWithBalance" :key="type.LeaveTypeID" :value="type.LeaveTypeID">
+    {{ type.LeaveTypeName }} ({{ type.RemainingBalance }} days remaining)
+  </option>
+</select>
 
-      <!-- Leave type options -->
-      <option v-for="type in leaveTypes" :key="type.LeaveTypeID" :value="type.LeaveTypeID">
-        {{ type.LeaveTypeName }}
-      </option>
-    </select>
   </div>
 
   <!-- Start Date Field -->

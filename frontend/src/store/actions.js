@@ -385,6 +385,32 @@ async fetchUnassignedUpcomingTrainings({ commit }) {
   }
 },
 
+async fetchEmployeeLeaveTypesWithBalance({ commit }, employeeID) {
+  try {
+    const response = await apiService.post('/manageLeave/getEmployeeLeaveTypesWithBalance', { EmployeeID: employeeID });
+    if (response.data && response.status === 200) {
+      commit('SET_EMPLOYEE_LEAVE_TYPES_WITH_BALANCE', response.data);
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch leave types with balance');
+    }
+  } catch (error) {
+    console.error('Error fetching leave types with balance:', error);
+  }
+},
+
+async fetchPendingLeaveRequests({ commit }) {
+  try {
+    const response = await apiService.post('/manageLeave/fetchPendingLeaveRequests');
+    if (response.data && response.status === 200) {
+      commit('SET_PENDING_LEAVE_REQUESTS', response.data);
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch pending leave requests');
+    }
+  } catch (error) {
+    console.error('Error fetching pending leave requests:', error);
+  }
+},
+
 async fetchCountOfUpcomingTrainingsWithNoAssignedEmployees({ commit }) {
   try {
     const response = await apiService.post('/hrDashboard/fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
