@@ -519,7 +519,7 @@ const handleSubmit = async () => {
       <!-- E-mail Address -->
       <div>
         <label for="email" class="block text-gray-700 text-sm dark:text-white mb-2">E-mail Address (if any):</label>
-        <input type="email" id="email" v-model="formData.Email" class="shadow border rounded w-full py-2 px-3 text-gray-800 dark:text-gray-200 leading-tight  dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline" placeholder="example@domain.com">
+        <input type="email" id="email" v-model="formData.Email" class="shadow border rounded w-full py-2 px-3 text-gray-800 dark:text-gray-200 leading-tight  dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline" placeholder="example@email.com">
       </div>
     </div>
       

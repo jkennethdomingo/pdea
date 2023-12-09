@@ -24,8 +24,6 @@
   </div>
 </template>
 
-
-
 <script setup>
 import { ref } from 'vue';
 import DynamicForm from '@/components/dynamic/DynamicForm.vue'; // Adjust the path as needed

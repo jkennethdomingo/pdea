@@ -10,7 +10,7 @@ defineProps({
 
     bgClasses: {
         type: String,
-        default: 'bg-white dark:bg-dark-eval-1',
+        default: 'bg-[#efeff4] dark:bg-dark-eval-1',
     },
 
     title: String,

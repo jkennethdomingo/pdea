@@ -41,7 +41,7 @@ const categories = ref({
       date: '',
     },
   ],
-  Denied: [
+  Rejected: [
     {
       id: 1,
       title: '',
@@ -578,7 +578,7 @@ function moveToday() {
         <template #footer>
           <div class="w-full px-4 pb-3">
             <button
-              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold w-full px-3 py-1 rounded-md"
+              class="bg-green-600 hover:bg-green-700 text-gray-200 font-bold w-full px-3 py-1 rounded-md"
               @click="moveToday"
             >
               Today
@@ -615,7 +615,7 @@ function moveToday() {
   <TabPanel
       v-for="(posts, category) in categories"
       :key="category"
-      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
+      class="rounded-xl bg-[#f5f5f7] dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
   >
       <ul>
           <li
@@ -657,7 +657,7 @@ function moveToday() {
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-[#0F172A] px-3 py-3 rounded-xl'>
+    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-[#f5f5f7] dark:bg-[#0F172A] px-3 py-7 rounded-xl border-2 border-gray-200 dark:border-gray-700'>
       <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
   </div>
