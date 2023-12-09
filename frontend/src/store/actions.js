@@ -477,7 +477,41 @@ async rejectLeave({ commit }, leaveRequestId) {
     console.error('Error approving leave request:', error);
     // Handle the error as needed
   }
-}
+},
+
+async fetchEmployeeLeaveRequests({ commit }, leaveRequestId) {
+  try {
+    const response = await apiService.post(`/manageLeave/fetchSortedLeaveRequestsByEmployeeID/${leaveRequestId}`); // Adjust the API endpoint as needed
+    if (response.data && response.status === 200) {
+      commit('SET_EMPLOYEE_LEAVE_REQUESTS', {
+        pending: response.data.pending,
+        approved: response.data.approved,
+        rejected: response.data.rejected
+      });
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch leave requests');
+    }
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+},
+
+async deleteEmployeeLeaveRequest({ commit }, leaveRequestId) {
+  try {
+    const response = await apiService.post(`/manageLeave/deleteLeaveRequest/${leaveRequestId}`);
+
+    if (response.status === 200) {
+      commit('REMOVE_EMPLOYEE_LEAVE_REQUEST', leaveRequestId);
+      // Optionally, show a success notification to the user
+    } else {
+      throw new Error(response.data.message || 'Failed to delete leave request');
+    }
+  } catch (error) {
+    console.error('Error deleting leave request:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+},
 
       
       

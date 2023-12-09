@@ -169,5 +169,10 @@ export const state = {
     rejected: []
   },
   employeePendingLeaves: [],
-  leaveApprovalResult: null
+  leaveApprovalResult: null,
+  employeeleaveRequests: {
+    pending: [],
+    approved: [],
+    rejected: []
+  },
 };

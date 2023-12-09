@@ -9,8 +9,7 @@ import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
 import apiService from '@/composables/axios-setup';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-
-
+import { isDark } from '@/composables';
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -37,9 +36,6 @@ function openRightDrawer() {
 
 
 // Fetch employees data
-
-
-
 
 // Function to handle form submission
 async function submitLeaveRequest() {
@@ -95,6 +91,11 @@ onMounted(async () => {
           // Handle the error appropriately
         }
       }
+    
+      await store.dispatch('fetchEmployeeLeaveRequests', EmployeeID.value);
+  setTimeout(() => {
+    isLoading.value = false; // Stop loading after a delay
+  }, 2000);
 });
 
 
@@ -143,29 +144,61 @@ function handleEvents(events) {
 }
 
 
+const formatTimeAgo = (dateString) => {
+  const now = new Date();
+  const requestedTime = new Date(dateString);
+  const differenceInMilliseconds = now - requestedTime;
+  const hours = differenceInMilliseconds / 36e5; // 36e5 milliseconds in an hour
+  const days = hours / 24;
+  const weeks = days / 7;
+  const months = days / 30; // approximate value for a month
+  const years = days / 365;
+
+  const pluralize = (value, word) => value === 1 ? `${value} ${word} ago` : `${value} ${word}s ago`;
+
+  if (hours < 24) {
+    return pluralize(Math.round(hours), 'hour');
+  } else if (days < 7) {
+    return pluralize(Math.round(days), 'day');
+  } else if (weeks < 4) {
+    return pluralize(Math.round(weeks), 'week');
+  } else if (months < 12) {
+    return pluralize(Math.round(months), 'month');
+  } else {
+    return pluralize(Math.round(years), 'year');
+  }
+};
+
 const categories = computed(() => ({
-  Pending: isLoading.value ? [] : store.state.leaveRequests.pending.map(request => ({
+  Pending: isLoading.value ? [] : store.state.employeeleaveRequests.pending.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName} requesting a leave`,
-    date: request.TimeRequested // Format this date as needed
+    date: formatTimeAgo(request.TimeRequested)
   })),
-  Approved: store.state.leaveRequests.approved.map(request => ({
+  Approved: store.state.employeeleaveRequests.approved.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName}'s leave request approved`,
-    date: request.TimeRequested // Format this date as needed
+    date: formatTimeAgo(request.TimeRequested)
   })),
-  Rejected: store.state.leaveRequests.rejected.map(request => ({
+  Rejected: store.state.employeeleaveRequests.rejected.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName}'s leave request rejected`,
-    date: request.TimeRequested // Format this date as needed
+    date: formatTimeAgo(request.TimeRequested)
   })),
 }));
+
 
 function moveToday() {
   const calendarApi = calendarRef.value.getApi();
   calendar.value.move(new Date());
     calendarApi.gotoDate(new Date());
 }
+
+const CancelRequest = async (id) => {
+  // Implement the denial logic, possibly dispatching a Vuex action
+  await store.dispatch('deleteEmployeeLeaveRequest', id);
+  await store.dispatch('fetchEmployeeLeaveRequests', EmployeeID.value);
+};
 
 </script>
 
@@ -268,7 +301,7 @@ function moveToday() {
 
 
     <!--Bawal-->
-<div class='flex flex-wrap min-h-full font-sans text-sm'>
+    <div class='flex flex-wrap min-h-full font-sans text-sm'>
   <!-- Left sidebar for mini calendar and TabGroup -->
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
@@ -288,7 +321,7 @@ function moveToday() {
     </div>
 
     <!-- TabGroup Component -->
-    <div class="max-w-xs px-2 py-1 sm:px-0">
+    <div class="max-w-xs px-2 py-0 sm:px-0">
       <TabGroup>
         <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
           <Tab
@@ -303,7 +336,7 @@ function moveToday() {
                       'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
                       selected
                           ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                          : 'text-blue-100 hover:bg-white/[0.12] hover:text-white',
+                          : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
                   ]"
               >
                   {{ category }}
@@ -311,31 +344,52 @@ function moveToday() {
           </Tab>
         </TabList>
         <TabPanels class="mt-2">
-  <TabPanel
-      v-for="(posts, category) in categories"
-      :key="category"
-      class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+          <TabPanel
+    v-for="(posts, category) in categories"
+    :key="category"
+    class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
   >
-      <ul>
-          <li
-              v-for="post in posts"
-              :key="post.id"
-              class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+    <div v-if="isLoading && category === 'Pending'">
+      Loading...
+    </div>
+    <ul v-else class="max-h-40 overflow-y-auto ">
+      <li
+        v-for="post in posts"
+        :key="post.id"
+        class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+      >
+        <h3 class="text-sm font-medium leading-5">
+          {{ post.title }}
+        </h3>
+        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300">
+          <li>{{ post.date }}</li>
+        </ul>
+        <!-- Conditionally render Approval and Denial Buttons -->
+        <div 
+          class="flex justify-end space-x-2 mt-2" 
+          v-if="category === 'Pending'"
+        >
+
+      <button
+        type="button"
+        @click="approveRequest(post.id)"
+        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+      >
+        View
+      </button>
+
+      
+
+
+          <button
+            @click="CancelRequest(post.id)"
+            class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
           >
-              <h3 class="text-sm font-medium leading-5">
-                  {{ post.title }}
-              </h3>
-              <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                  <li>{{ post.date }}</li>
-              </ul>
-              <!-- Conditionally render Approval and Denial Buttons -->
-              <div 
-                  class="flex justify-end space-x-2 mt-2" 
-                  v-if="category === 'Pending'"
-              >
-              </div>
-          </li>
-      </ul>
+            Cancel
+          </button>
+        </div>
+      </li>
+    </ul>
   </TabPanel>
 </TabPanels>
       </TabGroup>
@@ -344,7 +398,7 @@ function moveToday() {
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-3 rounded-xl'>
+    <div class="flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-[#0F172A] px-3 py-7 rounded-xl">
       <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
   </div>

@@ -184,6 +184,12 @@ SET_LEAVE_REQUESTS(state, { pending, approved, rejected }) {
   state.leaveRequests.rejected = rejected;
 },
 
+SET_EMPLOYEE_LEAVE_REQUESTS(state, { pending, approved, rejected }) {
+  state.employeeleaveRequests.pending = pending;
+  state.employeeleaveRequests.approved = approved;
+  state.employeeleaveRequests.rejected = rejected;
+},
+
 SET_EMPLOYEE_PENDING_LEAVES(state, leaves) {
   state.employeePendingLeaves = leaves;
 },
