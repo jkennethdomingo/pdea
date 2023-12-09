@@ -420,12 +420,12 @@ function handleWeekendsToggle() {
           <TabPanel
     v-for="(posts, category) in categories"
     :key="category"
-    class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+    class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
   >
     <div v-if="isLoading && category === 'Pending'">
       Loading...
     </div>
-    <ul v-else class="max-h-40 overflow-y-auto">
+    <ul v-else class="max-h-40 overflow-y-auto ">
       <li
         v-for="post in posts"
         :key="post.id"
@@ -522,8 +522,8 @@ function handleWeekendsToggle() {
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class="flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-7 rounded-xl">
-      <FullCalendar :is-dark="isDark" ref="calendarRef" :options="calendarOptions"></FullCalendar>
+    <div class="flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-[#0F172A] px-3 py-7 rounded-xl">
+      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
   </div>
 </div>
