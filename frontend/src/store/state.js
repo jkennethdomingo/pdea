@@ -163,4 +163,9 @@ export const state = {
   employeeInformation: null,
   employeeLeaveTypesWithBalance: [],
   pendingLeaveRequests: [],
+  leaveRequests: {
+    pending: [],
+    approved: [],
+    rejected: []
+  },
 };

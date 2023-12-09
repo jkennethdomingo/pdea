@@ -420,6 +420,24 @@ async fetchCountOfUpcomingTrainingsWithNoAssignedEmployees({ commit }) {
   }
 },
 
+async fetchLeaveRequests({ commit }) {
+  try {
+    const response = await apiService.post('/manageLeave/fetchSortedLeaveRequests'); // Adjust the API endpoint as needed
+    if (response.data && response.status === 200) {
+      commit('SET_LEAVE_REQUESTS', {
+        pending: response.data.pending,
+        approved: response.data.approved,
+        rejected: response.data.rejected
+      });
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch leave requests');
+    }
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+},
+
 
       
       

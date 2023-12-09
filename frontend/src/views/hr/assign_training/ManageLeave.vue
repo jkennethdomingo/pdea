@@ -128,7 +128,7 @@ onMounted(async () => {
   initFlowbite();
   await store.dispatch('getEmployeeOnLeave'); // Dispatch the action to fetch employee leave data
   isLoading.value = true; // Start loading
-  await store.dispatch('fetchPendingLeaveRequests');
+  await store.dispatch('fetchLeaveRequests');
   setTimeout(() => {
     isLoading.value = false; // Stop loading after a delay
   }, 2000);
@@ -171,23 +171,34 @@ const calendarOptions = ref({
 });
 
 const categories = computed(() => ({
-  Pending: isLoading.value ? [] : store.state.pendingLeaveRequests.map(request => ({
+  Pending: isLoading.value ? [] : store.state.leaveRequests.pending.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName} requesting a leave`,
     date: request.TimeRequested // Format this date as needed
   })),
-  Approved: [], // Populate these based on your Vuex state or API calls
-  Denied: [],   // Populate these based on your Vuex state or API calls
+  Approved: store.state.leaveRequests.approved.map(request => ({
+    id: request.LeaveID,
+    title: `${request.EmployeeName}'s leave request approved`,
+    date: request.TimeRequested // Format this date as needed
+  })),
+  Rejected: store.state.leaveRequests.rejected.map(request => ({
+    id: request.LeaveID,
+    title: `${request.EmployeeName}'s leave request rejected`,
+    date: request.TimeRequested // Format this date as needed
+  })),
 }));
 
-const approveRequest = (id) => {
-  console.log(id);
+// Method to approve a leave request
+const approveRequest = async (id) => {
+  // Implement the approval logic, possibly dispatching a Vuex action
+  console.log('Approve Request ID:', id);
 };
 
-const denyRequest = (id) => {
-  // Implement request denial logic
+// Method to deny a leave request
+const denyRequest = async (id) => {
+  // Implement the denial logic, possibly dispatching a Vuex action
+  console.log('Deny Request ID:', id);
 };
-
 
 function openAddEventDialog() {
   // Logic to open the dialog to add a new event

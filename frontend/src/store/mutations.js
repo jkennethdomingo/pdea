@@ -172,5 +172,10 @@ SET_EMPLOYEE_LEAVE_TYPES_WITH_BALANCE(state, leaveTypesWithBalance) {
 SET_PENDING_LEAVE_REQUESTS(state, leaveRequests) {
   state.pendingLeaveRequests = leaveRequests;
 },
+SET_LEAVE_REQUESTS(state, { pending, approved, rejected }) {
+  state.leaveRequests.pending = pending;
+  state.leaveRequests.approved = approved;
+  state.leaveRequests.rejected = rejected;
+},
     
 };
