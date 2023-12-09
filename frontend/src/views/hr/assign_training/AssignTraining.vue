@@ -589,7 +589,7 @@ function moveToday() {
     </div>
 
     <!-- TabGroup Component -->
-    <div class="max-w-xs px-2 py-1 sm:px-0">
+    <div class="max-w-xs px-2 py-0 sm:px-0">
       <TabGroup>
         <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
           <Tab
@@ -657,7 +657,7 @@ function moveToday() {
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-3 rounded-xl'>
+    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-[#0F172A] px-3 py-3 rounded-xl'>
       <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
   </div>
