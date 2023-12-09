@@ -69,6 +69,7 @@ export const actions = {
         try {
             commit('setIsSubmitting', true);
             const transformedFormData = transformFormData(state.formData);
+            console.log(transformedFormData);
             await apiService.post('employee/insert', transformedFormData);
             // Handle response here
         } catch (error) {
