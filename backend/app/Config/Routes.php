@@ -56,6 +56,7 @@ $routes->group('api', function($routes)
         $routes->post('validateAndDeductLeave', 'ManageLeaveController::validateAndDeductLeave');
         $routes->post('getEmployeeLeaveTypesWithBalance', 'ManageLeaveController::getEmployeeLeaveTypesWithBalance');
         $routes->post('fetchPendingLeaveRequests', 'ManageLeaveController::fetchPendingLeaveRequests');
+        $routes->post('fetchSortedLeaveRequests', 'ManageLeaveController::fetchSortedLeaveRequests');
     });
 
     // For Beta Testing

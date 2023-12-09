@@ -505,9 +505,75 @@ class ManageLeaveController extends ResourceController
         return $this->respond($response);
     }
 
-
+    public function fetchSortedLeaveRequests()
+    {
+        // Fetch and sort pending leaves
+        $pendingLeaves = $this->buildLeaveQuery('pending')->findAll();
+    
+        // Fetch and sort approved leaves
+        $approvedLeaves = $this->buildLeaveQuery('approved')->findAll();
+    
+        // Fetch and sort rejected leaves
+        $rejectedLeaves = $this->buildLeaveQuery('rejected')->findAll();
+    
+        // Prepare the response
+        $response = [
+            'pending' => $this->prepareLeaveResponse($pendingLeaves),
+            'approved' => $this->prepareLeaveResponse($approvedLeaves),
+            'rejected' => $this->prepareLeaveResponse($rejectedLeaves)
+        ];
+    
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+    
+    private function buildLeaveQuery($status)
+    {
+        return $this->employeeLeavesModel
+            ->select('
+                employee_leaves.id as LeaveID, 
+                employee_leaves.EmployeeID, 
+                employee_leaves.start_date, 
+                employee_leaves.end_date, 
+                employee_leaves.reason, 
+                employee_leaves.status,
+                employee_leaves.created_at,
+                personal_information.first_name, 
+                personal_information.surname, 
+                personal_information.photo, 
+                leave_type.LeaveTypeName, 
+                leave_balance.NumberofLeaves, 
+                leave_request_notes.Note as HRNote'
+            )
+            ->join('personal_information', 'personal_information.EmployeeID = employee_leaves.EmployeeID', 'left')
+            ->join('leave_type', 'leave_type.LeaveTypeID = employee_leaves.leave_type_id', 'left')
+            ->join('leave_balance', 'leave_balance.EmployeeID = employee_leaves.EmployeeID AND leave_balance.LeaveTypeID = employee_leaves.leave_type_id', 'left')
+            ->join('leave_request_notes', 'leave_request_notes.LeaveRequestID = employee_leaves.id', 'left')
+            ->where('employee_leaves.status', $status)
+            ->orderBy('employee_leaves.' . ($status === 'pending' ? 'start_date' : 'updated_at'), 'DESC');
+    }
+    
+    private function prepareLeaveResponse($leaves)
+    {
+        return array_map(function ($leave) {
+            return [
+                'LeaveID' => $leave['LeaveID'] ?? 'N/A',
+                'EmployeeID' => $leave['EmployeeID'] ?? 'N/A',
+                'EmployeeName' => isset($leave['first_name'], $leave['surname']) ? $leave['first_name'] . ' ' . $leave['surname'] : 'Unknown',
+                'EmployeePhoto' => $leave['photo'] ?? 'default_photo.jpg',
+                'LeaveTypeName' => $leave['LeaveTypeName'] ?? 'Not Specified',
+                'RemainingBalance' => $leave['NumberofLeaves'] ?? 'N/A',
+                'StartDate' => $leave['start_date'] ?? 'N/A',
+                'EndDate' => $leave['end_date'] ?? 'N/A',
+                'Reason' => $leave['reason'] ?? 'Not Provided',
+                'TimeRequested' => $leave['created_at'] ?? 'N/A',
+                'HRNote' => $leave['HRNote'] ?? 'No Note',
+            ];
+        }, $leaves);
+    }
     
 
+    
 
 
 }
