@@ -11,48 +11,10 @@ import apiService from '@/composables/axios-setup';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
 
-const categories = ref({
-  Pending: [
-    {
-      id: 1,
-      title: 'Request for leave sent successfully',
-      date: '5h ago',
-
-    },
-    {
-      id: 2,
-      title: "Request for leave sent successfully",
-      date: '10h ago',
-    },
-  ],
-  Approved: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: '',
-      date: '',
-    },
-  ],
-  Denied: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: "",
-      date: '',
-    },
-  ],
-})
 
 const store = useStore();
 const calendarRef = ref(null);
+const calendar = ref(null);
 const date = ref(new Date());
 const drawerRef = ref(null);
 const leaveTypes = ref([]);
@@ -62,6 +24,8 @@ const startDate = ref('');
 const endDate = ref('');
 const reason = ref('');
 const EmployeeID = computed(() => store.state.employeeID);
+
+const isLoading = ref(true); 
 const leaveTypesWithBalance = computed(() => store.state.employeeLeaveTypesWithBalance);
 
 
@@ -179,6 +143,30 @@ function handleEvents(events) {
 }
 
 
+const categories = computed(() => ({
+  Pending: isLoading.value ? [] : store.state.leaveRequests.pending.map(request => ({
+    id: request.LeaveID,
+    title: `${request.EmployeeName} requesting a leave`,
+    date: request.TimeRequested // Format this date as needed
+  })),
+  Approved: store.state.leaveRequests.approved.map(request => ({
+    id: request.LeaveID,
+    title: `${request.EmployeeName}'s leave request approved`,
+    date: request.TimeRequested // Format this date as needed
+  })),
+  Rejected: store.state.leaveRequests.rejected.map(request => ({
+    id: request.LeaveID,
+    title: `${request.EmployeeName}'s leave request rejected`,
+    date: request.TimeRequested // Format this date as needed
+  })),
+}));
+
+function moveToday() {
+  const calendarApi = calendarRef.value.getApi();
+  calendar.value.move(new Date());
+    calendarApi.gotoDate(new Date());
+}
+
 </script>
 
 <template>
@@ -285,7 +273,18 @@ function handleEvents(events) {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker is-dark="system" class="px-4" v-model="date" />
+      <VDatePicker  class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
+        <template #footer>
+          <div class="w-full px-4 pb-3">
+            <button
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold w-full px-3 py-1 rounded-md"
+              @click="moveToday"
+            >
+              Today
+            </button>
+          </div>
+        </template>
+     </VDatePicker>
     </div>
 
     <!-- TabGroup Component -->

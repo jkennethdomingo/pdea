@@ -463,6 +463,20 @@ async validateAndDeductLeave({ commit }, leaveRequestId) {
     console.error('Error approving leave request:', error);
     // Handle the error as needed
   }
+},
+
+async rejectLeave({ commit }, leaveRequestId) {
+  try {
+    const response = await apiService.post(`/manageLeave/rejectLeave/${leaveRequestId}`);
+    if (response.data && response.status === 200) {
+      commit('SET_LEAVE_APPROVAL_RESULT', response.data);
+    } else {
+      throw new Error(response.data.message || 'Failed to approve leave request');
+    }
+  } catch (error) {
+    console.error('Error approving leave request:', error);
+    // Handle the error as needed
+  }
 }
 
       

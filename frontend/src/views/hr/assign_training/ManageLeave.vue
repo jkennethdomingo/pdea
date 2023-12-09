@@ -240,7 +240,9 @@ const approveAndCloseModal = async (id) => {
 // Method to deny a leave request
 const denyRequest = async (id) => {
   // Implement the denial logic, possibly dispatching a Vuex action
-  console.log('Deny Request ID:', id);
+  await store.dispatch('rejectLeave', id);
+  await store.dispatch('getEmployeeOnLeave'); 
+  await store.dispatch('fetchLeaveRequests');
 };
 
 function openAddEventDialog() {
@@ -253,7 +255,6 @@ function handleDateSelect(selectInfo) {
   date.value = selectInfo.startStr;
   openRightDrawer();
 
-  console.log(leaveEvents.value)
 }
 
 async function handleEventClick(clickInfo) {
