@@ -8,9 +8,17 @@ export function transformFormData(formData) {
 
     Object.keys(formData).forEach(page => {
         Object.keys(formData[page]).forEach(field => {
-            transformedData[field] = formData[page][field];
+            // Check if the field is an array and handle it accordingly
+            if (Array.isArray(formData[page][field])) {
+                // If the field is an array, we need to preserve the array structure
+                transformedData[field] = formData[page][field].map(item => ({ ...item }));
+            } else {
+                // For non-array fields, assign them as before
+                transformedData[field] = formData[page][field];
+            }
         });
     });
 
     return transformedData;
 }
+
