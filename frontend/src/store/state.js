@@ -168,5 +168,6 @@ export const state = {
     approved: [],
     rejected: []
   },
-  employeePendingLeaves: []
+  employeePendingLeaves: [],
+  leaveApprovalResult: null
 };

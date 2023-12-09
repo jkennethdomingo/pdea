@@ -450,6 +450,19 @@ async fetchEmployeePendingLeaves({ commit }, employeeID) {
     console.error('Error fetching employee pending leaves:', error);
     // Handle the error as needed, e.g., by setting an error state or showing a notification
   }
+},
+async validateAndDeductLeave({ commit }, leaveRequestId) {
+  try {
+    const response = await apiService.post(`/manageLeave/validateAndDeductLeave/${leaveRequestId}`);
+    if (response.data && response.status === 200) {
+      commit('SET_LEAVE_APPROVAL_RESULT', response.data);
+    } else {
+      throw new Error(response.data.message || 'Failed to approve leave request');
+    }
+  } catch (error) {
+    console.error('Error approving leave request:', error);
+    // Handle the error as needed
+  }
 }
 
       

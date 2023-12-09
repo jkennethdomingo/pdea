@@ -57,64 +57,58 @@
         View
       </button>
 
-    <TransitionRoot appear :show="isOpen" as="template">
-      <Dialog as="div" @close="closeModal" class="relative z-10">
+      <TransitionRoot appear :show="isOpen" as="template">
+  <Dialog as="div" @close="closeModal" class="relative z-10">
+    <TransitionChild
+      as="template"
+      enter="duration-300 ease-out"
+      enter-from="opacity-0"
+      enter-to="opacity-100"
+      leave="duration-200 ease-in"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
+      <div class="fixed inset-0 bg-black/25" />
+    </TransitionChild>
+
+    <div class="fixed inset-0 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4 text-center">
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
+          enter-from="opacity-0 scale-95"
+          enter-to="opacity-100 scale-100"
           leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
+          leave-from="opacity-100 scale-100"
+          leave-to="opacity-0 scale-95"
         >
-          <div class="fixed inset-0 bg-black/25" />
-        </TransitionChild>
-  
-        <div class="fixed inset-0 overflow-y-auto">
-          <div
-            class="flex min-h-full items-center justify-center p-4 text-center"
-          >
-            <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED]  dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all"
+          <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
+            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
+              {{ selectedLeaveRequest.EmployeeName }} requesting a leave
+            </DialogTitle>
+            <div class="mt-2">
+              <p class="text-sm text-gray-800 dark:text-gray-200">
+                Reason for leave: {{ selectedLeaveRequest.Reason }}
+                <!-- Include other relevant details here -->
+              </p>
+            </div>
+
+            <div class="mt-4">
+              <button
+                type="button"
+                class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                @click="approveAndCloseModal(selectedLeaveRequest.id)"
               >
-                <DialogTitle
-                  as="h3"
-                  class="text-lg font-medium leading-6 text-green-800 dark:text-green-200"
-                >
-                  Doe User requesting a leave
-                </DialogTitle>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-800 dark:text-gray-200">
-                    Your payment has been successfully submitted. We’ve sent you
-                    an email with all of the details of your order.
-                  </p>
-                </div>
-  
-                <div class="mt-4">
-                  <button
-                    type="button"
-                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                    @click="closeModal"
-                  >
-                   Approve
-                  </button>
-                </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </div>
-      </Dialog>
-    </TransitionRoot>
+                Approve
+              </button>
+            </div>
+          </DialogPanel>
+        </TransitionChild>
+      </div>
+    </div>
+  </Dialog>
+</TransitionRoot>
+
 
 
           <button
@@ -156,6 +150,7 @@
  
  const store = useStore();
  const isLoading = ref(true); 
+ const selectedLeaveRequest = ref({});
  
  
  onMounted(async () => {
@@ -188,10 +183,19 @@
  
  // Method to approve a leave request
  const approveRequest = async (id) => {
-   // Implement the approval logic, possibly dispatching a Vuex action
-   console.log('Approve Request ID:', id);
-   isOpen.value = true
- };
+  try {
+    const leaveRequest = store.state.leaveRequests.pending.find(request => request.LeaveID === id);
+    if (leaveRequest) {
+      selectedLeaveRequest.value = leaveRequest;
+      // Then dispatch your Vuex action
+      await store.dispatch('approveLeaveRequest', id);
+      isOpen.value = true;
+    }
+  } catch (error) {
+    console.error('Error approving leave request:', error);
+  }
+};
+
  
  // Method to deny a leave request
  const denyRequest = async (id) => {
