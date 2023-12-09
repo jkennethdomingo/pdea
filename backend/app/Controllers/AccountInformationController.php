@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use Config\Services;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class AccountInformationController extends ResourceController
 {
@@ -226,45 +227,57 @@ class AccountInformationController extends ResourceController
     
 
     private function insertCivilServiceEligibility($json, $EmployeeID) {
-        // Check if civil service eligibility data is provided
-        if (!isset($json->civil_service_eligibility)) {
-            // Optionally handle the lack of civil service data
-            throw new \Exception('No civil service eligibility information provided.');
+        // Check if CivilService data is provided
+        if (!isset($json->CivilService)) {
+            // Optionally handle the lack of CivilService data
+            return $this->response->setStatusCode(400) // Bad Request
+                                  ->setJSON(['error' => 'No Civil Service eligibility information provided.']);
         }
     
-        // Assuming $json->civil_service_eligibility contains an array of civil service eligibility entries
-        foreach ($json->civil_service_eligibility as $eligibilityJson) {
-            $eligibilityData = [
-                'EmployeeID' => $EmployeeID,
-                'career_service' => $eligibilityJson->career_service,
-                'rating' => $eligibilityJson->rating,
-                'date_of_examination' => $eligibilityJson->date_of_examination,
-                'place_of_examination' => $eligibilityJson->place_of_examination,
-                'license_number' => $eligibilityJson->license_number ?? null,
-                'license_date_of_validity' => $eligibilityJson->license_date_of_validity ?? null,
-                // ... include other fields as necessary
-            ];
+        try {
+            // Assuming $json->CivilService contains an array of civil service eligibility entries
+            foreach ($json->CivilService as $eligibilityJson) {
+                $eligibilityData = [
+                    'EmployeeID' => $EmployeeID,
+                    'career_service' => $eligibilityJson->career_service,
+                    'rating' => $eligibilityJson->rating,
+                    'date_of_examination' => $eligibilityJson->date_of_examination,
+                    'place_of_examination' => $eligibilityJson->place_of_examination,
+                    'license_number' => $eligibilityJson->license_number ?? null,
+                    'license_date_of_validity' => $eligibilityJson->license_date_of_validity ?? null,
+                    // ... include other fields as necessary
+                ];
     
-            // Insert the data and check for success
-            if (!$this->CivilServiceEligibilityModel->insert($eligibilityData)) {
-                // If the insert failed, throw an exception
-                throw new \Exception('Failed to insert civil service eligibility information');
+                if (!$this->CivilServiceEligibilityModel->insert($eligibilityData)) {
+                    // If the insert failed, gather the errors
+                    $errors = $this->CivilServiceEligibilityModel->errors();
+                    error_log(print_r($errors, true));
+                    // Return a 500 Internal Server Error response
+                    return $this->response->setStatusCode(500)
+                                          ->setJSON(['error' => 'Failed to insert Civil Service eligibility information', 'details' => $errors]);
+                }
             }
-        }
     
-        // If all inserts were successful, return true
-        return true;
+            // If all inserts were successful, return a 201 Created response
+            return $this->response->setStatusCode(201)
+                                  ->setJSON(['message' => 'Civil Service eligibility information successfully inserted']);
+        } catch (\Exception $e) {
+            // Handle any other exceptions and return a 500 Internal Server Error response
+            return $this->response->setStatusCode(500)
+                                  ->setJSON(['error' => 'An error occurred while inserting Civil Service eligibility information', 'details' => $e->getMessage()]);
+        }
     }
+    
 
     private function insertWorkExperience($json, $EmployeeID) {
         // Check if work experience data is provided
-        if (!isset($json->work_experience)) {
+        if (!isset($json->WorkExperience)) {
             // Optionally handle the lack of work experience data
             throw new \Exception('No work experience information provided.');
         }
     
         // Assuming $json->work_experience contains an array of work experience entries
-        foreach ($json->work_experience as $experienceJson) {
+        foreach ($json->WorkExperience as $experienceJson) {
             $experienceData = [
                 'EmployeeID' => $EmployeeID,
                 'inclusive_dates_from' => $experienceJson->inclusive_dates_from,
@@ -291,13 +304,13 @@ class AccountInformationController extends ResourceController
     
     private function insertVoluntaryWork($json, $EmployeeID) {
         // Check if voluntary work data is provided
-        if (!isset($json->voluntary_work)) {
+        if (!isset($json->VoluntaryWork)) {
             // Optionally handle the lack of voluntary work data
             throw new \Exception('No voluntary work information provided.');
         }
     
         // Assuming $json->voluntary_work contains an array of voluntary work entries
-        foreach ($json->voluntary_work as $voluntaryWorkJson) {
+        foreach ($json->VoluntaryWork as $voluntaryWorkJson) {
             $voluntaryWorkData = [
                 'EmployeeID' => $EmployeeID,
                 'organization_name' => $voluntaryWorkJson->organization_name,
@@ -321,13 +334,13 @@ class AccountInformationController extends ResourceController
 
     private function insertTrainingPrograms($json, $EmployeeID) {
         // Check if training programs data is provided
-        if (!isset($json->training_programs)) {
+        if (!isset($json->LearningDevelopment)) {
             // Optionally handle the lack of training programs data
             throw new \Exception('No training programs information provided.');
         }
     
         // Assuming $json->training_programs contains an array of training program entries
-        foreach ($json->training_programs as $trainingJson) {
+        foreach ($json->LearningDevelopment as $trainingJson) {
             $trainingData = [
                 'EmployeeID' => $EmployeeID,
                 'title' => $trainingJson->title,
@@ -351,13 +364,13 @@ class AccountInformationController extends ResourceController
     
     private function insertOtherInformation($json, $EmployeeID) {
         // Check if voluntary work data is provided
-        if (!isset($json->other_information)) {
+        if (!isset($json->OtherInformation)) {
             // Optionally handle the lack of voluntary work data
             throw new \Exception('No voluntary work information provided.');
         }
     
         // Assuming $json->voluntary_work contains an array of voluntary work entries
-        foreach ($json->other_information as $otherInformationJson) {
+        foreach ($json->OtherInformation as $otherInformationJson) {
             $otherInformationData = [
                 'EmployeeID' => $EmployeeID,
                 'special_skills_hobbies' => $otherInformationJson->special_skills_hobbies ?? null,
@@ -555,11 +568,11 @@ class AccountInformationController extends ResourceController
         
         $this->insertOtherInformation($json, $EmployeeID);
 
-        $this->insertPDSheetQuestions($json, $EmployeeID);
+        // $this->insertPDSheetQuestions($json, $EmployeeID);
 
-        $this->insertReferences($json, $EmployeeID);
+        // $this->insertReferences($json, $EmployeeID);
 
-        $this->insertGovernmentIssuedIDs($json, $EmployeeID);
+        // $this->insertGovernmentIssuedIDs($json, $EmployeeID);
 
         $authRoleData = [
             'EmployeeID' => $EmployeeID,

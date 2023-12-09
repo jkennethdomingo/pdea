@@ -15,10 +15,6 @@ class Address extends Migration
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'EmployeeID' => [
-                'type' => 'VARCHAR',
-                'constraint' => 20,
-            ],
             'address_type' => [
                 'type' => 'ENUM("Residential", "Permanent")',
             ],
@@ -67,7 +63,6 @@ class Address extends Migration
         ]);
 
         $this->forge->addKey('address_id', true);
-        $this->forge->addForeignKey('EmployeeID', 'personal_information', 'EmployeeID', 'CASCADE', 'CASCADE');
         $this->forge->createTable('address');
     }
 
