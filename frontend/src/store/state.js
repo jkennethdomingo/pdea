@@ -168,4 +168,5 @@ export const state = {
     approved: [],
     rejected: []
   },
+  employeePendingLeaves: []
 };

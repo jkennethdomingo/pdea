@@ -1,13 +1,62 @@
 <template>
-    <div class="fixed inset-0 flex items-center justify-center">
+     <!-- TabGroup Component -->
+     <div class="max-w-xs px-2 py-0 sm:px-0">
+      <TabGroup>
+        <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+          <Tab
+              v-for="category in Object.keys(categories)"
+              as="template"
+              :key="category"
+              v-slot="{ selected }"
+          >
+              <button
+                  :class="[
+                      'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                      'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+                      selected
+                          ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                          : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
+                  ]"
+              >
+                  {{ category }}
+              </button>
+          </Tab>
+        </TabList>
+        <TabPanels class="mt-2">
+          <TabPanel
+    v-for="(posts, category) in categories"
+    :key="category"
+    class="rounded-xl bg-white dark:bg-dark-bg p-2 border-2 border-gray-200 dark:border-gray-700"
+  >
+    <div v-if="isLoading && category === 'Pending'">
+      Loading...
+    </div>
+    <ul v-else class="max-h-40 overflow-y-auto">
+      <li
+        v-for="post in posts"
+        :key="post.id"
+        class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+      >
+        <h3 class="text-sm font-medium leading-5">
+          {{ post.title }}
+        </h3>
+        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300">
+          <li>{{ post.date }}</li>
+        </ul>
+        <!-- Conditionally render Approval and Denial Buttons -->
+        <div 
+          class="flex justify-end space-x-2 mt-2" 
+          v-if="category === 'Pending'"
+        >
+
       <button
         type="button"
-        @click="openModal"
-        class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
+        @click="approveRequest(post.id)"
+        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
       >
-        Open dialog
+        View
       </button>
-    </div>
+
     <TransitionRoot appear :show="isOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
         <TransitionChild
@@ -36,16 +85,16 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED]  dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all"
               >
                 <DialogTitle
                   as="h3"
-                  class="text-lg font-medium leading-6 text-gray-900"
+                  class="text-lg font-medium leading-6 text-green-800 dark:text-green-200"
                 >
-                  Payment successful
+                  Doe User requesting a leave
                 </DialogTitle>
                 <div class="mt-2">
-                  <p class="text-sm text-gray-500">
+                  <p class="text-sm text-gray-800 dark:text-gray-200">
                     Your payment has been successfully submitted. We’ve sent you
                     an email with all of the details of your order.
                   </p>
@@ -54,10 +103,10 @@
                 <div class="mt-4">
                   <button
                     type="button"
-                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                     @click="closeModal"
                   >
-                    Got it, thanks!
+                   Approve
                   </button>
                 </div>
               </DialogPanel>
@@ -66,25 +115,89 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+
+          <button
+            @click="denyRequest(post.id)"
+            class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+          >
+            Deny
+          </button>
+        </div>
+      </li>
+    </ul>
+  </TabPanel>
+</TabPanels>
+      </TabGroup>
+    </div>
   </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import {
-    TransitionRoot,
-    TransitionChild,
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-  } from '@headlessui/vue'
-  
-  const isOpen = ref(true)
-  
-  function closeModal() {
-    isOpen.value = false
-  }
-  function openModal() {
-    isOpen.value = true
-  }
-  </script>
-  
+ <script setup>
+ import { ref, computed, onMounted, watch } from 'vue';
+ import { initFlowbite } from 'flowbite';
+ import { useStore } from 'vuex';
+ import Button from '@/components/base/Button';
+ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+ 
+ 
+   import {
+     TransitionRoot,
+     TransitionChild,
+     Dialog,
+     DialogPanel,
+     DialogTitle,
+   } from '@headlessui/vue'
+   
+   const isOpen = ref(false)
+   
+   function closeModal() {
+     isOpen.value = false
+   }
+ 
+ 
+ const store = useStore();
+ const isLoading = ref(true); 
+ 
+ 
+ onMounted(async () => {
+   initFlowbite();
+   isLoading.value = true; // Start loading
+   await store.dispatch('fetchLeaveRequests');
+   setTimeout(() => {
+     isLoading.value = false; // Stop loading after a delay
+   }, 2000);
+ });
+ 
+ 
+ const categories = computed(() => ({
+   Pending: isLoading.value ? [] : store.state.leaveRequests.pending.map(request => ({
+     id: request.LeaveID,
+     title: `${request.EmployeeName} requesting a leave`,
+     date: request.TimeRequested // Format this date as needed
+   })),
+   Approved: store.state.leaveRequests.approved.map(request => ({
+     id: request.LeaveID,
+     title: `${request.EmployeeName}'s leave request approved`,
+     date: request.TimeRequested // Format this date as needed
+   })),
+   Rejected: store.state.leaveRequests.rejected.map(request => ({
+     id: request.LeaveID,
+     title: `${request.EmployeeName}'s leave request rejected`,
+     date: request.TimeRequested // Format this date as needed
+   })),
+ }));
+ 
+ // Method to approve a leave request
+ const approveRequest = async (id) => {
+   // Implement the approval logic, possibly dispatching a Vuex action
+   console.log('Approve Request ID:', id);
+   isOpen.value = true
+ };
+ 
+ // Method to deny a leave request
+ const denyRequest = async (id) => {
+   // Implement the denial logic, possibly dispatching a Vuex action
+   console.log('Deny Request ID:', id);
+ };
+ 
+ 
+ </script>

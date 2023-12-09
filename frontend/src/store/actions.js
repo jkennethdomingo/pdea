@@ -438,7 +438,19 @@ async fetchLeaveRequests({ commit }) {
     // Handle the error as needed, e.g., by setting an error state or showing a notification
   }
 },
-
+async fetchEmployeePendingLeaves({ commit }, employeeID) {
+  try {
+    const response = await apiService.post(`/manageLeave/fetchPendingLeavesByEmployeeID/${employeeID}`); // Adjust the API endpoint as needed
+    if (response.data && response.status === 200) {
+      commit('SET_EMPLOYEE_PENDING_LEAVES', response.data.pending);
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch employee pending leaves');
+    }
+  } catch (error) {
+    console.error('Error fetching employee pending leaves:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+}
 
       
       
