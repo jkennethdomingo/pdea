@@ -95,6 +95,11 @@ export default [
             name: 'Backup and Restore',
             component: () => import('@/views/hr/beta/Backup.vue'),
           },
+          {
+            path: 'Betatest',
+            name: 'Betatest',
+            component: () => import('@/views/hr/beta/Betatest.vue'),
+          },
         ],
       },
       {

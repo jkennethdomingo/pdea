@@ -574,7 +574,7 @@ function moveToday() {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker ref="calendar" v-model="date" :is-dark="isDark">
+      <VDatePicker class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
         <template #footer>
           <div class="w-full px-4 pb-3">
             <button
@@ -638,7 +638,7 @@ function moveToday() {
                       @click="approveRequest(post.id)"
                       class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
                   >
-                      Approve
+                      View
                   </button>
                   <button
                       @click="denyRequest(post.id)"

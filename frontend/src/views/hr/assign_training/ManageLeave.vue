@@ -12,10 +12,35 @@ import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import apiService from '@/composables/axios-setup';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { isDark } from '@/composables';
+
+function moveToday() {
+  const calendarApi = calendarRef.value.getApi();
+  calendar.value.move(new Date());
+    calendarApi.gotoDate(new Date());
+}
+
+  import {
+    TransitionRoot,
+    TransitionChild,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+  } from '@headlessui/vue'
+  
+  const isOpen = ref(false)
+  
+  function closeModal() {
+    isOpen.value = false
+  }
+  function openModal() {
+    isOpen.value = true
+  }
 
 
 const store = useStore();
 const calendarRef = ref(null);
+const calendar = ref(null);
 const date = ref(new Date()); // Assuming this is your VDatePicker model
 const drawerRef = ref(null);
 const leaveTypes = ref([]);
@@ -335,11 +360,22 @@ function handleWeekendsToggle() {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker is-dark="system" class="px-4" v-model="date" />
+      <VDatePicker  class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
+        <template #footer>
+          <div class="w-full px-4 pb-3">
+            <button
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold w-full px-3 py-1 rounded-md"
+              @click="moveToday"
+            >
+              Today
+            </button>
+          </div>
+        </template>
+     </VDatePicker>
     </div>
 
     <!-- TabGroup Component -->
-    <div class="max-w-xs px-2 py-1 sm:px-0">
+    <div class="max-w-xs px-2 py-0 sm:px-0">
       <TabGroup>
         <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
           <Tab
@@ -354,7 +390,7 @@ function handleWeekendsToggle() {
                       'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
                       selected
                           ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                          : 'text-blue-100 hover:bg-white/[0.12] hover:text-white',
+                          : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
                   ]"
               >
                   {{ category }}
@@ -370,16 +406,16 @@ function handleWeekendsToggle() {
     <div v-if="isLoading && category === 'Pending'">
       Loading...
     </div>
-    <ul v-else>
+    <ul v-else class="max-h-40 overflow-y-auto">
       <li
         v-for="post in posts"
         :key="post.id"
-        class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+        class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
       >
         <h3 class="text-sm font-medium leading-5">
           {{ post.title }}
         </h3>
-        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300">
           <li>{{ post.date }}</li>
         </ul>
         <!-- Conditionally render Approval and Denial Buttons -->
@@ -387,12 +423,75 @@ function handleWeekendsToggle() {
           class="flex justify-end space-x-2 mt-2" 
           v-if="category === 'Pending'"
         >
-          <button
-            @click="approveRequest(post.id)"
-            class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
+
+      <button
+        type="button"
+        @click="openModal"
+        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+      >
+        View
+      </button>
+
+    <TransitionRoot appear :show="isOpen" as="template">
+      <Dialog as="div" @close="closeModal" class="relative z-10">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/25" />
+        </TransitionChild>
+  
+        <div class="fixed inset-0 overflow-y-auto">
+          <div
+            class="flex min-h-full items-center justify-center p-4 text-center"
           >
-            Approve
-          </button>
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED]  dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all"
+              >
+                <DialogTitle
+                  as="h3"
+                  class="text-lg font-medium leading-6 text-green-800 dark:text-green-200"
+                >
+                  Doe User requesting a leave
+                </DialogTitle>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-800 dark:text-gray-200">
+                    Your payment has been successfully submitted. We’ve sent you
+                    an email with all of the details of your order.
+                  </p>
+                </div>
+  
+                <div class="mt-4">
+                  <button
+                    type="button"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                    @click="closeModal"
+                  >
+                   Approve
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+
           <button
             @click="denyRequest(post.id)"
             class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
@@ -410,8 +509,8 @@ function handleWeekendsToggle() {
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-3 rounded-xl'>
-      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+    <div class="flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-7 rounded-xl">
+      <FullCalendar :is-dark="isDark" ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
   </div>
 </div>

@@ -80,5 +80,12 @@ const isAssignRouteActive = () => {
             :active="isCurrentRoute('Backup and Restore')"
         >
         </SidebarLink>
+        <SidebarLink
+            icon="ic:round-people"
+            :to="{ name: 'Betatest' }"
+            title="Testingan"
+            :active="isCurrentRoute('Betatest')"
+        >
+        </SidebarLink>
     </PerfrectScrollbar>
 </template>
