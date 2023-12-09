@@ -504,7 +504,7 @@ CREATE TABLE `employee_leaves` (
   KEY `employee_leaves_leave_type_id_foreign` (`leave_type_id`),
   CONSTRAINT `employee_leaves_EmployeeID_foreign` FOREIGN KEY (`EmployeeID`) REFERENCES `personal_information` (`EmployeeID`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `employee_leaves_leave_type_id_foreign` FOREIGN KEY (`leave_type_id`) REFERENCES `leave_type` (`LeaveTypeID`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -513,7 +513,7 @@ CREATE TABLE `employee_leaves` (
 
 LOCK TABLES `employee_leaves` WRITE;
 /*!40000 ALTER TABLE `employee_leaves` DISABLE KEYS */;
-INSERT INTO `employee_leaves` VALUES (1,'ABC',4,'2023-11-28','2023-11-28','Fever','approved','2023-11-27 19:29:41','2023-11-27 19:29:41'),(14,'USER123',1,'2023-11-29','2023-11-29','None','approved','2023-11-28 03:55:01','2023-11-28 03:55:01'),(15,'USER123',1,'2023-11-30','2023-12-03','Lagnat','approved','2023-11-28 04:01:06','2023-11-28 04:01:06'),(16,'EMP12345',1,'2023-12-04','2023-12-08','Hello','approved','2023-11-28 19:14:53','2023-11-28 19:14:53'),(17,'XYZ',2,'2023-12-08','2023-12-08','Sick','approved','2023-12-04 16:22:49','2023-12-04 16:22:49');
+INSERT INTO `employee_leaves` VALUES (1,'ABC',4,'2023-11-28','2023-11-28','Fever','approved','2023-11-27 19:29:41','2023-11-27 19:29:41'),(14,'USER123',1,'2023-11-29','2023-11-29','None','approved','2023-11-28 03:55:01','2023-11-28 03:55:01'),(15,'USER123',1,'2023-11-30','2023-12-03','Lagnat','approved','2023-11-28 04:01:06','2023-11-28 04:01:06'),(16,'EMP12345',1,'2023-12-04','2023-12-08','Hello','approved','2023-11-28 19:14:53','2023-11-28 19:14:53'),(17,'XYZ',2,'2023-12-08','2023-12-08','Sick','approved','2023-12-04 16:22:49','2023-12-04 16:22:49'),(18,'USER123',4,'2023-12-27','2023-12-28','Sick','pending','2023-12-08 13:18:06','2023-12-08 13:18:06');
 /*!40000 ALTER TABLE `employee_leaves` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -715,6 +715,35 @@ INSERT INTO `leave_balance` VALUES (2,1,'EMP12345',0,'2023-11-12 07:03:32','2023
 UNLOCK TABLES;
 
 --
+-- Table structure for table `leave_request_notes`
+--
+
+DROP TABLE IF EXISTS `leave_request_notes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `leave_request_notes` (
+  `NoteID` int unsigned NOT NULL AUTO_INCREMENT,
+  `LeaveRequestID` int unsigned NOT NULL,
+  `Note` text,
+  `CreatedBy` varchar(50) NOT NULL,
+  `CreatedAt` datetime NOT NULL,
+  `TypeOfNote` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`NoteID`),
+  KEY `leave_request_notes_LeaveRequestID_foreign` (`LeaveRequestID`),
+  CONSTRAINT `leave_request_notes_LeaveRequestID_foreign` FOREIGN KEY (`LeaveRequestID`) REFERENCES `employee_leaves` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `leave_request_notes`
+--
+
+LOCK TABLES `leave_request_notes` WRITE;
+/*!40000 ALTER TABLE `leave_request_notes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `leave_request_notes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `leave_type`
 --
 
@@ -757,7 +786,7 @@ CREATE TABLE `migrations` (
   `time` int NOT NULL,
   `batch` int unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -766,7 +795,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'2023-11-19-055920','App\\Database\\Migrations\\PersonalInformation','default','App',1700393599,1),(2,'2023-11-19-060041','App\\Database\\Migrations\\AuthenticationRole','default','App',1700393599,1),(3,'2023-11-19-060156','App\\Database\\Migrations\\EmployeeAuthrole','default','App',1700393599,1),(4,'2023-11-19-060258','App\\Database\\Migrations\\Section','default','App',1700393599,1),(5,'2023-11-19-060355','App\\Database\\Migrations\\EmployeeSection','default','App',1700393599,1),(6,'2023-11-19-060453','App\\Database\\Migrations\\LeaveType','default','App',1700393599,1),(7,'2023-11-19-060549','App\\Database\\Migrations\\LeaveBalance','default','App',1700393599,1),(8,'2023-11-19-060644','App\\Database\\Migrations\\Designation','default','App',1700393599,1),(9,'2023-11-19-060808','App\\Database\\Migrations\\EmployeeDesignation','default','App',1700393599,1),(10,'2023-11-19-061244','App\\Database\\Migrations\\Position','default','App',1700393599,1),(11,'2023-11-19-061355','App\\Database\\Migrations\\EmployeePosition','default','App',1700393599,1),(12,'2023-11-19-061719','App\\Database\\Migrations\\FamilyBackground','default','App',1700393599,1),(13,'2023-11-19-061814','App\\Database\\Migrations\\Children','default','App',1700393599,1),(14,'2023-11-19-062043','App\\Database\\Migrations\\Address','default','App',1700393599,1),(15,'2023-11-19-062133','App\\Database\\Migrations\\EducationalBackground','default','App',1700393599,1),(16,'2023-11-19-062224','App\\Database\\Migrations\\TrainingPrograms','default','App',1700393599,1),(17,'2023-11-19-062323','App\\Database\\Migrations\\CivilServiceEligibility','default','App',1700393599,1),(18,'2023-11-19-062410','App\\Database\\Migrations\\WorkExperience','default','App',1700393599,1),(19,'2023-11-19-062531','App\\Database\\Migrations\\VoluntaryWork','default','App',1700393599,1),(20,'2023-11-19-062618','App\\Database\\Migrations\\OtherInformation','default','App',1700393599,1),(21,'2023-11-19-062749','App\\Database\\Migrations\\PdSheetQuestions','default','App',1700393599,1),(22,'2023-11-19-062835','App\\Database\\Migrations\\ReferencesTbl','default','App',1700393600,1),(23,'2023-11-19-062919','App\\Database\\Migrations\\GovernmentIssuedIds','default','App',1700393600,1),(24,'2023-11-19-063337','App\\Database\\Migrations\\Department','default','App',1700393600,1),(25,'2023-11-19-063617','App\\Database\\Migrations\\ProvincialOffice','default','App',1700393600,1),(26,'2023-11-19-063727','App\\Database\\Migrations\\RegionalOffice','default','App',1700393600,1),(27,'2023-11-19-064540','App\\Database\\Migrations\\Procurement','default','App',1700393600,1),(28,'2023-11-19-065040','App\\Database\\Migrations\\AssetType','default','App',1700393600,1),(29,'2023-11-19-065134','App\\Database\\Migrations\\Asset','default','App',1700393600,1),(30,'2023-11-19-065747','App\\Database\\Migrations\\AssetStatus','default','App',1700393600,1),(31,'2023-11-19-065941','App\\Database\\Migrations\\AssetLocation','default','App',1700393600,1),(32,'2023-11-19-070316','App\\Database\\Migrations\\AssetAudit','default','App',1700393600,1),(33,'2023-11-19-071243','App\\Database\\Migrations\\Training','default','App',1700393600,1),(34,'2023-11-19-071320','App\\Database\\Migrations\\InternalEmployeeTraining','default','App',1700393600,1),(35,'2023-11-19-071521','App\\Database\\Migrations\\EmployeeAddress','default','App',1700393600,1),(36,'2023-11-19-105500','App\\Database\\Migrations\\ProcurementStatus','default','App',1700393693,2),(37,'2023-11-19-111102','App\\Database\\Migrations\\ProcurementUpdate','default','App',1700393693,2),(38,'2023-11-19-151828','App\\Database\\Migrations\\ProcurementStatusUpdate','default','App',1700407238,3),(39,'2023-11-19-232824','App\\Database\\Migrations\\ProcurementStatusUpdate','default','App',1700436665,4),(40,'2023-11-20-002108','App\\Database\\Migrations\\PersonalInformationPhoto','default','App',1700439686,5),(41,'2023-11-23-101630','App\\Database\\Migrations\\Trainingupdate1','default','App',1700734775,6),(42,'2023-11-23-152523','App\\Database\\Migrations\\EmployeeTrainingUpdate','default','App',1700753168,7),(43,'2023-11-24-012406','App\\Database\\Migrations\\CreateEmployeeLeave','default','App',1700789117,8),(44,'2023-11-26-104428','App\\Database\\Migrations\\Updateonemployeeleave','default','App',1700995483,9);
+INSERT INTO `migrations` VALUES (1,'2023-11-19-055920','App\\Database\\Migrations\\PersonalInformation','default','App',1700393599,1),(2,'2023-11-19-060041','App\\Database\\Migrations\\AuthenticationRole','default','App',1700393599,1),(3,'2023-11-19-060156','App\\Database\\Migrations\\EmployeeAuthrole','default','App',1700393599,1),(4,'2023-11-19-060258','App\\Database\\Migrations\\Section','default','App',1700393599,1),(5,'2023-11-19-060355','App\\Database\\Migrations\\EmployeeSection','default','App',1700393599,1),(6,'2023-11-19-060453','App\\Database\\Migrations\\LeaveType','default','App',1700393599,1),(7,'2023-11-19-060549','App\\Database\\Migrations\\LeaveBalance','default','App',1700393599,1),(8,'2023-11-19-060644','App\\Database\\Migrations\\Designation','default','App',1700393599,1),(9,'2023-11-19-060808','App\\Database\\Migrations\\EmployeeDesignation','default','App',1700393599,1),(10,'2023-11-19-061244','App\\Database\\Migrations\\Position','default','App',1700393599,1),(11,'2023-11-19-061355','App\\Database\\Migrations\\EmployeePosition','default','App',1700393599,1),(12,'2023-11-19-061719','App\\Database\\Migrations\\FamilyBackground','default','App',1700393599,1),(13,'2023-11-19-061814','App\\Database\\Migrations\\Children','default','App',1700393599,1),(14,'2023-11-19-062043','App\\Database\\Migrations\\Address','default','App',1700393599,1),(15,'2023-11-19-062133','App\\Database\\Migrations\\EducationalBackground','default','App',1700393599,1),(16,'2023-11-19-062224','App\\Database\\Migrations\\TrainingPrograms','default','App',1700393599,1),(17,'2023-11-19-062323','App\\Database\\Migrations\\CivilServiceEligibility','default','App',1700393599,1),(18,'2023-11-19-062410','App\\Database\\Migrations\\WorkExperience','default','App',1700393599,1),(19,'2023-11-19-062531','App\\Database\\Migrations\\VoluntaryWork','default','App',1700393599,1),(20,'2023-11-19-062618','App\\Database\\Migrations\\OtherInformation','default','App',1700393599,1),(21,'2023-11-19-062749','App\\Database\\Migrations\\PdSheetQuestions','default','App',1700393599,1),(22,'2023-11-19-062835','App\\Database\\Migrations\\ReferencesTbl','default','App',1700393600,1),(23,'2023-11-19-062919','App\\Database\\Migrations\\GovernmentIssuedIds','default','App',1700393600,1),(24,'2023-11-19-063337','App\\Database\\Migrations\\Department','default','App',1700393600,1),(25,'2023-11-19-063617','App\\Database\\Migrations\\ProvincialOffice','default','App',1700393600,1),(26,'2023-11-19-063727','App\\Database\\Migrations\\RegionalOffice','default','App',1700393600,1),(27,'2023-11-19-064540','App\\Database\\Migrations\\Procurement','default','App',1700393600,1),(28,'2023-11-19-065040','App\\Database\\Migrations\\AssetType','default','App',1700393600,1),(29,'2023-11-19-065134','App\\Database\\Migrations\\Asset','default','App',1700393600,1),(30,'2023-11-19-065747','App\\Database\\Migrations\\AssetStatus','default','App',1700393600,1),(31,'2023-11-19-065941','App\\Database\\Migrations\\AssetLocation','default','App',1700393600,1),(32,'2023-11-19-070316','App\\Database\\Migrations\\AssetAudit','default','App',1700393600,1),(33,'2023-11-19-071243','App\\Database\\Migrations\\Training','default','App',1700393600,1),(34,'2023-11-19-071320','App\\Database\\Migrations\\InternalEmployeeTraining','default','App',1700393600,1),(35,'2023-11-19-071521','App\\Database\\Migrations\\EmployeeAddress','default','App',1700393600,1),(36,'2023-11-19-105500','App\\Database\\Migrations\\ProcurementStatus','default','App',1700393693,2),(37,'2023-11-19-111102','App\\Database\\Migrations\\ProcurementUpdate','default','App',1700393693,2),(38,'2023-11-19-151828','App\\Database\\Migrations\\ProcurementStatusUpdate','default','App',1700407238,3),(39,'2023-11-19-232824','App\\Database\\Migrations\\ProcurementStatusUpdate','default','App',1700436665,4),(40,'2023-11-20-002108','App\\Database\\Migrations\\PersonalInformationPhoto','default','App',1700439686,5),(41,'2023-11-23-101630','App\\Database\\Migrations\\Trainingupdate1','default','App',1700734775,6),(42,'2023-11-23-152523','App\\Database\\Migrations\\EmployeeTrainingUpdate','default','App',1700753168,7),(43,'2023-11-24-012406','App\\Database\\Migrations\\CreateEmployeeLeave','default','App',1700789117,8),(44,'2023-11-26-104428','App\\Database\\Migrations\\Updateonemployeeleave','default','App',1700995483,9),(45,'2023-12-08-222319','App\\Database\\Migrations\\CreateLeaveRequestNotesTable','default','App',1702074305,10),(46,'2023-12-08-230032','App\\Database\\Migrations\\AlterLeaveRequestNotesTable','default','App',1702076451,11);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1241,4 +1270,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-08 20:45:04
+-- Dump completed on 2023-12-09 12:22:08
