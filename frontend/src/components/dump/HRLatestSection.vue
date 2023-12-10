@@ -2,7 +2,7 @@
 import { onMounted, computed } from 'vue';
 import BaseCard from '@/components/ui/BaseCard.vue'
 import Button from '@/components/base/Button.vue'
-import Calendar from '@/components/dashboard/HRCalendarOfEvents.vue'
+import Calendar from '@/components/dump/HRCalendarOfEvents.vue'
 import { Icon } from '@iconify/vue'
 import { useStore } from 'vuex';
 
