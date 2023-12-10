@@ -205,6 +205,52 @@ class AssignTrainingController extends ResourceController
     
         return $this->respond($data);
     }
+
+    public function getTrainingbyID($id)
+    {
+        // Start building the query
+        $builder = $this->trainingModel->builder();
+        
+        // Specify the columns you want to select
+        $builder->select('
+            training.*,
+            GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+            GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
+            GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+            GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids
+        ', false);
+        
+        // Join with the internal_employee_training table and personal_information table
+        $builder->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left');
+        $builder->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left');
+        
+        // Add a where clause for the title
+        $builder->where('training.training_id', $id);
+        
+        // Add a group by clause to consolidate the results by training ID
+        $builder->groupBy('training.training_id');
+        
+        // Execute the query and get the result
+        $query = $builder->get();
+        $trainingData = $query->getResultArray();
+    
+        // Process each training record to convert photos and employee_ids into arrays
+        foreach ($trainingData as &$training) {
+            // Split the concatenated string of photos and employee IDs into arrays
+            $training['first_names'] = array_filter(explode(',', $training['first_names']));
+            $training['surnames'] = array_filter(explode(',', $training['surnames']));
+            $training['photos'] = array_filter(explode(',', $training['photos']));
+            $training['employee_ids'] = array_filter(explode(',', $training['employee_ids']));
+        }
+        unset($training); // Break the reference with the last element
+    
+        // Prepare the data for the response
+        $data = [
+            'training' => $trainingData,
+        ];
+    
+        return $this->respond($data);
+    }
     
 
 
