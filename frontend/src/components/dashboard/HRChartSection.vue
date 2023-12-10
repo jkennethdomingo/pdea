@@ -54,7 +54,7 @@ onMounted(async () => {
   let earningChart = new ApexCharts(earningChartEl.value, {
     series: [30, 70],
         chart: {
-            type: 'donut',
+            type: 'pie',
             toolbar: {
                 show: false,
             },
@@ -167,25 +167,25 @@ onMounted(async () => {
                 </div>
 
                 <!-- Earning card -->
-                <BaseCard noHeader class="grid grid-cols-2">
-                    <div class="grid grid-cols-1 gap-4">
-                        <h4 class="text-2xl font-medium">Employee Status Distribution</h4>
-                        <p class="text-lg font-medium text-gray-500">
-                            This Month
-                        </p>
-                        <p class="text-base font-medium text-green-400">
-                            +20.5%
-                        </p>
-                        <p class="text-2xl font-medium text-gray-600">
-                            $5070.80
-                        </p>
-                    </div>
+                <BaseCard noHeader class="grid grid-cols-2 items-center"> <!-- Added items-center for vertical alignment -->
+                <div class="flex flex-col gap-2"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                    <h4 class="text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
+                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
+                        This Month
+                    </p>
+                    <p class="text-base font-medium text-green-400">
+                        +20.5%
+                    </p>
+                    <p class="text-2xl font-medium text-gray-800 dark:text-gray-200">
+                        $5070.80
+                    </p>
+                </div>
 
-                    <!-- Donut chart -->
-                    <div class="w-full h-fullflex items-center justify-center">
-                        <div ref="earningChartEl"></div>
-                    </div>
-                </BaseCard>
+                <!-- Donut chart with corrected classes -->
+                <div class="flex w-full h-full items-center justify-center"> <!-- Corrected class list for flexbox layout -->
+                    <div ref="earningChartEl"></div>
+                </div>
+            </BaseCard>
             </div>
 
             <!-- Bar chart -->
