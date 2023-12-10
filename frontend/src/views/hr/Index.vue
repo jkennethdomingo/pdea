@@ -1,8 +1,8 @@
 <script setup>
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import HRStatisticsSection from '@/components/dashboard/HRStatisticsSection.vue'
-import HRSalesSection from '@/components/dashboard/HRSalesSection.vue'
-import HRLatestSection from '@/components/dashboard/HRLatestSection.vue'
+import HRSalesSection from '@/components/dashboard/HRChartSection.vue'
+import HRLatestSection from '@/components/dashboard/HRUpcomingSection.vue'
 </script>
 
 <template>

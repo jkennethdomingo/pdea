@@ -217,5 +217,11 @@ SET_ACTIVE_PPE_DATA(state, data) {
 },
 SET_ARCHIVED_PPE_DATA(state, data) {
   state.archivedPPEData = Object.values(data).flat();
-}
+},
+setActiveEmployees(state, count) {
+  state.activeEmployees = count;
+},
+setTodayTrainingCount(state, count) {
+  state.todayTrainingCount = count;
+},
 };

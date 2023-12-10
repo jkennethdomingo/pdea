@@ -139,9 +139,9 @@ export const state = {
     employeeInfo: [],
     EmployeeOnLeave: [],
     todaysLeavesCount: 0,
-    todaysTrainingCount: 0,
+    todayTrainingCount: 0,
     todaysOnTrainingCount: 0,
-    ActiveEmployeesCount: 0,
+    activeEmployeesCount: 0,
     employeeStatusPercentages: {
         activePercentage: 0,
         onTrainingPercentage: 0,

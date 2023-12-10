@@ -576,7 +576,22 @@ async getPropertyPlantAndEquipment({ commit }) {
   } finally {
     commit('SET_LOADING', false);
   }
-}
+},
+
+async fetchChartCountData({ commit }) {
+  const apiUrl = 'hrDashboard';
+
+  try {
+    const activeEmployeesResponse = await apiService.post(`${apiUrl}/getActiveEmployeesCount`);
+    commit('setActiveEmployees', activeEmployeesResponse.data.activeEmployeesCount);
+
+    const todayTrainingResponse = await apiService.post(`${apiUrl}/getTodayTrainingCount`);
+    commit('setTodayTrainingCount', todayTrainingResponse.data.todaysTrainingCount);
+  } catch (error) {
+    console.error('API fetch error:', error);
+    // You may want to add additional error handling or notify the user.
+  }
+},
       
       
 };

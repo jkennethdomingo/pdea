@@ -1,130 +1,85 @@
 <script setup>
-import { onMounted, computed, watch } from 'vue';
-import { useStore } from 'vuex';
+import { onMounted, ref } from 'vue';
+import apiService from '@/composables/axios-setup';
 import QuiclStatisticsCard from '@/components/ui/QuiclStatisticsCard.vue'
 
-const store = useStore();
+const apiUrl = 'hrDashboard';
 
-onMounted(() => {
-    store.dispatch('fetchTodaysLeavesCount');
-    store.dispatch('fetchTodaysTrainingCount');
-    store.dispatch('fetchTodaysOnTrainingCount');
-    store.dispatch('fetchTodaysActiveEmployeeCount');
-    store.dispatch('fetchActiveEmployeesLast13Days');
-    store.dispatch('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
-});
+const customersData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
+const visitsData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13].reverse()
+const ordersData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
+const growthData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
 
-const todaysLeavesCount = computed(() => store.state.todaysLeavesCount);
-const todaysTrainingCount = computed(() => store.state.todaysTrainingCount);
-const todaysOnTrainingCount = computed(() => store.state.todaysOnTrainingCount);
-const todaysActiveEmployeeCount = computed(() => store.state.ActiveEmployeesCount);
-const activeEmployeesLast13Days = computed(() => store.state.activeEmployeesLast13Days);
-const activeEmployeesPercentagesLast13Days = computed(() => store.state.activeEmployeesPercentagesLast13Days);
-const countOfUnassignedUpcomingTrainings = computed(() => store.state.countOfUnassignedUpcomingTrainings);
+const trainingParticipants = ref([]);
+const employeesOnLeave = ref([]);
+const pendingLeave = ref([]);
+const unassignedTraining = ref([]);
 
-const transformedActiveEmployeeData = computed(() => {
-  return activeEmployeesLast13Days.value.map(data => data.activeCount);
-});
-const transformedActiveEmployeePercentages = computed(() => {
-  return activeEmployeesPercentagesLast13Days.value.map(data => data.activePercentage);
-});
 
-const percentageChangeFromLastDay = computed(() => {
-  if (activeEmployeesLast13Days.value.length > 1) {
-    const lastDayIndex = activeEmployeesLast13Days.value.length - 1;
-    const lastDayCount = activeEmployeesLast13Days.value[lastDayIndex].activeCount;
-    const secondLastDayCount = activeEmployeesLast13Days.value[lastDayIndex - 1].activeCount;
+onMounted(async () => {
+  try {
+    const trainingResponse = await apiService.post(`${apiUrl}/getTodayOnTrainingCount`);
+    trainingParticipants.value = trainingResponse.data.todaysOnTrainingCount;
 
-    if (secondLastDayCount === 0) {
-      return lastDayCount > 0 ? '100%' : '0%'; // If the second last day had 0, it's either an increase from 0 to a positive number or no change (0 to 0)
-    } else {
-      const change = lastDayCount - secondLastDayCount;
-      const percentageChange = (change / secondLastDayCount) * 100;
-      return percentageChange.toFixed(2) + '%'; // Return the change as a formatted percentage string
-    }
+    const onLeaveResponse = await apiService.post(`${apiUrl}/getTodaysLeavesCount`);
+    employeesOnLeave.value = onLeaveResponse.data.todaysLeavesCount;
+
+    const pendingLeaveResponse = await apiService.post(`${apiUrl}/fetchPendingLeaveCount`);
+    pendingLeave.value = pendingLeaveResponse.data.pendingLeavesCount;
+
+    const pendingTrainingResponse = await apiService.post(`${apiUrl}/fetchCountOfUpcomingTrainingsWithNoAssignedEmployees`);
+    unassignedTraining.value = pendingTrainingResponse.data.data; 
+    
+  } catch (error) {
+    console.error("API fetch error:", error);
   }
-
-  return '0%'; // Default to 0% if there's not enough data
 });
-
-const activeEmployeeStatus = computed(() => {
-  if (activeEmployeesLast13Days.value.length > 1) {
-    const lastDayIndex = activeEmployeesLast13Days.value.length - 1;
-    const lastDayCount = activeEmployeesLast13Days.value[lastDayIndex].activeCount;
-    const secondLastDayCount = activeEmployeesLast13Days.value[lastDayIndex - 1].activeCount;
-
-    if (secondLastDayCount === 0) {
-      return lastDayCount > 0 ? 'success' : 'warning'; // If the second last day had 0, it's either an increase from 0 to a positive number or no change (0 to 0)
-    } else {
-      const change = lastDayCount - secondLastDayCount;
-      const percentageChange = (change / secondLastDayCount) * 100;
-      
-      if (change > 0) {
-        return 'success';
-      } else if (change < 0) {
-        return 'danger';
-      }
-    }
-  }
-
-  return 'warning'; // Default to 'warning' if there's not enough data or no change
-});
-
-
-
-const onLeaveData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
-const trainingData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
-
 </script>
 
 <template>
     <section class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <h2 class="sr-only">Quick statistics</h2>
 
-        <!-- Customers card -->
+        <!-- Training Participants card -->
         <QuiclStatisticsCard
-        title="Active Employees"
-        class="dark:text-green-300"
-        :chartData="transformedActiveEmployeeData"
-        :result="todaysActiveEmployeeCount"
-        :percentage="percentageChangeFromLastDay" 
-        :status="activeEmployeeStatus"
-        :actions="[{ title: 'View', to: '#' }]"
-        icon="clarity:employee-group-solid"
-        />
-
-       <!-- Training card -->
-       <QuiclStatisticsCard
-            title="Training Participation"
-            class="dark:text-green-300"
-            :chartData="trainingData"
-            :result="todaysOnTrainingCount"
-            status="danger"
-            percentage="-2.10%"
+            title="Training Participants"
+            :chartData="customersData"
+            :result="trainingParticipants"
+            percentage="32.40%"
             :actions="[{ title: 'View', to: '#' }]"
             icon="healthicons:i-training-class"
         />
 
-        <!-- Orders card -->
+        <!-- Employees on Leave card -->
         <QuiclStatisticsCard
-        title="Leave Status Today"
-        class="dark:text-green-300"
-        :chartData="onLeaveData"
-        :result="todaysLeavesCount"
-        percentage="0.60%" 
-        :actions="[{ title: 'View', to: '#' }]"
-        icon="fluent-mdl2:leave-user"
-    />
-
-        <!-- Growth card -->
-        <QuiclStatisticsCard
-            title="Unassigned Training"
-            class="dark:text-green-300"
-            :chartData="trainingData"
-            :result="countOfUnassignedUpcomingTrainings"
-            percentage="7.20%" 
+            title="Employees on Leave"
+            :chartData="visitsData"
+            :result="employeesOnLeave"
+            status="danger"
+            percentage="-2.10%"
             :actions="[{ title: 'View', to: '#' }]"
-            icon="fa-solid:users"
+            icon="fluent-mdl2:leave-user"
+        />
+
+        <!-- Pending Leave Requests card -->
+        <QuiclStatisticsCard
+            title="Pending Leave Requests"
+            :chartData="ordersData"
+            :result="pendingLeave"
+            status="warning"
+            percentage="0.60%"
+            :actions="[{ title: 'View', to: '#' }]"
+            icon="material-symbols:pending-actions"
+        />
+
+        <!-- Unassigned Trainings card -->
+        <QuiclStatisticsCard
+            title="Unassigned Trainings"
+            :chartData="growthData"
+            :result="unassignedTraining"
+            percentage="7.20%"
+            :actions="[{ title: 'View', to: '#' }]"
+            icon="subway:missing"
         />
     </section>
 </template>

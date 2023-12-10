@@ -638,6 +638,7 @@ const trainingsMap = computed(() => ({
     <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
       <Tab
         v-for="category in Object.keys(trainingCategories)"
+        as="template"
         :key="category"
         v-slot="{ selected }"
       >
