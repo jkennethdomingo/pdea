@@ -40,7 +40,7 @@ const attributes = ref([
     highlight: true,
     dates: { start: new Date(2019, 3, 15), end: new Date(2019, 3, 19) },
     highlight: {
-      color: 'blue',
+      color: 'green',
       fillMode: 'solid',
       contentClass: 'italic',
     },
