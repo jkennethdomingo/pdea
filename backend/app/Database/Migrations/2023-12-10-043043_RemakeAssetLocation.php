@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AssetLocation extends Migration
+class RemakeAssetLocation extends Migration
 {
     public function up()
     {
@@ -23,15 +23,22 @@ class AssetLocation extends Migration
             'EmployeeID' => [
                 'type' => 'VARCHAR',
                 'constraint' => '20',
+                'null' => true, // Making it nullable
             ],
             'department_id' => [
                 'type' => 'INT',
+                'null' => true, // Making it nullable
             ],
             'provincial_office_id' => [
                 'type' => 'INT',
+                'constraint' => 11,
+                'null' => true, // Making it nullable
             ],
             'regional_office_id' => [
                 'type' => 'INT',
+                'constraint' => 11,
+                'unsigned' => true,
+                'null' => true, // Making it nullable
             ],
             'remarks_whereabouts' => [
                 'type' => 'TEXT',
@@ -49,17 +56,17 @@ class AssetLocation extends Migration
         ]);
 
         $this->forge->addKey('location_id', true);
-        $this->forge->addForeignKey('asset_id', 'asset', 'asset_id');
-        $this->forge->addForeignKey('EmployeeID', 'personal_information', 'EmployeeID');
-        $this->forge->addForeignKey('department_id', 'department', 'department_id');
-        $this->forge->addForeignKey('provincial_office_id', 'provincial_office', 'provincial_office_id');
-        $this->forge->addForeignKey('regional_office_id', 'regional_office', 'regional_office_id');
+        $this->forge->addForeignKey('asset_id', 'asset', 'asset_id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('EmployeeID', 'personal_information', 'EmployeeID', 'SET NULL', 'CASCADE');
+        $this->forge->addForeignKey('department_id', 'department', 'department_id', 'SET NULL', 'CASCADE');
+        $this->forge->addForeignKey('provincial_office_id', 'provincial_office', 'provincial_office_id', 'SET NULL', 'CASCADE');
+        $this->forge->addForeignKey('regional_office_id', 'regional_office', 'regional_office_id', 'SET NULL', 'CASCADE');
 
         $this->forge->createTable('asset_location');
     }
 
     public function down()
     {
-        $this->forge->dropTable('asset_location');
+        //
     }
 }

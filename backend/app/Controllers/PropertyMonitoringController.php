@@ -47,7 +47,6 @@ class PropertyMonitoringController extends ResourceController
             'property_number' => $formData->property_number,
             'unit_of_measure' => $formData->unit_of_measure,
             'unit_value' => $formData->unit_value,
-            'item_status' => $formData->status,
         ];
         $this->assetModel->insert($assetData);
         $asset_id = $this->assetModel->getInsertID();
