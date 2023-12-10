@@ -113,7 +113,7 @@ export default [
                 {
                   path: '',
                   name: 'Assign Training',
-                  component: () => import('@/views/hr/assign_training/MainAssignTraining.vue'),
+                  component: () => import('@/views/hr/assign_training/AssignTraining.vue'),
                 },
               ],
             },
