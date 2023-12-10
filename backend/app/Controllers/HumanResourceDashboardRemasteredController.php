@@ -123,4 +123,21 @@ class HumanResourceDashboardRemasteredController extends ResourceController
         $result = $query->getRowArray();
         return (int)$result['NumberOfActiveEmployees'];
     }
+
+    public function getTodayTrainingCount()
+    {
+        $count = $this->countTodayTraining();
+        return $this->respond(['todaysTrainingCount' => $count]);
+    }
+
+    private function countTodayTraining() {
+        $currentDate = date('Y-m-d');
+        $builder = $this->trainingModel->builder();
+        $builder->select('COUNT(*) as NumberOfTrainingsToday');
+        $builder->where('period_from <=', $currentDate);
+        $builder->where('period_to >=', $currentDate);
+        $query = $builder->get();
+        $result = $query->getRowArray();
+        return (int)$result['NumberOfTrainingsToday'];
+    }
 }
