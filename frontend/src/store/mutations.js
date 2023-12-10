@@ -195,6 +195,16 @@ SET_EMPLOYEE_PENDING_LEAVES(state, leaves) {
 },
 SET_LEAVE_APPROVAL_RESULT(state, result) {
   state.leaveApprovalResult = result;
-}
+},
+SET_TRAININGS_WITHOUT_EMPLOYEES(state, trainings) {
+  state.trainingsWithoutEmployees = trainings;
+},
+SET_TRAINING_SESSIONS(state, { unassigned_or_pending, upcoming, finished }) {
+  state.trainingSessions = {
+    unassigned_or_pending,
+    upcoming,
+    finished
+  };
+},
     
 };

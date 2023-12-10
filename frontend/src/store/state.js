@@ -175,4 +175,10 @@ export const state = {
     approved: [],
     rejected: []
   },
+  trainingsWithoutEmployees: [],
+  trainingSessions: {
+    unassigned_or_pending: [],
+    upcoming: [],
+    finished: []
+  },
 };

@@ -513,6 +513,39 @@ async deleteEmployeeLeaveRequest({ commit }, leaveRequestId) {
   }
 },
 
+async fetchTrainingsWithoutEmployees({ commit }) {
+  try {
+    const response = await apiService.post('/manageTraining/fetchUpcomingTrainingsWithoutEmployees'); // Adjust the API endpoint as needed
+    if (response.data && response.status === 200) {
+      commit('SET_TRAININGS_WITHOUT_EMPLOYEES', response.data.trainings);
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch trainings without employees');
+    }
+  } catch (error) {
+    console.error('Error fetching trainings without employees:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+},
+
+async fetchTrainingSessions({ commit }) {
+  try {
+    const response = await apiService.post('/manageTraining/fetchSortedTrainingSessions'); // Adjust the API endpoint as needed
+    if (response.data && response.status === 200) {
+      commit('SET_TRAINING_SESSIONS', {
+        unassigned_or_pending: response.data.unassigned_or_pending,
+        upcoming: response.data.upcoming,
+        finished: response.data.finished
+      });
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch training sessions');
+    }
+  } catch (error) {
+    console.error('Error fetching training sessions:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+},
+
+
       
       
 };

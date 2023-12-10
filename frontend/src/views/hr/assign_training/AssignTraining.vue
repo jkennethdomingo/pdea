@@ -55,7 +55,7 @@ const categories = ref({
   ],
 })
 
-
+const isLoading = ref(true); 
 const store = useStore();
 const calendarRef = ref(null);
 const calendar = ref(null);
@@ -151,6 +151,15 @@ onMounted(async () => {
   initFlowbite();
   await store.dispatch('getTraining'); // Dispatch the action to fetch training data
   await store.dispatch('fetchEmployeeInfo');
+  isLoading.value = true; // Start loading
+  await store.dispatch('fetchTrainingsWithoutEmployees');
+  setTimeout(() => {
+    isLoading.value = false; // Stop loading after a delay
+  }, 2000);
+  await store.dispatch('fetchTrainingSessions');
+  setTimeout(() => {
+    isLoading.value = false; // Stop loading after a delay
+  }, 2000);
 });
 
 const calendarOptions = ref({
@@ -279,6 +288,25 @@ const updateEmployeeList = (employeeId) => {
   }
 };
 
+const trainingCategories = computed(() => ({
+  UnassignedOrPending: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session is pending`,
+    date: session.CreatedAt // Format this date as needed
+  })),
+  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session is upcoming`,
+    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
+  })),
+  Finished: store.state.trainingSessions.finished.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has finished`,
+    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
+  })),
+}));
+
+
 
 const addEvent = async () => {
   await store.dispatch('addEvent', newEvent.value);
@@ -309,6 +337,14 @@ function moveToday() {
   calendar.value.move(new Date());
     calendarApi.gotoDate(new Date());
 }
+
+const trainingsMap = computed(() => ({
+  Upcoming: store.state.trainingsWithoutEmployees.map(training => ({
+    id: training.training_id,
+    title: `Training: ${training.title}`,
+    date: training.period_from // Format this date as needed
+  }))
+}))
 
 </script>
 
@@ -591,67 +627,61 @@ function moveToday() {
     <!-- TabGroup Component -->
     <div class="max-w-xs px-2 py-0 sm:px-0">
       <TabGroup>
-        <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-          <Tab
-              v-for="category in Object.keys(categories)"
-              as="template"
-              :key="category"
-              v-slot="{ selected }"
-          >
-              <button
-                  :class="[
-                      'w-full rounded-lg py-1 text-sm font-medium leading-5', 
-                      'ring-gray-800 ring-offset-black focus:outline-none focus:ring-2',
-                      selected
-                          ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                          : 'text-gray-800 dark:text-gray-100 hover:bg-green-400 hover:text-white',
-                  ]"
-              >
-                  {{ category }}
-              </button>
-          </Tab>
-        </TabList>
-        <TabPanels class="mt-2">
-  <TabPanel
-      v-for="(posts, category) in categories"
-      :key="category"
-      class="rounded-xl bg-[#f5f5f7] dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
-  >
-      <ul>
-          <li
-              v-for="post in posts"
-              :key="post.id"
-              class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
-          >
-              <h3 class="text-sm font-medium leading-5">
-                  {{ post.title }}
-              </h3>
-              <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                  <li>{{ post.date }}</li>
-              </ul>
-              <!-- Conditionally render Approval and Denial Buttons -->
-              <div 
-                  class="flex justify-end space-x-2 mt-2" 
-                  v-if="category === 'Pending'"
-              >
-                  <button
-                      @click="approveRequest(post.id)"
-                      class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
-                  >
-                      View
-                  </button>
-                  <button
-                      @click="denyRequest(post.id)"
-                      class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
-                  >
-                      Deny
-                  </button>
-              </div>
-          </li>
-      </ul>
-  </TabPanel>
-</TabPanels>
-      </TabGroup>
+    <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+        <Tab
+            v-for="category in Object.keys(trainingCategories)"
+            :key="category"
+            v-slot="{ selected }"
+        >
+            <button
+                :class="[
+                    'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                    'ring-gray-800 ring-offset-black focus:outline-none focus:ring-2',
+                    selected
+                        ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                        : 'text-gray-800 dark:text-gray-100 hover:bg-green-400 hover:text-white',
+                ]"
+            >
+                {{ category }}
+            </button>
+        </Tab>
+    </TabList>
+    <TabPanels class="mt-2">
+        <TabPanel
+            v-for="(sessions, category) in trainingCategories"
+            :key="category"
+            class="rounded-xl bg-[#f5f5f7] dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
+        >
+            <ul>
+                <li
+                    v-for="session in sessions"
+                    :key="session.id"
+                    class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+                >
+                    <h3 class="text-sm font-medium leading-5">
+                        {{ session.title }}
+                    </h3>
+                    <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+                        <li>{{ session.date }}</li>
+                    </ul>
+                    <!-- Conditionally render View Details button for Upcoming and Finished sessions -->
+                    <div 
+                        class="flex justify-end space-x-2 mt-2" 
+                        v-if="category === 'Upcoming' || category === 'Finished'"
+                    >
+                        <button
+                            @click="viewDetails(session.id)"
+                            class="text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-xs px-4 py-1"
+                        >
+                            View Details
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </TabPanel>
+    </TabPanels>
+</TabGroup>
+
     </div>
   </div>
 
