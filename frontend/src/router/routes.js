@@ -179,6 +179,11 @@ export default [
                   name: 'LG_Property_Add',
                   component: () => import('@/views/logistics/manage_inventory/LG_Property_Add.vue'),
                   },
+                {
+                  path: 'addBeta',
+                  name: 'LG_Property_Add_Beta',
+                  component: () => import('@/views/logistics/manage_inventory/LG_Manage_Property.vue'),
+                  },
             ],
           },
           

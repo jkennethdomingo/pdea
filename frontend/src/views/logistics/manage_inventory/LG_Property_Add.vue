@@ -84,7 +84,7 @@ const submitForm = async () => {
   <PageWrapper>
 
   <form @submit.prevent="submitForm">
-    <Button class="dark:bg-green-600" :to="{ name: 'LG_Property_Monitoring' }">View Details</Button>
+    <Button class="dark:bg-green-600" :to="{ name: 'LG_Property_Add_Beta' }">View Details</Button>
 <div class="grid grid-cols-3 gap-4 pt-2">
   <div>
         <label for="article" class="block text-gray-700 text-sm dark:text-white mb-2">Article:</label>

@@ -59,6 +59,14 @@ const isCurrentPath = (path) => {
         >
         </SidebarLink>
 
+        <SidebarLink
+            icon="mdi:property-tag"
+            :to="{ name: 'LG_Property_Add_Beta' }"
+            title="addBeta"
+            :active="isCurrentPath('/logistics/lg/property_management')"
+        >
+        </SidebarLink>
+
         
     </PerfrectScrollbar>
 </template>
