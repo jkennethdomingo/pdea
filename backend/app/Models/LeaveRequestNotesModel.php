@@ -15,7 +15,7 @@ class LeaveRequestNotesModel extends Model
     protected $allowedFields    = ['LeaveRequestID', 'Note', 'CreatedBy', 'CreatedAt', 'TypeOfNote'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'CreatedAt';
     protected $updatedField  = 'updated_at';

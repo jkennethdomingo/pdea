@@ -432,8 +432,14 @@ class ManageLeaveController extends ResourceController
         }
     }
 
-    public function rejectLeave($leaveRequestId) {
-        // Validate the leave request ID
+    public function rejectLeave() {
+        // Get JSON payload
+        $json = $this->request->getJSON();
+        $leaveRequestId = $json->leaveRequestId ?? null;
+        $employeeId = $json->employeeId ?? null; // Get the admin's employee ID
+        $rejectionReason = $json->rejectionReason ?? '';
+    
+        // Validate the leave request ID and the employee ID
         if (!is_numeric($leaveRequestId) || $leaveRequestId <= 0) {
             return $this->fail('Invalid leave request ID.', 400);
         }
@@ -449,16 +455,44 @@ class ManageLeaveController extends ResourceController
             return $this->fail('Leave request is already processed or not in a state that can be rejected.', 400);
         }
     
-        // Update the leave request status to 'Archived' or 'Rejected'
+        // Begin a transaction
+        $this->employeeLeavesModel->transStart();
+    
+        // Update the leave request status to 'rejected'
         $updateResult = $this->employeeLeavesModel->update($leaveRequestId, ['status' => 'rejected']);
         if (!$updateResult) {
-            // Handle the error appropriately, log it if necessary
+            // If the update fails, roll back the transaction and return an error
+            $this->employeeLeavesModel->transRollback();
             return $this->fail('Failed to reject the leave request.', 500);
+        }
+    
+        // Insert a leave request note with the rejection reason
+        $noteData = [
+            'LeaveRequestID' => $leaveRequestId,
+            'Note' => $rejectionReason,
+            'CreatedBy' => $employeeId, // Use the provided admin's employee ID
+            'CreatedAt' => date('Y-m-d H:i:s'), // Use the current date and time
+            'TypeOfNote' => 'rejection'
+        ];
+        $noteResult = $this->leaveRequestNotesModel->insert($noteData);
+        if (!$noteResult) {
+            // If the note insert fails, roll back the transaction
+            $this->employeeLeavesModel->transRollback();
+            return $this->fail('Failed to add the rejection note.', 500);
+        }
+    
+        // If everything is fine, commit the transaction
+        $this->employeeLeavesModel->transComplete();
+    
+        if ($this->employeeLeavesModel->transStatus() === false) {
+            // If the transaction failed to commit, return an error
+            return $this->fail('Transaction failed: could not reject the leave request and add the note.', 500);
         }
     
         // Success response
         return $this->respondUpdated(['message' => 'Leave request rejected successfully.']);
     }
+    
     
 
     public function getEmployeeLeaveTypesWithBalance()

@@ -38,6 +38,7 @@ $routes->group('api', function($routes)
 
     $routes->group('ppeMonitoring', function($routes) {
         $routes->post('getAssetType', 'PropertyMonitoringController::getAssetType');
+        $routes->post('insertAssetData', 'PropertyMonitoringController::insertAssetData');
     }); //PP&E Monitoring
 
     $routes->group('manageTraining', function($routes) {
@@ -64,7 +65,7 @@ $routes->group('api', function($routes)
         $routes->post('fetchPendingLeaveRequests', 'ManageLeaveController::fetchPendingLeaveRequests');
         $routes->post('fetchSortedLeaveRequests', 'ManageLeaveController::fetchSortedLeaveRequests');
         $routes->post('fetchPendingLeavesByEmployeeID/(:any)', 'ManageLeaveController::fetchPendingLeavesByEmployeeID/$1');
-        $routes->post('rejectLeave/(:any)', 'ManageLeaveController::rejectLeave/$1');
+        $routes->post('rejectLeave', 'ManageLeaveController::rejectLeave');
         $routes->post('fetchSortedLeaveRequestsByEmployeeID/(:any)', 'ManageLeaveController::fetchSortedLeaveRequestsByEmployeeID/$1');
         $routes->post('deleteLeaveRequest/(:num)', 'ManageLeaveController::deleteLeaveRequest/$1');
     });
