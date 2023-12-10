@@ -561,7 +561,22 @@ async getAssetType({ commit }) {
     // Handle the error as needed, e.g., by setting an error state or showing a notification
   }
 },
-
+async getPropertyPlantAndEquipment({ commit }) {
+  commit('SET_LOADING', true);
+  try {
+    const response = await apiService.post('/ppeMonitoring/getPropertyPlantAndEquipment'); // Adjusted endpoint
+    if (response.data.success) {
+      commit('SET_ACTIVE_PPE_DATA', response.data.data.active);
+      commit('SET_ARCHIVED_PPE_DATA', response.data.data.archived);
+    } else {
+      console.error(response.data.message);
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    commit('SET_LOADING', false);
+  }
+}
       
       
 };

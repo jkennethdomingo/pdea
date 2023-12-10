@@ -209,4 +209,13 @@ SET_TRAINING_SESSIONS(state, { unassigned_or_pending, upcoming, finished }) {
 SET_ASSET_TYPE_DROPDOWN(state, asset_type) {
   state.asset_type = asset_type;
 },   
+SET_LOADING(state, isLoading) {
+  state.isLoading = isLoading;
+},
+SET_ACTIVE_PPE_DATA(state, data) {
+  state.activePPEData = Object.values(data).flat();
+},
+SET_ARCHIVED_PPE_DATA(state, data) {
+  state.archivedPPEData = Object.values(data).flat();
+}
 };
