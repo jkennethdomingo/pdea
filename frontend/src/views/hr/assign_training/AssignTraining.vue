@@ -679,7 +679,7 @@ const trainingsMap = computed(() => ({
                 v-if="category === 'Unassigned'"
                 type="button"
                 @click="assignTraining(session.id)"
-                class="text-white bg-blue-600 hover:bg-blue-800 rounded-lg text-xs px-4 py-1"
+                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
               >
                 Assign
               </button>
