@@ -2,9 +2,8 @@
 import { ref, watch, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
 import PageWrapper from '@/components/layout/PageWrapper.vue';
-import procurementStatusData from '@/assets/json/procurement_status.json';
-import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
+import apiService from '@/composables/axios-setup';
 
 
 const store = useStore();
@@ -56,25 +55,22 @@ const clearForm = () => {
 const isSubmitting = ref(false);
 
 const submitForm = async () => {
-  if (isSubmitting.value) {
-    return; // Prevents further execution if a submission is already in progress
-  }
-
   try {
-    isSubmitting.value = true; // Indicates that submission is in progress
-
-    // Dispatch the Vuex action with the form data
-    await store.dispatch('addInventory', formData.value);
-    successToast('Form submitted successfully.');
-    clearForm();
-
-    // Optionally, handle post-submission logic (e.g., clear form, show success message)
+    // You might want to validate formData here or set a loading state
+    const response = await apiService.post('/ppeMonitoring/insertAssetData', formData.value);
+    
+    // Handle the successful submission
+    if (response.data.success) {
+      // Commit the response data to the store if necessary
+      // e.g., commit('addAsset', response.data.asset)
+      console.log('Form submitted successfully:', response.data.message);
+      // Here you could redirect to another route or clear the form
+    } else {
+      throw new Error(response.data.message || 'Form submission failed');
+    }
   } catch (error) {
     console.error('Error submitting form:', error);
-    errorToast('Error submitting form. Please try again.');
-    // Handle the error, e.g., show an error message to the user
-  } finally {
-    isSubmitting.value = false; // Resets the submission state
+    // Handle the error (e.g., show a notification or set an error state)
   }
 };
 
