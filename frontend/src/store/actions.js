@@ -465,19 +465,22 @@ async validateAndDeductLeave({ commit }, leaveRequestId) {
   }
 },
 
-async rejectLeave({ commit }, leaveRequestId) {
+async rejectLeave({ commit }, payload) {
   try {
-    const response = await apiService.post(`/manageLeave/rejectLeave/${leaveRequestId}`);
+    // The payload should contain leaveRequestId, employeeId, and rejectionReason
+    const response = await apiService.post('/manageLeave/rejectLeave', payload);
+
     if (response.data && response.status === 200) {
-      commit('SET_LEAVE_APPROVAL_RESULT', response.data);
+      commit('SET_LEAVE_REJECTION_RESULT', response.data); // Make sure to have a mutation for rejection results
     } else {
-      throw new Error(response.data.message || 'Failed to approve leave request');
+      throw new Error(response.data.message || 'Failed to reject leave request');
     }
   } catch (error) {
-    console.error('Error approving leave request:', error);
-    // Handle the error as needed
+    console.error('Error rejecting leave request:', error);
+    // Handle the error as needed, possibly commit another mutation to set error state
   }
 },
+
 
 async fetchEmployeeLeaveRequests({ commit }, leaveRequestId) {
   try {
@@ -545,6 +548,19 @@ async fetchTrainingSessions({ commit }) {
   }
 },
 
+async getAssetType({ commit }) {
+  try {
+    const response = await apiService.post('/ppeMonitoring/getAssetType'); // Adjust the API endpoint as needed
+    if (response.data && response.status === 200) {
+      commit('SET_ASSET_TYPE_DROPDOWN', response.data.asset_type);
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch asset type');
+    }
+  } catch (error) {
+    console.error('Error fetching asset type:', error);
+    // Handle the error as needed, e.g., by setting an error state or showing a notification
+  }
+},
 
       
       

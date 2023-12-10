@@ -7,7 +7,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
-import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import apiService from '@/composables/axios-setup';
@@ -30,12 +29,16 @@ function moveToday() {
   
   const isOpen = ref(false)
   const isOpenDeny = ref(false)
+  const currentDenyId = ref(null);
+
 
   function closeModal() {
     isOpen.value = false
+    isOpenDeny.value = false
   }
 
-  function openModalDeny() {
+  function openModalDeny(id) {
+    currentDenyId.value = id;
     isOpenDeny.value = true
   }
 
@@ -54,8 +57,10 @@ const endDate = ref('');
 const reason = ref('');
 const employeesOnLeave = ref([]);
 const isLoading = ref(true); 
+const rejectionReason = ref('');
 
 const selectedLeaveRequest = ref({});
+const EmployeeID = computed(() => store.state.employeeID);
 
 
 function openRightDrawer() {
@@ -240,12 +245,21 @@ const approveAndCloseModal = async (id) => {
 }
 
 // Method to deny a leave request
-const denyRequest = async (id) => {
-  // Implement the denial logic, possibly dispatching a Vuex action
-  await store.dispatch('rejectLeave', id);
-  await store.dispatch('getEmployeeOnLeave'); 
-  await store.dispatch('fetchLeaveRequests');
-};
+  const denyRequest = async () => {
+    if (currentDenyId.value != null) {
+      const payload = {
+        leaveRequestId: currentDenyId.value,
+        employeeId: EmployeeID.value, // Include the admin's employee ID
+        rejectionReason: rejectionReason.value // Assume you have a reactive variable for the reason
+      };
+      await store.dispatch('rejectLeave', payload);
+      await store.dispatch('getEmployeeOnLeave'); 
+      await store.dispatch('fetchLeaveRequests');
+      currentDenyId.value = null; // Reset the ID after use
+      isOpenDeny.value = false; // Close the modal
+    }
+  };
+
 
 function openAddEventDialog() {
   // Logic to open the dialog to add a new event
@@ -510,7 +524,7 @@ function handleWeekendsToggle() {
     <!-- New Deny Button -->
     <button
       type="button"
-      @click="openModalDeny"
+      @click="openModalDeny(post.id)"
       class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
     >
       Deny
@@ -553,7 +567,7 @@ function handleWeekendsToggle() {
                 Reason for Rejection...
               </DialogTitle>
               <div class="mt-2">
-                <textarea 
+                <textarea v-model="rejectionReason"
                   class="textarea textarea-success w-full border border-green-500 p-2 rounded-md focus:ring focus:ring-green-300 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700" 
                   placeholder="Let us know what's on your mind..."
                 ></textarea>
@@ -563,7 +577,7 @@ function handleWeekendsToggle() {
                 <button
                   type="button"
                   class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  @close="closeModal"
+                  @click="denyRequest"
                 >
                   Save
                 </button>

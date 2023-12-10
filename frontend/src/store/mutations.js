@@ -206,5 +206,7 @@ SET_TRAINING_SESSIONS(state, { unassigned_or_pending, upcoming, finished }) {
     finished
   };
 },
-    
+SET_ASSET_TYPE_DROPDOWN(state, asset_type) {
+  state.asset_type = asset_type;
+},   
 };

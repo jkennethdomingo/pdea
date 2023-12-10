@@ -6,12 +6,12 @@ import procurementStatusData from '@/assets/json/procurement_status.json';
 import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 
-const procurementStatus = procurementStatusData.statuses;
 
 const store = useStore();
 // Create a reactive object for your form data
 const formData = ref({
-  asset_type_name: '',
+  article: '',
+  asset_type_id: '',
   description: '',
   yr_acquired: '',
   serial_number: '',
@@ -27,74 +27,12 @@ const formData = ref({
 });
 
 onMounted(() => {
-  store.dispatch('getData');
+  store.dispatch('getAssetType');
 });
 
-
-const endUserTypeOptions = [
-  { value: 'personal', label: 'Personal' },
-  { value: 'department', label: 'Department' },
-  { value: 'province', label: 'Province' },
-  { value: 'region', label: 'Regional' },
-  // Add other types if necessary
-];
-
-// Computed property to determine End-User dropdown options
-const endUserOptions = computed(() => {
-  switch (formData.value.endUserType) {
-    case 'personal':
-      return store.state.dropdownData.personal_information.map(person => ({
-        value: person.EmployeeID,
-        label: `${person.first_name} ${person.surname}`
-      }));
-    case 'department':
-      return store.state.dropdownData.department.map(dept => ({
-        value: dept.department_id,
-        label: dept.department_name
-      }));
-    case 'province':
-      return store.state.dropdownData.provincial_office.map(dept => ({
-        value: dept.provincial_office_id,
-        label: dept.office_name
-      }));
-    case 'region':
-      return store.state.dropdownData.regional_office.map(dept => ({
-        value: dept.regional_office_id,
-        label: dept.regional_office_name
-      }));
-    // Add other cases if necessary
-    default:
-      return [];
-  }
-});
-
-const updateIdealDays = (event) => {
-    const value = event.target.value;
-    if (value === '') {
-        formData.value.ideal_no_of_days_to_complete = 0;
-    } else if (!isNaN(value)) {
-        formData.value.ideal_no_of_days_to_complete = Number(value);
-    } else {
-        event.target.value = formData.value.ideal_no_of_days_to_complete;
-    }
-};
-
-const updateActualDays = (event) => {
-    const value = event.target.value;
-    if (value === '') {
-        formData.value.actual_days_to_complete = 0;
-    } else if (!isNaN(value)) {
-        formData.value.actual_days_to_complete = Number(value);
-    } else {
-        event.target.value = formData.value.actual_days_to_complete;
-    }
-};
-const difference = computed(() => {
-    return formData.value.actual_days_to_complete - formData.value.ideal_no_of_days_to_complete;
-});
-
-watch(difference, (newDifference) => {
-    formData.value.difference = newDifference;
+const assetTypes = computed(() => {
+  // Access asset types from the store
+  return store.state.asset_type;
 });
 
 
@@ -148,12 +86,21 @@ const submitForm = async () => {
   <form @submit.prevent="submitForm">
     <Button class="dark:bg-green-600" :to="{ name: 'LG_Property_Monitoring' }">View Details</Button>
 <div class="grid grid-cols-3 gap-4 pt-2">
+  <div>
+        <label for="article" class="block text-gray-700 text-sm dark:text-white mb-2">Article:</label>
+        <input type="text" id="article" v-model="formData.article" class="shadow border dark:bg-dark-eval-2 rounded w-5/6 py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
+      </div>
       <div>
-        <label for="asset_type_name" class="block text-gray-700 text-sm dark:text-white mb-2">Article:</label>
-        <select id="asset_type_name" v-model="formData.asset_type_name" class="shadow border dark:bg-dark-eval-2 rounded w-5/6 py-2 px-3 text-gray-700  dark:text-white  leading-tight  focus:outline-none focus:shadow-outline">
-          <option v-for="pc in propertyStatus" :key="pc.value" :value="pc.value">
-            {{ pc.label }}
-          </option>
+        <label for="asset_type_name" class="block text-gray-700 text-sm dark:text-white mb-2">Asset Type:</label>
+        <select
+              id="asset_type_name"
+              v-model="formData.asset_type_id"
+              class="shadow border dark:bg-dark-eval-2 rounded w-5/6 py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option :value="null" disabled selected>Select an asset type</option>
+              <option v-for="assetType in assetTypes" :key="assetType.asset_type_id" :value="assetType.asset_type_id">
+                {{ assetType.type_name }}
+              </option>
         </select>
       </div>
       <div>

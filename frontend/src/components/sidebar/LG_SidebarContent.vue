@@ -20,31 +20,7 @@ const isCurrentPath = (path) => {
         aria-label="main"
         class="relative flex flex-col flex-1 max-h-full gap-4 px-3"
     >
-        <SidebarLink
-            title="Dashboard"
-            :to="{ name: 'LG_Dashboard' }"
-            :active="isCurrentRoute('LG_Dashboard')"
-            icon="mdi:view-dashboard"
-        />
-
-        <SidebarLink
-            icon="material-symbols-light:folder-managed-sharp"
-            :to="{ name: 'LG_Inventory' }"
-            title="Procurement"
-            :active="isCurrentPath('/logistics/lg/inventory_management')"
-        >
-        </SidebarLink>
-
-        <SidebarLink
-            icon="mdi:property-tag"
-            :to="{ name: 'LG_Property_Monitoring' }"
-            title="Property"
-            :active="isCurrentPath('/logistics/lg/property_management')"
-        >
-        </SidebarLink>
-
-
-        <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/material_requisition')">
+    <SidebarCollapsible icon="mdi:shield-star-outline" title="Material Requisition" :active="isCurrentPath('/logistics/material_requisition')">
             <SidebarCollapsibleItem
                 :to="{ name: 'LG_Agent' }"
                 title="Agent"
@@ -68,10 +44,18 @@ const isCurrentPath = (path) => {
         </SidebarCollapsible>
 
         <SidebarLink
-            icon="carbon:report"
-            :to="{ name: 'LG_Reports' }"
-            title="Reports"
-            :active="isCurrentRoute('LG_Reports')"
+            icon="material-symbols-light:folder-managed-sharp"
+            :to="{ name: 'LG_Inventory' }"
+            title="Procurement"
+            :active="isCurrentPath('/logistics/lg/inventory_management')"
+        >
+        </SidebarLink>
+
+        <SidebarLink
+            icon="mdi:property-tag"
+            :to="{ name: 'LG_Property_Monitoring' }"
+            title="Property"
+            :active="isCurrentPath('/logistics/lg/property_management')"
         >
         </SidebarLink>
 
