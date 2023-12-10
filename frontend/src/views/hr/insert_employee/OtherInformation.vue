@@ -10,15 +10,12 @@
       <Button :to="{ name: 'Learning And Development' }">
         Back
       </Button>
-      <Button :to="{ name: 'Questions And Others' }">
-        Next
-      </Button>
-
-    </div>
-
-<button @click="handleSubmit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <button @click="handleSubmit" class="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
     Submit Form
 </button>
+    </div>
+
+
     </form>
     
   </div>

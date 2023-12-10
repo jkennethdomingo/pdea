@@ -186,9 +186,6 @@ const handleSubmit = async () => {
         <input type="text" id="scholarship_academic_honors_received" v-model="formData.GraduateStudies.scholarship_academic_honors_received" class="shadow border dark:bg-dark-eval-2 rounded w-full py-2 px-3 text-gray-700  dark:text-white leading-tight focus:outline-none focus:shadow-outline">
       </div>
    </div>
-   <button @click="handleSubmit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-    Submit Form
-</button>
   </form>
 <div class="flex justify-between">
  <div>
