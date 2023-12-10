@@ -39,6 +39,7 @@ $routes->group('api', function($routes)
     $routes->group('ppeMonitoring', function($routes) {
         $routes->post('getAssetType', 'PropertyMonitoringController::getAssetType');
         $routes->post('insertAssetData', 'PropertyMonitoringController::insertAssetData');
+        $routes->post('getPropertyPlantAndEquipment', 'PropertyMonitoringController::getPropertyPlantAndEquipment');
     }); //PP&E Monitoring
 
     $routes->group('manageTraining', function($routes) {

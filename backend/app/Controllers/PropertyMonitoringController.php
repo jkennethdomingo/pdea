@@ -30,58 +30,131 @@ class PropertyMonitoringController extends ResourceController
     }
 
     public function insertAssetData()
+    {
+        // Assuming you are receiving JSON data
+        $formData = $this->request->getJSON();
+    
+        $this->db->transStart();
+    
+        try {
+            // Insert into `asset` table
+            $assetData = [
+                'article' => $formData->article,
+                'asset_type_id' => $formData->asset_type_id,
+                'description' => $formData->description,
+                'yr_acquired' => $formData->yr_acquired,
+                'serial_number' => $formData->serial_number,
+                'property_number' => $formData->property_number,
+                'unit_of_measure' => $formData->unit_of_measure,
+                'unit_value' => $formData->unit_value,
+            ];
+            $this->assetModel->insert($assetData);
+            $asset_id = $this->assetModel->getInsertID();
+    
+            // Insert into `asset_status` table
+            $assetStatusData = [
+                'asset_id' => $asset_id,
+                'qty_per_property_card' => $formData->qty_per_property_card,
+                'physical_count' => $formData->physical_count,
+                'shortage_overage_qty' => $formData->shortage_overage_qty,
+                'shortage_overage_value' => $formData->shortage_overage_value,
+                'status' => $formData->status
+            ];
+            $this->assetStatusModel->insert($assetStatusData);
+    
+            // Insert into `asset_location` table
+            $assetLocationData = [
+                'asset_id' => $asset_id,
+                'remarks_whereabouts' => $formData->remarks_whereabouts
+            ];
+            $this->assetLocationModel->insert($assetLocationData);
+    
+            // Check if the EmployeeID exists in the personal_information table
+            $employeeExists = $this->db->table('personal_information')
+                                       ->where('EmployeeID', $formData->employeeID)
+                                       ->countAllResults() > 0;
+    
+            if (!$employeeExists) {
+                // Rollback the transaction if the EmployeeID does not exist
+                $this->db->transRollback();
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => "EmployeeID {$formData->employeeID} does not exist in personal information."
+                ]);
+            }
+    
+            // Insert into `asset_audit` table
+            $audit_date = date('Y-m-d H:i:s'); // Set audit_date to current date and time
+            $assetAuditData = [
+                'asset_id' => $asset_id,
+                'EmployeeID' => $formData->employeeID,
+                'audit_date' => $audit_date,
+            ];
+            $this->assetAuditModel->insert($assetAuditData);
+    
+            // Commit the transaction if everything went well
+            $this->db->transComplete();
+    
+            if ($this->db->transStatus() === false) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Transaction failed: Could not insert asset data.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Asset data inserted successfully.'
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Rollback the transaction in case of an error
+            $this->db->transRollback();
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Exception caught: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getPropertyPlantAndEquipment()
 {
-    // Assuming you are receiving JSON data
-    $formData = $this->request->getJSON();
-
     $this->db->transStart();
-
     try {
-        // Insert into `asset` table
-        $assetData = [
-            'article' => $formData->article,
-            'asset_type_id' => $formData->asset_type_id,
-            'description' => $formData->description,
-            'yr_acquired' => $formData->yr_acquired,
-            'serial_number' => $formData->serial_number,
-            'property_number' => $formData->property_number,
-            'unit_of_measure' => $formData->unit_of_measure,
-            'unit_value' => $formData->unit_value,
-        ];
-        $this->assetModel->insert($assetData);
-        $asset_id = $this->assetModel->getInsertID();
+        $assets = $this->assetModel
+            ->select('asset.*, asset_type.type_name as asset_type_name, asset_location.remarks_whereabouts, asset_audit.audit_date')
+            ->join('asset_type', 'asset_type.asset_type_id = asset.asset_type_id', 'left')
+            ->join('asset_location', 'asset_location.asset_id = asset.asset_id', 'left')
+            ->join('asset_audit', 'asset_audit.asset_id = asset.asset_id', 'left')
+            ->findAll();
 
-        // Insert into `asset_status` table
-        $assetStatusData = [
-            'asset_id' => $asset_id,
-            'qty_per_property_card' => $formData->qty_per_property_card,
-            'physical_count' => $formData->physical_count,
-            'shortage_overage_qty' => $formData->shortage_overage_qty,
-            'shortage_overage_value' => $formData->shortage_overage_value,
-            'status' => $formData->status
+        $categorizedData = [
+            'active' => [],
+            'archived' => []
         ];
-        $this->assetStatusModel->insert($assetStatusData);
 
-        // Insert into `asset_location` table
-        $assetLocationData = [
-            'asset_id' => $asset_id,
-            'remarks_whereabouts' => $formData->remarks_whereabouts
-            // Add other location details as needed
-        ];
-        $this->assetLocationModel->insert($assetLocationData);
+        foreach ($assets as $asset) {
+            $statusKey = strtolower($asset['item_status']);
+            $typeKey = $asset['asset_type_name'];
 
-        // Commit the transaction if everything went well
+            // Initialize the array if not already set
+            if (!isset($categorizedData[$statusKey][$typeKey])) {
+                $categorizedData[$statusKey][$typeKey] = [];
+            }
+
+            array_push($categorizedData[$statusKey][$typeKey], $asset);
+        }
+
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Transaction failed: Could not insert asset data.'
+                'message' => 'Could not retrieve inventory data.'
             ]);
         } else {
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Asset data inserted successfully.'
+                'data' => $categorizedData
             ]);
         }
     } catch (\Exception $e) {
@@ -94,6 +167,8 @@ class PropertyMonitoringController extends ResourceController
     }
 }
 
+    
+
 
     public function getAssetType()
     {
@@ -103,5 +178,7 @@ class PropertyMonitoringController extends ResourceController
 
         return $this->respond($data);
     }
+
+    
 
 }

@@ -12,7 +12,7 @@ class AssetAuditModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['asset_id', 'audit_date', 'auth_role_id'];
+    protected $allowedFields    = [ 'asset_id', 'audit_date', 'EmployeeID'];
 
     // Dates
     protected $useTimestamps = true;
