@@ -14,47 +14,6 @@ import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { isDark } from '@/composables';
 
-
-const categories = ref({
-  Pending: [
-    {
-      id: 1,
-      title: 'John Smith requesting a leave',
-      date: '5h ago',
-
-    },
-    {
-      id: 2,
-      title: "Samantha Doe requesting a leave",
-      date: '2h ago',
-    },
-  ],
-  Approved: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: '',
-      date: '',
-    },
-  ],
-  Rejected: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: "",
-      date: '',
-    },
-  ],
-})
-
 const isLoading = ref(true); 
 const store = useStore();
 const calendarRef = ref(null);
@@ -62,7 +21,6 @@ const calendar = ref(null);
 const date = ref(new Date()); // Assuming this is your VDatePicker model
 const drawerRef = ref(null);
 const editdrawerRef = ref(null);
-const openAssignModalRef = ref(null);
 
 const { getPhotoUrl } = usePhotoUrl(); 
 
@@ -289,7 +247,7 @@ const updateEmployeeList = (employeeId) => {
 };
 
 const trainingCategories = computed(() => ({
-  UnassignedOrPending: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
+  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
     id: session.TrainingID,
     title: `${session.Title} training session is pending`,
     date: session.CreatedAt // Format this date as needed
@@ -626,64 +584,80 @@ const trainingsMap = computed(() => ({
 
     <!-- TabGroup Component -->
     <div class="max-w-xs px-2 py-0 sm:px-0">
-      <TabGroup>
+  <TabGroup>
     <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-        <Tab
-            v-for="category in Object.keys(trainingCategories)"
-            :key="category"
-            v-slot="{ selected }"
+      <Tab
+        v-for="category in Object.keys(trainingCategories)"
+        :key="category"
+        v-slot="{ selected }"
+      >
+        <button
+          :class="[
+            'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+            'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+            selected
+              ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+              : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
+          ]"
         >
-            <button
-                :class="[
-                    'w-full rounded-lg py-1 text-sm font-medium leading-5', 
-                    'ring-gray-800 ring-offset-black focus:outline-none focus:ring-2',
-                    selected
-                        ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                        : 'text-gray-800 dark:text-gray-100 hover:bg-green-400 hover:text-white',
-                ]"
-            >
-                {{ category }}
-            </button>
-        </Tab>
+          {{ category }}
+        </button>
+      </Tab>
     </TabList>
     <TabPanels class="mt-2">
-        <TabPanel
-            v-for="(sessions, category) in trainingCategories"
-            :key="category"
-            class="rounded-xl bg-[#f5f5f7] dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
-        >
-            <ul>
-                <li
-                    v-for="session in sessions"
-                    :key="session.id"
-                    class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
-                >
-                    <h3 class="text-sm font-medium leading-5">
-                        {{ session.title }}
-                    </h3>
-                    <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                        <li>{{ session.date }}</li>
-                    </ul>
-                    <!-- Conditionally render View Details button for Upcoming and Finished sessions -->
-                    <div 
-                        class="flex justify-end space-x-2 mt-2" 
-                        v-if="category === 'Upcoming' || category === 'Finished'"
-                    >
-                        <button
-                            @click="viewDetails(session.id)"
-                            class="text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-xs px-4 py-1"
-                        >
-                            View Details
-                        </button>
-                    </div>
-                </li>
+      <TabPanel
+        v-for="(sessions, category) in trainingCategories"
+        :key="category"
+        :class="{
+          'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700': !isLoading,
+          'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
+        }"
+      >
+        <div v-if="isLoading" class="flex justify-center items-center">
+          <div class="bg-green-600 text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
+            Loading...
+          </div>
+        </div>
+        <ul v-else class="max-h-40 overflow-y-auto">
+          <li
+            v-for="session in sessions"
+            :key="session.id"
+            class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+          >
+            <h3 class="text-sm font-medium leading-5">
+              {{ session.title }}
+            </h3>
+            <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
+              <li>{{ session.date }}</li>
             </ul>
-        </TabPanel>
+            <!-- Conditionally render Action button based on category -->
+            <div class="flex justify-end space-x-2 mt-2">
+              <button
+                v-if="category === 'UnassignedOrPending'"
+                type="button"
+                @click="assignTraining(session.id)"
+                class="text-white bg-blue-600 hover:bg-blue-800 rounded-lg text-xs px-4 py-1"
+              >
+                Assign
+              </button>
+              <button
+                v-else
+                type="button"
+                @click="viewTrainingDetails(session.id)"
+                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+              >
+                View Details
+              </button>
+            </div>
+          </li>
+        </ul>
+      </TabPanel>
     </TabPanels>
-</TabGroup>
+  </TabGroup>
+</div>
 
-    </div>
-  </div>
+</div>
+
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
