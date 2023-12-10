@@ -12,7 +12,7 @@ class AssetModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['article', 'description', 'yr_acquired', 'serial_number', 'property_number', 'unit_of_measure', 'unit_value', 'asset_type_id', 'procurement_id'];
+    protected $allowedFields    = ['article', 'description', 'yr_acquired', 'serial_number', 'property_number', 'unit_of_measure', 'unit_value', 'asset_type_id', 'item_status'];
 
     // Dates
     protected $useTimestamps = true;

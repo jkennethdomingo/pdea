@@ -34,7 +34,11 @@ $routes->group('api', function($routes)
         $routes->post('getArchivedInventoryData', 'ManageInventoryController::getArchivedInventoryData');
         $routes->post('getActiveInventoryData', 'ManageInventoryController::getActiveInventoryData');
         $routes->post('archiveInventory/(:num)', 'ManageInventoryController::archiveInventory/$1');
-    });
+    }); //Procurement Monitoring
+
+    $routes->group('ppeMonitoring', function($routes) {
+        $routes->post('getAssetType', 'PropertyMonitoringController::getAssetType');
+    }); //PP&E Monitoring
 
     $routes->group('manageTraining', function($routes) {
         $routes->post('insertTraining', 'AssignTrainingController::insertTraining');
@@ -42,6 +46,8 @@ $routes->group('api', function($routes)
         $routes->get('getTrainingByTitle/(:any)', 'AssignTrainingController::getTrainingbyTitle/$1');
         $routes->post('getEmployeeInfo', 'AssignTrainingController::getEmployeeInfo');
         $routes->post('editTraining', 'AssignTrainingController::editTraining');
+        $routes->post('fetchUpcomingTrainingsWithoutEmployees', 'AssignTrainingController::fetchUpcomingTrainingsWithoutEmployees');
+        $routes->post('fetchSortedTrainingSessions', 'AssignTrainingController::fetchSortedTrainingSessions');
     });
 
     $routes->group('manageLeave', function($routes) {
@@ -53,10 +59,14 @@ $routes->group('api', function($routes)
         $routes->post('manualInputLeave', 'ManageLeaveController::manualInputLeave');
         $routes->post('getPendingLeavesWithDetails', 'ManageLeaveController::getPendingLeavesWithDetails');
         $routes->post('updateLeaveStatus', 'ManageLeaveController::updateLeaveStatus');
-        $routes->post('validateAndDeductLeave', 'ManageLeaveController::validateAndDeductLeave');
+        $routes->post('validateAndDeductLeave/(:any)', 'ManageLeaveController::validateAndDeductLeave/$1');
         $routes->post('getEmployeeLeaveTypesWithBalance', 'ManageLeaveController::getEmployeeLeaveTypesWithBalance');
         $routes->post('fetchPendingLeaveRequests', 'ManageLeaveController::fetchPendingLeaveRequests');
         $routes->post('fetchSortedLeaveRequests', 'ManageLeaveController::fetchSortedLeaveRequests');
+        $routes->post('fetchPendingLeavesByEmployeeID/(:any)', 'ManageLeaveController::fetchPendingLeavesByEmployeeID/$1');
+        $routes->post('rejectLeave/(:any)', 'ManageLeaveController::rejectLeave/$1');
+        $routes->post('fetchSortedLeaveRequestsByEmployeeID/(:any)', 'ManageLeaveController::fetchSortedLeaveRequestsByEmployeeID/$1');
+        $routes->post('deleteLeaveRequest/(:num)', 'ManageLeaveController::deleteLeaveRequest/$1');
     });
 
     // For Beta Testing
@@ -69,21 +79,28 @@ $routes->group('api', function($routes)
         $routes->get('restore', 'RestoreDatabaseController::restore');
     });
 
-    $routes->group('hrDashboard', function($routes) {
-        $routes->post('getTodaysLeavesCount', 'HumanResourceDashboardController::getTodaysLeavesCount');
-        $routes->post('getTodayTrainingCount', 'HumanResourceDashboardController::getTodayTrainingCount');
-        $routes->post('getTodayOnTrainingCount', 'HumanResourceDashboardController::getTodayOnTrainingCount');
-        $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardController::getActiveEmployeesCount');
-        $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages');
-        $routes->post('getTrainingCountsForLast13Days', 'HumanResourceDashboardController::getTrainingCountsForLast13Days');
-        $routes->post('getActiveEmployeesCountForLast13Days', 'HumanResourceDashboardController::getActiveEmployeesCountForLast13Days');
-        $routes->post('getCombinedEvents', 'HumanResourceDashboardController::getCombinedEvents');
-        $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents');
-        $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardController::fetchRecentlyApprovedLeaves');
-        $routes->post('fetchUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchUpcomingTrainingsWithNoAssignedEmployees');
-        $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
-    });
+    // $routes->group('hrDashboard', function($routes) {
+    //     $routes->post('getTodaysLeavesCount', 'HumanResourceDashboardController::getTodaysLeavesCount');
+    //     $routes->post('getTodayTrainingCount', 'HumanResourceDashboardController::getTodayTrainingCount');
+    //     $routes->post('getTodayOnTrainingCount', 'HumanResourceDashboardController::getTodayOnTrainingCount');
+    //     $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardController::getActiveEmployeesCount');
+    //     $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages');
+    //     $routes->post('getTrainingCountsForLast13Days', 'HumanResourceDashboardController::getTrainingCountsForLast13Days');
+    //     $routes->post('getActiveEmployeesCountForLast13Days', 'HumanResourceDashboardController::getActiveEmployeesCountForLast13Days');
+    //     $routes->post('getCombinedEvents', 'HumanResourceDashboardController::getCombinedEvents');
+    //     $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents');
+    //     $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardController::fetchRecentlyApprovedLeaves');
+    //     $routes->post('fetchUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchUpcomingTrainingsWithNoAssignedEmployees');
+    //     $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
+    // });
 
+    $routes->group('hrDashboard', function($routes) {
+        $routes->post('getTodayTrainingCount', 'HumanResourceDashboardRemasteredController::getTodayOnTrainingCount'); //Statistics
+        $routes->post('getTodaysLeavesCount', 'HumanResourceDashboardRemasteredController::getTodaysLeavesCount'); //Statistics
+        $routes->post('fetchPendingLeaveCount', 'HumanResourceDashboardRemasteredController::fetchPendingLeaveCount'); //Statistics
+        $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardRemasteredController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees'); //Statistics
+        $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardRemasteredController::getActiveEmployeesCount'); //Statistics
+    });
 
     $routes->post('insert', 'TestArea::create');
 

@@ -45,6 +45,7 @@ class ManageLeaveController extends ResourceController
         ');
         $builder->join('personal_information', 'employee_leaves.EmployeeID = personal_information.EmployeeID', 'inner');
         $builder->join('leave_type', 'employee_leaves.leave_type_id = leave_type.LeaveTypeID', 'inner');
+        $builder->where('employee_leaves.status', 'approved');
         
         $query = $builder->get();
         
@@ -431,6 +432,35 @@ class ManageLeaveController extends ResourceController
         }
     }
 
+    public function rejectLeave($leaveRequestId) {
+        // Validate the leave request ID
+        if (!is_numeric($leaveRequestId) || $leaveRequestId <= 0) {
+            return $this->fail('Invalid leave request ID.', 400);
+        }
+    
+        // Fetch the leave request to check its existence and status
+        $leaveRequest = $this->employeeLeavesModel->find($leaveRequestId);
+        if (!$leaveRequest) {
+            return $this->fail('Leave request not found.', 404);
+        }
+    
+        // Check if the leave request is already processed
+        if ($leaveRequest['status'] !== 'pending') {
+            return $this->fail('Leave request is already processed or not in a state that can be rejected.', 400);
+        }
+    
+        // Update the leave request status to 'Archived' or 'Rejected'
+        $updateResult = $this->employeeLeavesModel->update($leaveRequestId, ['status' => 'rejected']);
+        if (!$updateResult) {
+            // Handle the error appropriately, log it if necessary
+            return $this->fail('Failed to reject the leave request.', 500);
+        }
+    
+        // Success response
+        return $this->respondUpdated(['message' => 'Leave request rejected successfully.']);
+    }
+    
+
     public function getEmployeeLeaveTypesWithBalance()
     {
         $leavetypeModel = $this->leavetypeModel; // Your leave type model
@@ -572,6 +602,71 @@ class ManageLeaveController extends ResourceController
         }, $leaves);
     }
     
+    public function fetchPendingLeavesByEmployeeID($employeeID)
+    {
+        // Validate or sanitize $employeeID as needed
+
+        // Fetch pending leaves for a specific employee
+        $pendingLeaves = $this->buildLeaveQuery('pending')
+                            ->where('employee_leaves.EmployeeID', $employeeID)
+                            ->findAll();
+
+        // Prepare the response for pending leaves
+        $response = [
+            'pending' => $this->prepareLeaveResponse($pendingLeaves)
+        ];
+
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+
+    public function fetchSortedLeaveRequestsByEmployeeID($employeeID)
+    {
+        // Fetch and sort pending leaves
+        $pendingLeaves = $this->buildLeaveQuery('pending')->where('employee_leaves.EmployeeID', $employeeID)->findAll();
+    
+        // Fetch and sort approved leaves
+        $approvedLeaves = $this->buildLeaveQuery('approved')->where('employee_leaves.EmployeeID', $employeeID)->findAll();
+    
+        // Fetch and sort rejected leaves
+        $rejectedLeaves = $this->buildLeaveQuery('rejected')->where('employee_leaves.EmployeeID', $employeeID)->findAll();
+    
+        // Prepare the response
+        $response = [
+            'pending' => $this->prepareLeaveResponse($pendingLeaves),
+            'approved' => $this->prepareLeaveResponse($approvedLeaves),
+            'rejected' => $this->prepareLeaveResponse($rejectedLeaves)
+        ];
+    
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+
+    public function deleteLeaveRequest($id)
+    {
+
+        // Basic validation to check if LeaveID is provided
+        if (!isset($id)) {
+            return $this->fail('LeaveID is required.', 400);
+        }
+
+        // Check if the leave request exists
+        $leaveRequest = $this->employeeLeavesModel->find($id);
+        if (!$leaveRequest) {
+            return $this->fail('Leave request not found.', 404);
+        }
+
+        // Additional checks can be added here, like if the user has permission to delete this leave request
+
+        // Delete the leave request from the database
+        if (!$this->employeeLeavesModel->delete($id)) {
+            return $this->fail('Error deleting leave request.', 500);
+        }
+
+        // Return success response
+        return $this->respondDeleted(['message' => 'Leave request deleted successfully.']);
+    }
+
 
     
 

@@ -215,4 +215,107 @@ class AssignTrainingController extends ResourceController
         return $this->response->setJSON($data);
     }
 
+    public function fetchUpcomingTrainingsWithoutEmployees() {
+        // Get the current date
+        $currentDate = date('Y-m-d');
+    
+        // Build the query
+        $query = $this->trainingModel
+            ->select('training.*')
+            ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id AND internal_employee_training.EmployeeID IS NULL', 'left')
+            ->where('training.period_from >=', $currentDate) // Only fetch training that hasn't passed
+            ->groupBy('training.training_id') // Group by to avoid duplicate trainings
+            ->orderBy('training.period_from', 'ASC'); // Order by upcoming dates
+    
+        // Execute the query and return the result
+        $upcomingTrainingsWithoutEmployees = $query->findAll();
+    
+        // Prepare the response
+        $response = [
+            'trainings' => $upcomingTrainingsWithoutEmployees
+        ];
+    
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+
+    public function fetchSortedTrainingSessions()
+    {
+        // Fetch and sort unassigned or pending training sessions
+        $unassignedOrPendingTrainings = $this->buildTrainingQuery('pending')->findAll();
+
+        // Fetch and sort upcoming training sessions
+        $upcomingTrainings = $this->buildTrainingQuery('upcoming')->findAll();
+
+        // Fetch and sort finished training sessions
+        $finishedTrainings = $this->buildTrainingQuery('finished')->findAll();
+
+        // Prepare the response
+        $response = [
+            'unassigned_or_pending' => $this->prepareTrainingResponse($unassignedOrPendingTrainings),
+            'upcoming' => $this->prepareTrainingResponse($upcomingTrainings),
+            'finished' => $this->prepareTrainingResponse($finishedTrainings)
+        ];
+
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+
+    private function buildTrainingQuery($status)
+{
+    $today = date('Y-m-d');
+    $query = $this->trainingModel
+        ->select('
+            training.training_id as TrainingID,
+            training.title,
+            training.period_from,
+            training.period_to,
+            training.number_of_hours,
+            training.conducted_by,
+            training.created_at,
+            training.updated_at'
+        );
+
+    if ($status === 'pending') {
+        // Unassigned or pending trainings that have not started yet
+        $query = $query
+            ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left')
+            ->where('internal_employee_training.internal_training_id IS NULL') // No associated internal_employee_training record means unassigned
+            ->where('training.period_from >', $today); // Excludes past training sessions
+    } elseif ($status === 'upcoming') {
+        // Upcoming trainings that have not finished
+        $query = $query
+            ->where('training.period_to >=', $today)
+            ->orderBy('training.period_from', 'ASC');
+    } elseif ($status === 'finished') {
+        // Finished trainings
+        $query = $query
+            ->where('training.period_to <', $today)
+            ->orderBy('training.period_to', 'DESC');
+    }
+
+    return $query;
+}
+
+
+    private function prepareTrainingResponse($trainings)
+    {
+        return array_map(function ($training) {
+            return [
+                'TrainingID' => $training['TrainingID'] ?? 'N/A',
+                'Title' => $training['title'] ?? 'Not Specified',
+                'StartTime' => $training['period_from'] ?? 'N/A',
+                'EndTime' => $training['period_to'] ?? 'N/A',
+                'Hours' => $training['number_of_hours'] ?? 'N/A',
+                'ConductedBy' => $training['conducted_by'] ?? 'N/A',
+                'CreatedAt' => $training['created_at'] ?? 'N/A',
+                'UpdatedAt' => $training['updated_at'] ?? 'N/A',
+                // Include more fields as needed
+            ];
+        }, $trainings);
+    }
+
+    
+    
+
 }
