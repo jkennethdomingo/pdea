@@ -7,6 +7,8 @@ import apiService from '@/composables/axios-setup';
 
 
 const store = useStore();
+
+const EmployeeID = computed(() => store.state.employeeID);
 // Create a reactive object for your form data
 const formData = ref({
   article: '',
@@ -23,7 +25,9 @@ const formData = ref({
   shortage_overage_value: '',
   status: '',
   remarks_whereabouts: '',
+  employeeID: EmployeeID.value,
 });
+
 
 onMounted(() => {
   store.dispatch('getAssetType');

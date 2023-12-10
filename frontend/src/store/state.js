@@ -182,4 +182,6 @@ export const state = {
     finished: []
   },
   asset_type: [],
+  activePPEData: [],
+  archivedPPEData: [],
 };
