@@ -66,13 +66,13 @@ const isAssignRouteActive = () => {
             />
         </SidebarCollapsible>
 
-        <SidebarLink
+        <!-- <SidebarLink
             icon="ic:round-people"
             :to="{ name: 'Beta' }"
             title="Beta"
             :active="isCurrentRoute('Beta')"
         >
-        </SidebarLink>
+        </SidebarLink> -->
         <SidebarLink
             icon="ic:round-people"
             :to="{ name: 'Backup and Restore' }"
@@ -80,12 +80,12 @@ const isAssignRouteActive = () => {
             :active="isCurrentRoute('Backup and Restore')"
         >
         </SidebarLink>
-        <SidebarLink
+        <!-- <SidebarLink
             icon="ic:round-people"
             :to="{ name: 'Betatest' }"
             title="Testingan"
             :active="isCurrentRoute('Betatest')"
         >
-        </SidebarLink>
+        </SidebarLink> -->
     </PerfrectScrollbar>
 </template>

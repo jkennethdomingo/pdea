@@ -7,13 +7,31 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
-import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { isDark } from '@/composables';
 
+const trainingbyTitle = computed(() => store.state.trainingbyTitle);
+const isLoading = ref(true); 
+const store = useStore();
+const calendarRef = ref(null);
+const calendar = ref(null);
+const date = ref(new Date()); // Assuming this is your VDatePicker model
+const drawerRef = ref(null);
+const editdrawerRef = ref(null);
+const { getPhotoUrl } = usePhotoUrl(); 
+const newEvent = ref({
+    title: '',
+    period_from: '',
+    period_to: '',
+    number_of_hours: '',
+    conducted_by: '',
+    employees: [],
+    photos: [],
+    employee_ids:[],
+});
 
 const selectedEmployeeIds = ref([]);
 
@@ -49,33 +67,13 @@ const allSelected = computed({
   }
 });
 
+const employeeCheckboxes = ref([]);
 
-
-const isLoading = ref(true); 
-const store = useStore();
-const calendarRef = ref(null);
-const calendar = ref(null);
-const date = ref(new Date()); // Assuming this is your VDatePicker model
-const drawerRef = ref(null);
-const editdrawerRef = ref(null);
-
-const { getPhotoUrl } = usePhotoUrl(); 
-
-
-const newEvent = ref({
-  title: '',
-  period_from: '',
-  period_to: '',
-  number_of_hours: '',
-  conducted_by: '',
-  employees: [],
-  photos: [],
-  employee_ids:[],
-});
-
-
-
-const trainingbyTitle = computed(() => store.state.trainingbyTitle);
+const clearCheckboxes = () => {
+  employeeCheckboxes.value.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+};
 
 // Computed property for transforming training data
 const trainingEvents = computed(() => {
@@ -87,15 +85,6 @@ const trainingEvents = computed(() => {
     // Add more fields if needed
   }));
 });
-
-const employeeCheckboxes = ref([]);
-
-const clearCheckboxes = () => {
-  employeeCheckboxes.value.forEach(checkbox => {
-    checkbox.checked = false;
-  });
-};
-
 
 const employeeInfo = computed(() => {
   return store.state.employeeInfo.map(employee => ({
@@ -109,6 +98,37 @@ const employeeInfo = computed(() => {
   }));
 });
 
+const trainingCategories = computed(() => ({
+  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session is pending`,
+    date: session.CreatedAt // Format this date as needed
+  })),
+  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has no employees assigned`,
+    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
+  })),
+  Finished: store.state.trainingSessions.finished.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has finished`,
+    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
+  })),
+}));
+
+const addEvent = async () => {
+  await store.dispatch('addEvent', newEvent.value);
+  await store.dispatch('getTraining');
+  // Reset newEvent here
+  resetNewEvent();
+};
+
+const editEvent = async () => {
+  await store.dispatch('editEvent', newEvent.value);
+  await store.dispatch('getTraining');
+  // Reset newEvent here
+  resetNewEvent();
+};
 
 const resetNewEvent = () => {
   newEvent.value = {
@@ -123,6 +143,7 @@ const resetNewEvent = () => {
 };
 
 
+
 // Watch for changes in the date picker and update the calendar
 watch(date, (newDate) => {
   if (calendarRef.value) {
@@ -132,16 +153,6 @@ watch(date, (newDate) => {
 });
 
 
-// Watch for changes in training events and update the calendar
-watch(trainingEvents, (newEvents) => {
-  if (calendarRef.value) {
-    const calendarApi = calendarRef.value.getApi();
-    calendarApi.removeAllEvents(); // Remove old events
-    calendarApi.addEventSource(newEvents); // Add new events
-  }
-}, { deep: true });
-
-// Fetch training data on component mount
 onMounted(async () => {
   initFlowbite();
   await store.dispatch('getTraining'); // Dispatch the action to fetch training data
@@ -156,6 +167,14 @@ onMounted(async () => {
     isLoading.value = false; // Stop loading after a delay
   }, 2000);
 });
+
+watch(trainingEvents, (newEvents) => {
+  if (calendarRef.value) {
+    const calendarApi = calendarRef.value.getApi();
+    calendarApi.removeAllEvents(); // Remove old events
+    calendarApi.addEventSource(newEvents); // Add new events
+  }
+}, { deep: true });
 
 const calendarOptions = ref({
   plugins: [
@@ -232,7 +251,6 @@ function handleDateSelect(selectInfo) {
 
 }
 
-
 watch(trainingbyTitle, (newTraining) => {
   if (newTraining && newTraining.length > 0) {
     const trainingData = newTraining[0]; // Assuming you want the first item
@@ -259,7 +277,6 @@ async function handleEventClick(clickInfo) {
   openEditRightDrawer();
 }
 
-
 function handleEvents(events) {
   // Handle events set
 }
@@ -268,99 +285,38 @@ function handleWeekendsToggle() {
   // Handle weekends toggle
 }
 
-const updateEmployeeList = (employeeId) => {
-  // Initialize employees as an array if it's undefined
-  if (!Array.isArray(newEvent.value.employees)) {
-    newEvent.value.employees = [];
-  }
-
-  // Now proceed with the logic
-  const index = newEvent.value.employees.indexOf(employeeId);
-  if (index > -1) {
-    newEvent.value.employees.splice(index, 1);
-  } else {
-    newEvent.value.employees.push(employeeId);
-  }
-};
-
-const trainingCategories = computed(() => ({
-  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session is pending`,
-    date: session.CreatedAt // Format this date as needed
-  })),
-  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session has no employees assigned`,
-    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
-  })),
-  Finished: store.state.trainingSessions.finished.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session has finished`,
-    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
-  })),
-}));
-
-
-
-const addEvent = async () => {
-  await store.dispatch('addEvent', newEvent.value);
-  await store.dispatch('getTraining');
-  // Reset newEvent here
-  resetNewEvent();
-};
-
-const editEvent = async () => {
-  await store.dispatch('editEvent', newEvent.value);
-  await store.dispatch('getTraining');
-  // Reset newEvent here
-  resetNewEvent();
-};
-
-
-
 function moveToday() {
   const calendarApi = calendarRef.value.getApi();
   calendar.value.move(new Date());
     calendarApi.gotoDate(new Date());
 }
 
-const trainingsMap = computed(() => ({
-  Upcoming: store.state.trainingsWithoutEmployees.map(training => ({
-    id: training.training_id,
-    title: `Training: ${training.title}`,
-    date: training.period_from // Format this date as needed
-  }))
-}))
 
 </script>
 
-
 <template>
+<!--Add Modal Start-->
+<div class="text-center hidden">
+    <button 
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
+        type="button" 
+        data-drawer-target="dynamic-drawer" 
+        data-drawer-show="dynamic-drawer" 
+        data-drawer-placement="right" 
+        aria-controls="dynamic-drawer">
+        Show right drawer
+    </button>
+</div>
 
-    <!-- Add Modal Start-->
-    <!-- drawer init and toggle -->
-    <div class="text-center hidden">
-        <button 
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
-            type="button" 
-            data-drawer-target="dynamic-drawer" 
-            data-drawer-show="dynamic-drawer" 
-            data-drawer-placement="right" 
-            aria-controls="dynamic-drawer">
-            Show right drawer
-        </button>
-    </div>
-
-    <!-- dynamic drawer component -->
-    <div ref="drawerRef"
-        id="dynamic-drawer" 
-        class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-        tabindex="-1" 
-        aria-labelledby="drawer-label">
+<!-- dynamic drawer component -->
+<div ref="drawerRef"
+    id="dynamic-drawer" 
+    class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
+    tabindex="-1" 
+    aria-labelledby="drawer-label">
         
-        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
+    <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>Assign Training</h5>
         <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -423,10 +379,9 @@ const trainingsMap = computed(() => ({
         <!-- Dynamic content goes here -->
         
     </div>
+<!--Add Modal End-->
 
-    <!-- Add Modal End-->
-
-    <!--Edit Modal Start-->
+<!--Edit Modal Start-->
 
     <!-- drawer init and toggle -->
     <div class="text-center hidden">
@@ -530,10 +485,8 @@ const trainingsMap = computed(() => ({
 
     <!--Edit Modal End-->
 
-     <!--Read Modal Start-->
-
      <!-- Main modal -->
-        <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class=" py-12 hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+     <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class=" py-12 hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
           <div class="relative p-4 w-full max-w-2xl max-h-full h-full">
               <!-- Modal content -->
               <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 flex flex-col">
@@ -604,113 +557,102 @@ const trainingsMap = computed(() => ({
 
 <!--Read Modal End-->
 
+
 <!--Bawal-->
 <div class='flex flex-wrap min-h-full font-sans text-sm'>
-  <!-- Left sidebar for mini calendar and TabGroup -->
-  <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
-    <!-- Mini calendar (VDatePicker) -->
-    <div class="mb-4">
-      <VDatePicker class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
-        <template #footer>
-          <div class="w-full px-4 pb-3">
-            <button
-              class="bg-green-600 hover:bg-green-700 text-gray-200 font-bold w-full px-3 py-1 rounded-md"
-              @click="moveToday"
-            >
-              Today
-            </button>
-          </div>
-        </template>
-     </VDatePicker>
-    </div>
-
-    <!-- TabGroup Component -->
-    <div class="max-w-xs px-2 py-0 sm:px-0">
-  <TabGroup>
-    <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-      <Tab
-        v-for="category in Object.keys(trainingCategories)"
-        as="template"
-        :key="category"
-        v-slot="{ selected }"
-      >
-        <button
-          :class="[
-            'w-full rounded-lg py-1 text-sm font-medium leading-5', 
-            'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
-            selected
-              ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-              : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
-          ]"
-        >
-          {{ category }}
-        </button>
-      </Tab>
-    </TabList>
-    <TabPanels class="mt-2">
-      <TabPanel
-        v-for="(sessions, category) in trainingCategories"
-        :key="category"
-        :class="{
-          'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700': !isLoading,
-          'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
-        }"
-      >
-        <div v-if="isLoading" class="flex justify-center items-center">
-          <div class="bg-green-600 text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
-            Loading...
-          </div>
+    <div class="w-full lg:w-1/4 px-2 mb-4">
+        <div class="mb-4">
+            <VDatePicker class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
+                <template #footer>
+                <div class="w-full px-4 pb-3">
+                    <button
+                    class="bg-green-600 hover:bg-green-700 text-gray-200 font-bold w-full px-3 py-1 rounded-md"
+                    @click="moveToday"
+                    >
+                    Today
+                    </button>
+                </div>
+                </template>
+            </VDatePicker>
         </div>
-        <ul v-else class="max-h-40 overflow-y-auto">
-          <li
-            v-for="session in sessions"
-            :key="session.id"
-            class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
-          >
-            <h3 class="text-sm font-medium leading-5">
-              {{ session.title }}
-            </h3>
-            <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
-              <li>{{ session.date }}</li>
-            </ul>
-            <!-- Conditionally render Action button based on category -->
-            <div class="flex justify-end space-x-2 mt-2">
-              <button
-                v-if="category === 'Unassigned'"
-                type="button"
-                @click="assignTraining(session.id)"
-                class="text-white bg-blue-600 hover:bg-blue-800 rounded-lg text-xs px-4 py-1"
-              >
-                Assign
-              </button>
-              <button
-                v-else
-                type="button"
-                @click="viewTrainingDetails(session.id)"
-                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-              >
-                View Details
-              </button>
-            </div>
-          </li>
-        </ul>
-      </TabPanel>
-    </TabPanels>
-  </TabGroup>
-</div>
-
-</div>
-
-
-  <!-- Main content area for FullCalendar -->
-  <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-[#f5f5f7] dark:bg-[#0F172A] px-3 py-7 rounded-xl border-2 border-gray-200 dark:border-gray-700'>
-      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+        <div class="max-w-xs px-2 py-0 sm:px-0">
+            <TabGroup>
+                <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+                    <Tab
+                        v-for="category in Object.keys(trainingCategories)"
+                        as="template"
+                        :key="category"
+                        v-slot="{ selected }"
+                    >
+                        <button
+                        :class="[
+                            'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                            'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+                            selected
+                            ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                            : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
+                        ]"
+                        >
+                        {{ category }}
+                        </button>
+                    </Tab>
+                </TabList>
+                <TabPanels class="mt-2">
+                    <TabPanel
+                        v-for="(sessions, category) in trainingCategories"
+                        :key="category"
+                        :class="{
+                        'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700': !isLoading,
+                        'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
+                        }"
+                    >
+                        <div v-if="isLoading" class="flex justify-center items-center">
+                            <div class="bg-green-600 text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
+                                Loading...
+                            </div>
+                        </div>
+                        <ul v-else class="max-h-40 overflow-y-auto">
+                            <li
+                                v-for="session in sessions"
+                                :key="session.id"
+                                class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+                            >
+                                    <h3 class="text-sm font-medium leading-5">
+                                    {{ session.title }}
+                                    </h3>
+                                <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
+                                    <li>{{ session.date }}</li>
+                                </ul>
+                                <!-- Conditionally render Action button based on category -->
+                                <div class="flex justify-end space-x-2 mt-2">
+                                    <button
+                                        v-if="category === 'Unassigned'"
+                                        type="button"
+                                        @click="assignTraining(session.id)"
+                                        class="text-white bg-blue-600 hover:bg-blue-800 rounded-lg text-xs px-4 py-1"
+                                    >
+                                    Assign
+                                    </button>
+                                    <button
+                                        v-else
+                                        type="button"
+                                        @click="viewTrainingDetails(session.id)"
+                                        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+                                    >
+                                        View Details
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </TabPanel>
+                </TabPanels>
+            </TabGroup>
+        </div>
     </div>
-  </div>
+    <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
+        <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-[#f5f5f7] dark:bg-[#0F172A] px-3 py-7 rounded-xl border-2 border-gray-200 dark:border-gray-700'>
+            <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+        </div>
+    </div>
 </div>
 </template>
-
-
-
-

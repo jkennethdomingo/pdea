@@ -31,12 +31,12 @@ const isAssignRouteActive = () => {
         aria-label="main"
         class="relative flex flex-col flex-1 max-h-full gap-4 px-3"
     >
-        <SidebarLink
+        <!-- <SidebarLink
             title="Dashboard"
             :to="{ name: 'User Dashboard' }"
             :active="isCurrentRoute('User Dashboard')"
             icon="mdi:view-dashboard"
-        />
+        /> -->
 
         <SidebarLink
             title="Request Leave"

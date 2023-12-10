@@ -264,6 +264,15 @@ export const actions = {
         console.error('Error fetching training data:', error);
       }
     },
+
+    async getTrainingByID({ commit }, title) {
+      try {
+        const response = await apiService.get(`manageTraining/getTrainingByID/${title}`);
+        commit('SET_TRAINING', response.data.training);
+      } catch (error) {
+        console.error('Error fetching training data:', error);
+      }
+    },
     
     async fetchEmployeeInfo({ commit }) {
       try {
