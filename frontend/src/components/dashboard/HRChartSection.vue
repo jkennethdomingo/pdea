@@ -19,35 +19,35 @@ const apiUrl = 'hrDashboard';
 function moveToday() {
   calendar.value.move(new Date());
 }
-
+const selectedColor = ref('blue');
 const date = new Date();
 const year = date.getFullYear();
 const month = date.getMonth();
 const attributes = ref([
+  // ... other attributes
   {
-    key: 'today',
+    key: 'rangeStart',
+    dates: new Date(2019, 3, 15),
+    customData: { class: 'start-date' } // Custom class for start date
+  },
+  {
+    key: 'rangeEnd',
+    dates: new Date(2019, 3, 19),
+    customData: { class: 'end-date' } // Custom class for end date
+  },
+  {
+    key: 'range',
+    highlight: true,
+    dates: { start: new Date(2019, 3, 15), end: new Date(2019, 3, 19) },
     highlight: {
-      color: 'purple',
+      color: 'blue',
       fillMode: 'solid',
       contentClass: 'italic',
     },
-    dates: new Date(year, month, 12),
   },
-  {
-    highlight: {
-      color: 'purple',
-      fillMode: 'light',
-    },
-    dates: new Date(year, month, 13),
-  },
-  {
-    highlight: {
-      color: 'purple',
-      fillMode: 'outline',
-    },
-    dates: new Date(year, month, 14),
-  },
+  // ... other attributes
 ]);
+
 
 onMounted(async () => {
   await store.dispatch('fetchChartCountData', apiUrl);
@@ -66,7 +66,7 @@ onMounted(async () => {
         comparedResult: [2, 8],
         labels: ['Sales', ''],
         stroke: { width: 0 },
-        colors: ['#a855f7', '#e2e8f0'],
+        colors: ['#f8963e', '#10e2b8'],
         grid: {
             padding: {
                 right: -20,
@@ -112,52 +112,58 @@ onMounted(async () => {
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
                 <div class="grid grid-cols-2 gap-6">
                     <!-- Today's user -->
-                    <BaseCard no-header bg-classes="bg-purple-500">
-                        <div class="p-2 grid grid-cols-1 gap-4">
-                            <Icon
-                                icon="clarity:employee-group-line"
-                                aria-hidden="treu"
-                                class="w-10 h-10 text-white"
-                            />
-
-                            <div class="grid gap-2">
-                                <p class="text-base font-medium text-green-300">
+                    <BaseCard no-header bg-classes="dark:bg-[#393E46] bg-[#EFEFF4]">
+                        <div class="pt-12 p-4 flex flex-col items-center justify-center gap-2">
+                            <!-- Row for Icon and +1% -->
+                            <div class="flex items-center space-x-2">
+                                <Icon
+                                    icon="clarity:employee-group-line"
+                                    aria-hidden="true"
+                                    class="w-10 h-10 text-[#10e2b8]"
+                                />
+                                <p class="text-base font-medium text-green-800 dark:text-green-300">
                                     +1%
-                                </p>
-                                <p class="text-3xl font-medium text-white">
-                                    {{activeEmployees}}
                                 </p>
                             </div>
 
-                            <p class="text-sm font-medium text-white">
+                            <!-- Centered active employees number -->
+                            <p class="text-6xl font-extrabold text-gray-800 dark:text-gray-200">
+                                {{ activeEmployees }}
+                            </p>
+
+                            <!-- Subtitle -->
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-200">
                                 Today's Active Employees
                             </p>
                         </div>
                     </BaseCard>
 
                     <!-- Today's sales -->
-                    <BaseCard no-header bg-classes="bg-cyan-500">
-                        <div class="p-2 grid grid-cols-1 gap-4">
+                    <BaseCard no-header bg-classes="dark:bg-[#393E46] bg-[#EFEFF4]">
+                    <div class="pt-12 p-4 flex flex-col items-center justify-center gap-2">
+                        <!-- Icon and Percentage -->
+                        <div class="flex items-center space-x-2">
                             <Icon
                                 icon="mdi:chart-bar"
                                 aria-hidden="true"
-                                class="w-10 h-10 text-white"
+                                class="w-10 h-10 text-[#10e2b8]"
                             />
-
-                            <div class="grid gap-2">
-                                <p class="text-base font-medium text-green-300">
-                                    +4%
-                                </p>
-                                <p class="text-3xl font-medium text-white">
-                                    {{ todayTrainingCount }}
-                                </p>
-                            </div>
-
-                            <p class="text-sm font-medium text-white">
-                                Today's Number of Trainings
+                            <p class="text-base font-medium text-green-800 dark:text-green-300">
+                                +4%
                             </p>
                         </div>
-                    </BaseCard>
+
+                        <!-- Today's Training Count - Large and Centered -->
+                        <p class="text-6xl font-extrabold text-gray-800 dark:text-gray-200">
+                            {{ todayTrainingCount }}
+                        </p>
+
+                        <!-- Description Text -->
+                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                            Today's Number of Trainings
+                        </p>
+                    </div>
+                </BaseCard>
                 </div>
 
                 <!-- Earning card -->
@@ -191,7 +197,7 @@ onMounted(async () => {
                         <template #footer>
                             <div class="w-full px-4 pb-3">
                                 <button
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold w-full px-3 py-1 rounded-md"
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold w-full px-3 py-1 rounded-md"
                                 @click="moveToday"
                                 >
                                 Today

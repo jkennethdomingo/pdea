@@ -165,7 +165,7 @@ onMounted(() => {
                 <Icon
                     :icon="icon"
                     aria-hidden="true"
-                    class="w-8 h-8 text-purple-500"
+                    class="w-8 h-8 text-[#10e2b8]"
                 />
 
                 <div class="flex items-center gap-2">
@@ -207,11 +207,13 @@ onMounted(() => {
         <div class="relative grid grid-cols-2 overflow-hidden">
             <div>
                 <h4 class="text-3xl font-semibold">{{ result }}</h4>
-                <p class="text-base font-medium text-gray-500">{{ title }}</p>
+                <p class="text-xs font-normal text-gray-200 whitespace-nowrap overflow-hidden overflow-ellipsis">{{ title }}</p> <!-- Further reduced font size and added nowrap -->
             </div>
             <div class="relative flex items-center max-h-16">
                 <div ref="chartEl"></div>
             </div>
         </div>
+
+
     </BaseCard>
 </template>
