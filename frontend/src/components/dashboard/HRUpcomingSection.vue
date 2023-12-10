@@ -1,0 +1,269 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import BaseCard from '@/components/ui/BaseCard.vue'
+import Button from '@/components/base/Button.vue'
+import { Icon } from '@iconify/vue'
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+onMounted(async () => {
+await store.dispatch('fetchUpcomingCombinedEvents');
+});
+
+const categories = ref({
+    Recent: [
+        {
+        id: 1,
+        title: 'Does drinking coffee make you smarter?',
+        date: '5h ago',
+        commentCount: 5,
+        shareCount: 2,
+        },
+        {
+        id: 2,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
+    ],
+    Popular: [
+        {
+        id: 1,
+        title: 'Is tech making coffee better or worse?',
+        date: 'Jan 7',
+        commentCount: 29,
+        shareCount: 16,
+        },
+        {
+        id: 2,
+        title: 'The most innovative things happening in coffee',
+        date: 'Mar 19',
+        commentCount: 24,
+        shareCount: 12,
+        },
+    ],
+    Trending: [
+        {
+        id: 1,
+        title: 'Ask Me Anything: 10 answers to your questions about coffee',
+        date: '2d ago',
+        commentCount: 9,
+        shareCount: 5,
+        },
+        {
+        id: 2,
+        title: "The worst advice we've ever heard about coffee",
+        date: '4d ago',
+        commentCount: 1,
+        shareCount: 2,
+        },
+    ],
+    New: [
+        {
+        id: 1,
+        title: 'Ask Me Anything: 10 answers to your questions about coffee',
+        date: '2d ago',
+        commentCount: 9,
+        shareCount: 5,
+        },
+        {
+        id: 2,
+        title: "The worst advice we've ever heard about coffee",
+        date: '4d ago',
+        commentCount: 1,
+        shareCount: 2,
+        },
+    ],
+})
+</script>
+
+<template>
+    <section class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <h2 class="sr-only">Upcoming Events</h2>
+
+        <!-- Upcoming Events -->
+        <BaseCard title="Upcoming Events">
+            <div class="py-6">
+                <TabGroup>
+                    <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+                        <Tab
+                        v-for="category in Object.keys(categories)"
+                        as="template"
+                        :key="category"
+                        v-slot="{ selected }"
+                        >
+                        <button
+                            :class="[
+                            'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+                            'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+                            selected
+                                ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                                : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
+                        ]"
+                        >
+                            {{ category }}
+                        </button>
+                        </Tab>
+                    </TabList>
+    
+                    <TabPanels class="mt-2">
+                        <TabPanel
+                        v-for="(posts, idx) in Object.values(categories)"
+                        :key="idx"
+                        class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
+                        >
+                        <ul>
+                            <li
+                            v-for="post in posts"
+                            :key="post.id"
+                            class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+                            >
+                            <h3 class="text-sm font-medium leading-5">
+                                {{ post.title }}
+                            </h3>
+    
+                            <ul
+                                class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300"
+                            >
+                                <li>{{ post.date }}</li>
+                                <li>&middot;</li>
+                                <li>{{ post.commentCount }} comments</li>
+                                <li>&middot;</li>
+                                <li>{{ post.shareCount }} shares</li>
+                            </ul>
+    
+                            <a
+                                href="#"
+                                :class="[
+                                'absolute inset-0 rounded-md',
+                                'ring-blue-400 focus:z-10 focus:outline-none focus:ring-2',
+                                ]"
+                            />
+                            </li>
+                        </ul>
+                        </TabPanel>
+                    </TabPanels>
+                </TabGroup>
+            </div>
+        </BaseCard>
+
+        <!-- Recent cards -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
+            <!-- Recent contacts -->
+            <BaseCard
+                title="Recently Approved Leaves"
+                :actions="[{ title: 'View', to: '#' }]"
+            >
+                <div
+                    class="mt-4 flex items-center justify-between"
+                    v-for="i in 4"
+                    :key="i"
+                >
+                    <div class="flex items-center gap-2">
+                        <img
+                            class="w-10 h-10 rounded-md object-cover"
+                            src="https://placekitten.com/200/300"
+                        />
+                        <div>
+                            <h5
+                                class="text-xs text-gray-600 dark:text-gray-300"
+                            >
+                                Name
+                            </h5>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">
+                                email@example.com
+                            </p>
+                        </div>
+                    </div>
+                    <Button
+                        sr-text="Actions"
+                        size="sm"
+                        icon-only
+                        icon="mdi:dots-vertical"
+                        variant="secondary"
+                    />
+                </div>
+            </BaseCard>
+
+            <!-- Recent transactions -->
+            <BaseCard
+                title="Unassigned Trainings"
+                :actions="[{ title: 'View', to: '#' }]"
+            >
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <Icon
+                            icon="mdi:plus-circle-outline"
+                            aria-hidden="true"
+                            class="w-6 h-6 text-green-500"
+                        />
+                        <div>
+                            <h5
+                                class="text-xs text-gray-600 dark:text-gray-300"
+                            >
+                                Gillette
+                            </h5>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">
+                                17 Oct, 2021
+                            </p>
+                        </div>
+                    </div>
+
+                    <span class="text-base font-medium text-green-500"
+                        >+$360.00</span
+                    >
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <Icon
+                            icon="mdi:minus-circle-outline"
+                            aria-hidden="true"
+                            class="w-6 h-6 text-red-500"
+                        />
+                        <div>
+                            <h5
+                                class="text-xs text-gray-600 dark:text-gray-300"
+                            >
+                                IBM
+                            </h5>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">
+                                01 Oct, 2021
+                            </p>
+                        </div>
+                    </div>
+
+                    <span class="text-base font-medium text-red-500"
+                        >-$254.00</span
+                    >
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <Icon
+                            icon="mdi:checkbox-blank-circle-outline"
+                            aria-hidden="true"
+                            class="w-6 h-6 text-gray-500"
+                        />
+
+                        <div>
+                            <h5
+                                class="text-xs text-gray-600 dark:text-gray-300"
+                            >
+                                Louis Vuitton
+                            </h5>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">
+                                8 Oct, 2021
+                            </p>
+                        </div>
+                    </div>
+
+                    <span class="text-base font-medium text-gray-500"
+                        >Pending</span
+                    >
+                </div>
+            </BaseCard>
+        </div>
+    </section>
+</template>
