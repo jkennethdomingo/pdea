@@ -12,18 +12,52 @@ import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { isDark } from '@/composables';
 
-const isDark = ref(false);
+
+const selectedEmployeeIds = ref([]);
+
+const selectEmployee = (employeeId) => {
+  const index = selectedEmployeeIds.value.indexOf(employeeId);
+  if (index > -1) {
+    selectedEmployeeIds.value.splice(index, 1);
+  } else {
+    selectedEmployeeIds.value.push(employeeId);
+  }
+};
+
+const isSelected = (employeeId) => {
+  return selectedEmployeeIds.value.includes(employeeId);
+};
+
+const selectAll = () => {
+  selectedEmployeeIds.value = employeeInfo.value.map(employee => employee.EmployeeID);
+};
+
+const clearAll = () => {
+  selectedEmployeeIds.value = [];
+};
+
+const allSelected = computed({
+  get: () => employeeInfo.value && selectedEmployeeIds.value.length === employeeInfo.value.length,
+  set: (value) => {
+    if (value) {
+      selectAll();
+    } else {
+      clearAll();
+    }
+  }
+});
+
+
+
 const isLoading = ref(true); 
-
-
-
 const store = useStore();
 const calendarRef = ref(null);
+const calendar = ref(null);
 const date = ref(new Date()); // Assuming this is your VDatePicker model
 const drawerRef = ref(null);
 const editdrawerRef = ref(null);
-const openAssignModalRef = ref(null);
 
 const { getPhotoUrl } = usePhotoUrl(); 
 
@@ -122,24 +156,6 @@ onMounted(async () => {
     isLoading.value = false; // Stop loading after a delay
   }, 2000);
 });
-
-const trainingCategories = computed(() => ({
-  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session is pending`,
-    date: session.CreatedAt // Format this date as needed
-  })),
-  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session has no employees assigned`,
-    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
-  })),
-  Finished: store.state.trainingSessions.finished.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session has finished`,
-    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
-  })),
-}));
 
 const calendarOptions = ref({
   plugins: [
@@ -267,6 +283,25 @@ const updateEmployeeList = (employeeId) => {
   }
 };
 
+const trainingCategories = computed(() => ({
+  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session is pending`,
+    date: session.CreatedAt // Format this date as needed
+  })),
+  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has no employees assigned`,
+    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
+  })),
+  Finished: store.state.trainingSessions.finished.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has finished`,
+    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
+  })),
+}));
+
+
 
 const addEvent = async () => {
   await store.dispatch('addEvent', newEvent.value);
@@ -282,16 +317,21 @@ const editEvent = async () => {
   resetNewEvent();
 };
 
-const approveRequest = (postId) => {
-  // Logic to approve the request
-  console.log('Approved request:', postId);
-};
 
-const denyRequest = (postId) => {
-  // Logic to deny the request
-  console.log('Denied request:', postId);
-};
 
+function moveToday() {
+  const calendarApi = calendarRef.value.getApi();
+  calendar.value.move(new Date());
+    calendarApi.gotoDate(new Date());
+}
+
+const trainingsMap = computed(() => ({
+  Upcoming: store.state.trainingsWithoutEmployees.map(training => ({
+    id: training.training_id,
+    title: `Training: ${training.title}`,
+    date: training.period_from // Format this date as needed
+  }))
+}))
 
 </script>
 
@@ -322,7 +362,7 @@ const denyRequest = (postId) => {
         <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>Assign Training</h5>
-        <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
+        <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
             </svg>
@@ -411,7 +451,7 @@ const denyRequest = (postId) => {
         <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>Edit event</h5>
-        <button type="button" data-drawer-hide="edit-dynamic-drawer" aria-controls="edit-dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
+        <button type="button" data-drawer-hide="edit-dynamic-drawer" aria-controls="edit-dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
             </svg>
@@ -493,56 +533,69 @@ const denyRequest = (postId) => {
      <!--Read Modal Start-->
 
      <!-- Main modal -->
-<div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Choose Employee
-                </h3>
-                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class=" py-12 hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+          <div class="relative p-4 w-full max-w-2xl max-h-full h-full">
+              <!-- Modal content -->
+              <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 flex flex-col">
+                <!-- Modal header -->
+                <div class="flex justify-between items-start p-4 md:p-5 border-b dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Choose Employee
+                    </h3>
+                    <!-- Placeholder for alignment -->
+                    <div class="w-8 h-8"></div>
+                </div>
+                <!-- Absolute positioned Close button -->
+                <button type="button" class="absolute top-4 right-5 transform translate-x-1/2 -translate-y-1/2 text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800" data-modal-hide="static-modal">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
                     <span class="sr-only">Close modal</span>
                 </button>
-            </div>
+                  <!-- Rest of your modal content -->
+
             <!-- Modal body -->
-            <div class="p-4 md:p-5 space-y-4">
-  <!-- Dynamic Employee Data -->
-  <div v-for="employee in employeeInfo" :key="employee.EmployeeID" class="mx-auto flex items-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4">
-    <!-- Avatar -->
-    <div class="shrink-0">
-      <template v-if="employee.photo">
-        <img :src="getPhotoUrl(employee.photo)" class="h-16 w-16 object-cover rounded-full" :alt="employee.first_name + ' ' + employee.surname + ' Avatar'">
-      </template>
-      <template v-else>
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M16 9a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-2 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z"/><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1ZM3 12c0 2.09.713 4.014 1.908 5.542A8.986 8.986 0 0 1 12.065 14a8.984 8.984 0 0 1 7.092 3.458A9 9 0 1 0 3 12Zm9 9a8.963 8.963 0 0 1-5.672-2.012A6.992 6.992 0 0 1 12.065 16a6.991 6.991 0 0 1 5.689 2.92A8.964 8.964 0 0 1 12 21Z"/></g></svg>
-      </template>
-    </div>
-    <!-- Name and details -->
-    <div class="flex-grow ml-4">
-      <div class="text-lg text-white font-bold">{{ employee.first_name + ' ' + employee.surname }}</div>
-      <div class="text-sm text-gray-400">
-        <p>ID: {{ employee.EmployeeID }}</p>
-        <p>Date of Entry: {{ employee.DateOfEntry }}</p>
-        <p>IPCR: {{ employee.IPCR }}</p>
-      </div>
-    </div>
-    <!-- Checkbox -->
-    <div class="ml-4 flex items-center">
-      <input ref="employeeCheckboxes" @change="updateEmployeeList(employee.EmployeeID)" type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" :value="employee.EmployeeID">
-    </div>
-  </div>
-  <!-- Footer -->
-  <div class="items-center px-4 py-3">
-    <button id="ok-btn" class="px-4 py-2 bg-gray-800 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-      Update Event
-    </button>
-  </div>
-</div>
+            <div class="relative p-4 md:p-5 space-y-4 max-h-[500px] overflow-y-auto bg-[#f5f5f7] dark:bg-[#0F172A] border border-gray-600 rounded-b-lg">
+              <!-- Select All Checkbox -->
+              <div class="absolute top-0 right-0 pt-2 pr-4">
+                <label class="cursor-pointer flex items-center">
+                  <span class="label-text text-sm text-gray-900 dark:text-gray-300">Select All</span>
+                  <input type="checkbox" checked="checked" class="checkbox checkbox-success ml-2" v-model="allSelected" />
+                </label>
+              </div>
+
+          <div class="grid grid-cols-3 gap-4">
+          <div v-for="employee in employeeInfo" :key="employee.EmployeeID"
+              @click="selectEmployee(employee.EmployeeID)"
+              :class="{'ring-2 ring-green-400': isSelected(employee.EmployeeID), 'bg-gray-300 dark:bg-gray-800': !isSelected(employee.EmployeeID)}"
+              class="flex flex-col border border-gray-400 shadow-lg rounded-2xl p-4 cursor-pointer">
+              <!-- Avatar -->
+              <div class="self-center mb-3 ">
+                <template v-if="employee.photo">
+                  <img :src="getPhotoUrl(employee.photo)" class="h-12 w-12 object-cover rounded-full" :alt="employee.first_name + ' ' + employee.surname + ' Avatar'">
+                </template>
+                <template v-else>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4Z"/></svg>
+                </template>
+              </div>
+              <!-- Name and details -->
+              <div class="flex-grow">
+                <div class="underline text-lg text-green-700 dark:text-gray-200  font-semibold text-center">{{ employee.first_name + ' ' + employee.surname }}</div>
+                <div class="text-md text-gray-800 dark:text-gray-200 mt-1">
+                  <p><span class="dark:text-green-400 text-green-800">ID:</span> {{ employee.EmployeeID }}</p>
+                  <p><span class="dark:text-green-400 text-green-800">IPCR:</span> {{ employee.IPCR }}</p>
+                  <p><span class="dark:text-green-400 text-green-800">Date of Entry:</span> {{ employee.DateOfEntry }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Footer -->
+          <div class="flex justify-center items-center px-4 py-3">
+            <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+              Assign
+            </button>
+          </div>
+        </div>
 
             <!-- Modal footer -->
         </div>
@@ -557,12 +610,22 @@ const denyRequest = (postId) => {
   <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
     <!-- Mini calendar (VDatePicker) -->
     <div class="mb-4">
-      <VDatePicker is-dark="system" class="px-4 my-datepicker" v-model="date" />
+      <VDatePicker class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
+        <template #footer>
+          <div class="w-full px-4 pb-3">
+            <button
+              class="bg-green-600 hover:bg-green-700 text-gray-200 font-bold w-full px-3 py-1 rounded-md"
+              @click="moveToday"
+            >
+              Today
+            </button>
+          </div>
+        </template>
+     </VDatePicker>
     </div>
 
     <!-- TabGroup Component -->
-     <!-- TabGroup Component -->
-     <div class="max-w-xs px-2 py-0 sm:px-0">
+    <div class="max-w-xs px-2 py-0 sm:px-0">
   <TabGroup>
     <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
       <Tab
@@ -594,7 +657,7 @@ const denyRequest = (postId) => {
         }"
       >
         <div v-if="isLoading" class="flex justify-center items-center">
-          <div class=" text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
+          <div class="bg-green-600 text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
             Loading...
           </div>
         </div>
@@ -635,11 +698,13 @@ const denyRequest = (postId) => {
     </TabPanels>
   </TabGroup>
 </div>
-  </div>
+
+</div>
+
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-dark-bg px-3 py-3 rounded-xl'>
+    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-[#f5f5f7] dark:bg-[#0F172A] px-3 py-7 rounded-xl border-2 border-gray-200 dark:border-gray-700'>
       <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
   </div>
