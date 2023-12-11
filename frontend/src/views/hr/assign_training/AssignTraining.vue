@@ -379,9 +379,9 @@ function closeEditRightDrawer() {
   <div class="drawer-side">
     <label for="dynamic-drawer" class="drawer-overlay"></label>
     <!-- Remove the 'overflow-y-hidden' class if you want the content to scroll when it overflows -->
-    <ul class="menu p-4 w-80 bg-base-100 text-base-content h-screen">
+    <ul class="p-4 w-80 dark:bg-base-100 bg-gray-200 text-base-content h-screen">
       <!-- Your dynamic drawer content -->
-      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-600 uppercase dark:text-gray-100"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>Assign Training</h5>
         <button
@@ -401,31 +401,31 @@ function closeEditRightDrawer() {
           <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Event Title" required>
+            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" placeholder="Event Title" required>
         </div>
 
         <!-- Period From Field -->
         <div class="mb-6">
             <label for="period_from" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period From</label>
-            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Period To Field -->
         <div class="mb-6">
             <label for="period_to" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period To</label>
-            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Number of Hours Field -->
         <div class="mb-6">
             <label for="number_of_hours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Number of Hours</label>
-            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Conducted By Field -->
         <div class="mb-6">
             <label for="conducted_by" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Conducted By</label>
-            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
+            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
       
         <div class="mb-4">
@@ -479,8 +479,8 @@ function closeEditRightDrawer() {
   <input id="edit-dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isEditDrawerOpen" />
   <div class="drawer-side">
     <label for="edit-dynamic-drawer" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-80 bg-base-100 text-base-content">
-      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+    <ul class="p-4 w-80 dark:bg-base-100 bg-gray-200 text-base-content h-screen">
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-600 uppercase dark:text-gray-100">
         <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>
@@ -503,31 +503,31 @@ function closeEditRightDrawer() {
         <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Event Title" required>
+            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" placeholder="Event Title" required>
         </div>
 
         <!-- Period From Field -->
         <div class="mb-6">
             <label for="period_from" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period From</label>
-            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Period To Field -->
         <div class="mb-6">
             <label for="period_to" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period To</label>
-            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Number of Hours Field -->
         <div class="mb-6">
             <label for="number_of_hours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Number of Hours</label>
-            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Conducted By Field -->
         <div class="mb-6">
             <label for="conducted_by" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Conducted By</label>
-            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
+            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" placeholder="Conductor's Name" required>
         </div>
 
         <div class="mb-4">
