@@ -189,18 +189,7 @@ const calendarOptions = ref({
   contentHeight: 'auto', // or set a specific numeric value
 });
 
-function openEditRightDrawer() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  editdrawerRef.value.classList.remove('translate-x-full');
-  editdrawerRef.value.classList.add('translate-x-0');
-}
 
-
-function openRightDrawer() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  drawerRef.value.classList.remove('translate-x-full');
-  drawerRef.value.classList.add('translate-x-0');
-}
 
 function openAddEventDialog() {
   // Logic to open the dialog to add a new event
@@ -333,6 +322,35 @@ const trainingsMap = computed(() => ({
   }))
 }))
 
+const isDrawerOpen = ref(false);
+const isEditDrawerOpen = ref(false);
+
+// ... your existing setup ...
+
+function openDrawer() {
+  isDrawerOpen.value = true;
+}
+
+function closeDrawer() {
+  isDrawerOpen.value = false;
+}
+
+function openRightDrawer() {
+  isDrawerOpen.value = true; // Opens the DaisyUI drawer
+}
+
+// Open the edit event drawer
+function openEditRightDrawer() {
+  isEditDrawerOpen.value = true; // Open the edit drawer
+}
+
+// Close the edit event drawer
+function closeEditRightDrawer() {
+  isEditDrawerOpen.value = false; // Close the edit drawer
+}
+
+
+
 </script>
 
 
@@ -353,24 +371,34 @@ const trainingsMap = computed(() => ({
     </div>
 
     <!-- dynamic drawer component -->
-    <div ref="drawerRef"
-        id="dynamic-drawer" 
-        class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-        tabindex="-1" 
-        aria-labelledby="drawer-label">
-        
-        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <div ref="drawerRef" class="drawer drawer-end" :class="{'z-50': isDrawerOpen}">
+  <input id="dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isDrawerOpen" />
+  <div class="drawer-content">
+    <!-- Main page content here -->
+  </div> 
+  <div class="drawer-side">
+    <label for="dynamic-drawer" class="drawer-overlay"></label>
+    <!-- Remove the 'overflow-y-hidden' class if you want the content to scroll when it overflows -->
+    <ul class="menu p-4 w-80 bg-base-100 text-base-content h-screen">
+      <!-- Your dynamic drawer content -->
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>Assign Training</h5>
-        <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-            </svg>
-            <span class="sr-only">Close menu</span>
+        <button
+          type="button"
+          @click="closeDrawer"
+          aria-controls="dynamic-drawer"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
+        >
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+          <span class="sr-only">Close menu</span>
         </button>
-
-        <form @submit.prevent="addEvent" class="mb-6">
-        <!-- Title Field -->
+      <li>
+        <form class="mb-6" @submit.prevent="addEvent">
+          <div class="mb-6 px-4">
+          <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
             <input type="text" v-model="newEvent.title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Event Title" required>
@@ -399,30 +427,35 @@ const trainingsMap = computed(() => ({
             <label for="conducted_by" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Conducted By</label>
             <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
         </div>
-
+      
         <div class="mb-4">
+        </div>
           
 
-          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-        Choose Employee
-      </button>
-        </div>
+        <div class="flex flex-col space-y-2">
+  <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+    Choose Employee
+  </button>
 
-        <!-- Submit Button -->
-        <div class="flex justify-start space-x-2">
-        <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
-          </svg> Save
-        </button>
-        <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg> Delete
-        </button>
-      </div>
-    </form>
+  <div class="flex space-x-2">
+    <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
+      Save
+    </button>
+    <button type="button" class="flex-1 text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-800">
+      Delete
+    </button>
+  </div>
+</div>
+</div>
+
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
         <!-- Dynamic content goes here -->
         
-    </div>
+
 
     <!-- Add Modal End-->
 
@@ -441,24 +474,32 @@ const trainingsMap = computed(() => ({
         </button>
     </div>
 
-    <!-- dynamic drawer component -->
-    <div ref="editdrawerRef"
-        id="edit-dynamic-drawer" 
-        class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-        tabindex="-1" 
-        aria-labelledby="drawer-label">
-        
-        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>Edit event</h5>
-        <button type="button" data-drawer-hide="edit-dynamic-drawer" aria-controls="edit-dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-            </svg>
-            <span class="sr-only">Close menu</span>
-        </button>
-
-        <form @submit.prevent="editEvent" class="mb-6">
+    <!-- Edit Drawer Component -->
+    <div ref="editdrawerRef" class="drawer drawer-end" :class="{'z-50': isEditDrawerOpen}">
+  <input id="edit-dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isEditDrawerOpen" />
+  <div class="drawer-side">
+    <label for="edit-dynamic-drawer" class="drawer-overlay"></label>
+    <ul class="menu p-4 w-80 bg-base-100 text-base-content">
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+        <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
+        </svg>
+        Edit Event
+      </h5>
+      <button
+        type="button"
+        @click="closeEditRightDrawer"
+        aria-controls="edit-dynamic-drawer"
+        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+        </svg>
+        <span class="sr-only">Close menu</span>
+      </button>
+      <li class="flex flex-col items-center">
+        <form class="mb-6 w-full" @submit.prevent="editEvent">
+          <div class="mb-6 px-4">
         <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
@@ -490,43 +531,39 @@ const trainingsMap = computed(() => ({
         </div>
 
         <div class="mb-4">
+        </div>
+
+        <div class="flex flex-col space-y-2">
+          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+            Choose Employee
+          </button>
+          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0" class="mt-4 gap-2">
+            <img v-for="(photo, index) in newEvent.photo" :key="index" :src="getPhotoUrl(photo)" class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" alt="Employee photo not found">
+          </div>
           
-          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0">
-          <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
-          <img v-for="(photo, index) in newEvent.photo" :key="index" :src="getPhotoUrl(photo)" class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" alt="Employee photo not found">
-        </div>
-        </div>
 
         <div v-else>
               <!-- Show text if no employees are assigned -->
-              <p>Training not assigned to any employee.</p>
+              <p class="mt-4 text-center">Training not assigned to any employee.</p>
             </div>
-
-          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-        Choose Employee
-      </button>
+                  <!-- Update and Delete Buttons -->
+                  <div class="flex space-x-2">
+            <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
+              Update
+            </button>
+            <button type="button" class="flex-1 text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-800">
+              Delete
+            </button>
+          </div>
         </div>
-        
-
-
-        <!-- Submit Button -->
-        <div class="flex justify-start space-x-2">
-        <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
-            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
-                <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-            </svg> Update
-        </button>
-        <button type="submit" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
-            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
-                <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-            </svg> Delete
-        </button>
       </div>
-    </form>
-        
-    </div>
+
+            
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
 
     <!--Edit Modal End-->
 
@@ -657,7 +694,7 @@ const trainingsMap = computed(() => ({
         }"
       >
         <div v-if="isLoading" class="flex justify-center items-center">
-          <div class="bg-green-600 text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
+          <div class="text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
             Loading...
           </div>
         </div>
