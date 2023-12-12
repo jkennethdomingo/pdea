@@ -118,11 +118,11 @@ class AssignTrainingController extends ResourceController
 
             // Check if the training was successfully updated
             if ($updateResult) {
-                // Check if there are employees to assign the training to
-                if (!empty($json->employees) && is_array($json->employees)) {
-                    // Assuming we clear previous assignments and reassign
-                    $this->internalEmployeeTrainingModel->where('training_id', $trainingId)->delete();
-                    
+                // Clear previous employee assignments for the training
+                $this->internalEmployeeTrainingModel->where('training_id', $trainingId)->delete();
+
+                // Assign new employees if the 'employees' field is present and is an array
+                if (isset($json->employees) && is_array($json->employees)) {
                     foreach ($json->employees as $employeeId) {
                         $assignmentData = [
                             'EmployeeID' => $employeeId,
@@ -138,7 +138,7 @@ class AssignTrainingController extends ResourceController
                     'status'   => 200,
                     'error'    => null,
                     'messages' => [
-                        'success' => 'Training successfully updated' . (!empty($json->employees) ? ' and employees assigned' : '')
+                        'success' => 'Training successfully updated' . (isset($json->employees) ? ' and employees assigned' : '')
                     ]
                 ];
                 return $this->response->setJSON($response);
@@ -151,6 +151,7 @@ class AssignTrainingController extends ResourceController
         return $this->fail($this->validator->getErrors());
     }
 
+
     public function getTraining()
     {
         $data = [
@@ -161,50 +162,53 @@ class AssignTrainingController extends ResourceController
     }
 
     public function getTrainingbyTitle($title)
-    {
-        // Start building the query
-        $builder = $this->trainingModel->builder();
-        
-        // Specify the columns you want to select
-        $builder->select('
-            training.*,
-            GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
-            GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
-            GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
-            GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids
-        ', false);
-        
-        // Join with the internal_employee_training table and personal_information table
-        $builder->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left');
-        $builder->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left');
-        
-        // Add a where clause for the title
-        $builder->where('training.title', $title);
-        
-        // Add a group by clause to consolidate the results by training ID
-        $builder->groupBy('training.training_id');
-        
-        // Execute the query and get the result
-        $query = $builder->get();
-        $trainingData = $query->getResultArray();
+{
+    // Start building the query
+    $builder = $this->trainingModel->builder();
     
-        // Process each training record to convert photos and employee_ids into arrays
-        foreach ($trainingData as &$training) {
-            // Split the concatenated string of photos and employee IDs into arrays
-            $training['first_names'] = array_filter(explode(',', $training['first_names']));
-            $training['surnames'] = array_filter(explode(',', $training['surnames']));
-            $training['photos'] = array_filter(explode(',', $training['photos']));
-            $training['employee_ids'] = array_filter(explode(',', $training['employee_ids']));
-        }
-        unset($training); // Break the reference with the last element
+    // Specify the columns you want to select
+    $builder->select('
+        training.*,
+        GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+        GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
+        GROUP_CONCAT(DISTINCT IFNULL(personal_information.photo, "null") ORDER BY personal_information.EmployeeID) as photos,
+        GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids
+    ', false);
     
-        // Prepare the data for the response
-        $data = [
-            'training' => $trainingData,
-        ];
+    // Join with the internal_employee_training table and personal_information table
+    $builder->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left');
+    $builder->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left');
     
-        return $this->respond($data);
+    // Add a where clause for the title
+    $builder->where('training.title', $title);
+    
+    // Add a group by clause to consolidate the results by training ID
+    $builder->groupBy('training.training_id');
+    
+    // Execute the query and get the result
+    $query = $builder->get();
+    $trainingData = $query->getResultArray();
+
+    // Process each training record to convert photos and employee_ids into arrays
+    foreach ($trainingData as &$training) {
+        // Split the concatenated string of names, surnames, photos, and employee IDs into arrays
+        $training['first_names'] = array_filter(explode(',', $training['first_names']));
+        $training['surnames'] = array_filter(explode(',', $training['surnames']));
+        $training['photos'] = array_map(function ($photo) {
+            return $photo === 'null' ? null : $photo;
+        }, explode(',', $training['photos']));
+        $training['employee_ids'] = array_filter(explode(',', $training['employee_ids']));
     }
+    unset($training); // Break the reference with the last element
+
+    // Prepare the data for the response
+    $data = [
+        'training' => $trainingData,
+    ];
+
+    return $this->respond($data);
+}
+
 
     public function getTrainingbyID($id)
     {
@@ -251,6 +255,45 @@ class AssignTrainingController extends ResourceController
     
         return $this->respond($data);
     }
+
+    public function getTraineesByID($id)
+    {
+        // Start building the query
+        $builder = $this->trainingModel->builder();
+        
+        // Specify the columns you want to select
+        $builder->select('
+            GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids
+        ', false);
+        
+        // Join only with the internal_employee_training table
+        $builder->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left');
+        
+        // Add a where clause for the training ID
+        $builder->where('training.training_id', $id);
+        
+        // Add a group by clause to consolidate the results by training ID
+        $builder->groupBy('training.training_id');
+        
+        // Execute the query and get the result
+        $query = $builder->get();
+        $trainingData = $query->getResultArray();
+
+        // Process each training record to convert employee_ids into an array
+        foreach ($trainingData as &$training) {
+            // Split the concatenated string of employee IDs into an array
+            $training['employee_ids'] = array_filter(explode(',', $training['employee_ids']));
+        }
+        unset($training); // Break the reference with the last element
+
+        // Prepare the data for the response
+        $data = [
+            'training' => $trainingData,
+        ];
+
+        return $this->respond($data);
+    }
+
     
 
 

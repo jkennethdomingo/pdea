@@ -46,7 +46,7 @@ $routes->group('api', function($routes)
         $routes->post('insertTraining', 'AssignTrainingController::insertTraining');
         $routes->post('getTraining', 'AssignTrainingController::getTraining');
         $routes->get('getTrainingByTitle/(:any)', 'AssignTrainingController::getTrainingbyTitle/$1');
-        $routes->get('getTrainingByID/(:any)', 'AssignTrainingController::getTrainingbyID/$1');
+        $routes->get('getTraineesByID/(:any)', 'AssignTrainingController::getTraineesByID/$1');
         $routes->post('getEmployeeInfo', 'AssignTrainingController::getEmployeeInfo');
         $routes->post('editTraining', 'AssignTrainingController::editTraining');
         $routes->post('fetchUpcomingTrainingsWithoutEmployees', 'AssignTrainingController::fetchUpcomingTrainingsWithoutEmployees');
