@@ -86,6 +86,12 @@ export const actions = {
             commit('setIsUploading', true);
             let formData = new FormData();
             formData.append('file', state.selectedFile);
+            formData.append('EmployeeID', state.formData.page1.EmployeeID);
+            for (let [key, value] of formData.entries()) {
+              console.log(key, value);
+            }
+            
+
 
             const response = await apiService.post('employee/insertWithPhoto', formData, {
                 headers: {
