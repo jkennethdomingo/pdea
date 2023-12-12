@@ -113,7 +113,7 @@ export default [
                 {
                   path: '',
                   name: 'Assign Training',
-                  component: () => import('@/views/hr/assign_training/AssignTraining.vue'),
+                  component: () => import('@/views/hr/assign_training/MainAssignTraining.vue'),
                 },
               ],
             },
@@ -129,6 +129,24 @@ export default [
                 },
               ],
             },
+        ],
+      },
+      {
+        path: 'certificate',
+        children: [
+          {
+              path: 'manageCertificate',
+              component: () => import('@/layouts/AssignTrainingLayout.vue'),
+              meta: { requiresRole: 'HR_ADMIN' },
+              children: [
+                {
+                  path: '',
+                  name: 'Certificate',
+                  component: () => import('@/views/hr/certificates/Certificate.vue'),
+                },
+              ],
+            },
+           
         ],
       },
 
@@ -172,7 +190,7 @@ export default [
               {
                 path: 'property',
                 name: 'LG_Property_Monitoring',
-                component: () => import('@/views/logistics/manage_inventory/LG_Property_Monitoring.vue'),
+                component: () => import('@/views/logistics/manage_inventory/LG_Manage_Property.vue'),
                 },
                 {
                   path: 'add',

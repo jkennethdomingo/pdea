@@ -159,7 +159,7 @@ export const actions = {
           period_to: updatedEvent.period_to,
           number_of_hours: updatedEvent.number_of_hours,
           conducted_by: updatedEvent.conducted_by,
-          employees: updatedEvent.employees, // This can be an array of employee IDs or omitted if no changes
+          employees: updatedEvent.employee_ids, // This can be an array of employee IDs or omitted if no changes
         };
   
         // Send the update request to the server
@@ -265,10 +265,13 @@ export const actions = {
       }
     },
 
-    async getTrainingByID({ commit }, title) {
+    async getTrainingByID({ commit }, id) {
       try {
-        const response = await apiService.get(`manageTraining/getTrainingByID/${title}`);
-        commit('SET_TRAINING', response.data.training);
+        const response = await apiService.get(`manageTraining/getTraineesByID/${id}`);
+        const traineesData = response.data.training.map(training => ({
+          employee_ids: training.employee_ids,
+        }));
+        commit('assignedTrainees', traineesData);
       } catch (error) {
         console.error('Error fetching training data:', error);
       }

@@ -224,4 +224,7 @@ setActiveEmployees(state, count) {
 setTodayTrainingCount(state, count) {
   state.todayTrainingCount = count;
 },
+assignedTrainees(state, trainees) {
+  state.trainees = trainees;
+},
 };

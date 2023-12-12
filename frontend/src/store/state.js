@@ -184,4 +184,5 @@ export const state = {
   asset_type: [],
   activePPEData: [],
   archivedPPEData: [],
+  trainees: [], 
 };

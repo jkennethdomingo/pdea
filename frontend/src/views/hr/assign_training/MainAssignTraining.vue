@@ -7,33 +7,17 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import { initFlowbite } from 'flowbite';
 import { useStore } from 'vuex';
+import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { TabGroup, TabList, Tab, TabPanels, TabPanel, TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { isDark } from '@/composables';
 
-const trainingbyTitle = computed(() => store.state.trainingbyTitle);
-const isLoading = ref(true); 
-const store = useStore();
-const calendarRef = ref(null);
-const calendar = ref(null);
-const date = ref(new Date()); // Assuming this is your VDatePicker model
-const drawerRef = ref(null);
-const editdrawerRef = ref(null);
-const { getPhotoUrl } = usePhotoUrl(); 
-const newEvent = ref({
-    title: '',
-    period_from: '',
-    period_to: '',
-    number_of_hours: '',
-    conducted_by: '',
-    employees: [],
-    photos: [],
-    employee_ids:[],
-});
 
 const selectedEmployeeIds = ref([]);
+const isModalVisible = ref(false);
+const selectedSessionId = ref(null);
 
 const selectEmployee = (employeeId) => {
   const index = selectedEmployeeIds.value.indexOf(employeeId);
@@ -42,17 +26,22 @@ const selectEmployee = (employeeId) => {
   } else {
     selectedEmployeeIds.value.push(employeeId);
   }
+  console.log('selectedEmployeeIds after update:', selectedEmployeeIds.value);
 };
 
+
 const isSelected = (employeeId) => {
-  return selectedEmployeeIds.value.includes(employeeId);
+  const selected = selectedEmployeeIds.value.includes(employeeId);
+  return selected;
 };
 
 const selectAll = () => {
+  console.log('selectAll called');
   selectedEmployeeIds.value = employeeInfo.value.map(employee => employee.EmployeeID);
 };
 
 const clearAll = () => {
+  console.log('clearAll called');
   selectedEmployeeIds.value = [];
 };
 
@@ -67,13 +56,37 @@ const allSelected = computed({
   }
 });
 
-const employeeCheckboxes = ref([]);
 
-const clearCheckboxes = () => {
-  employeeCheckboxes.value.forEach(checkbox => {
-    checkbox.checked = false;
-  });
-};
+
+const isLoading = ref(true); 
+const store = useStore();
+const calendarRef = ref(null);
+const calendar = ref(null);
+const date = ref(new Date()); // Assuming this is your VDatePicker model
+const drawerRef = ref(null);
+const editdrawerRef = ref(null);
+
+const { getPhotoUrl } = usePhotoUrl(); 
+
+
+const newEvent = ref({
+  title: '',
+  period_from: '',
+  period_to: '',
+  number_of_hours: '',
+  conducted_by: '',
+  employees: [],
+  photos: [],
+  employee_ids:[],
+});
+
+watch(selectedEmployeeIds, (newIds, oldIds) => {
+  console.log(`Watcher triggered. Old IDs: ${oldIds}, New IDs: ${newIds}`);
+}, { immediate: true });
+
+
+
+const trainingbyTitle = computed(() => store.state.trainingbyTitle);
 
 // Computed property for transforming training data
 const trainingEvents = computed(() => {
@@ -85,6 +98,8 @@ const trainingEvents = computed(() => {
     // Add more fields if needed
   }));
 });
+
+const trainees = computed(() => store.state.trainees);
 
 const employeeInfo = computed(() => {
   return store.state.employeeInfo.map(employee => ({
@@ -98,37 +113,6 @@ const employeeInfo = computed(() => {
   }));
 });
 
-const trainingCategories = computed(() => ({
-  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session is pending`,
-    date: session.CreatedAt // Format this date as needed
-  })),
-  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session has no employees assigned`,
-    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
-  })),
-  Finished: store.state.trainingSessions.finished.map(session => ({
-    id: session.TrainingID,
-    title: `${session.Title} training session has finished`,
-    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
-  })),
-}));
-
-const addEvent = async () => {
-  await store.dispatch('addEvent', newEvent.value);
-  await store.dispatch('getTraining');
-  // Reset newEvent here
-  resetNewEvent();
-};
-
-const editEvent = async () => {
-  await store.dispatch('editEvent', newEvent.value);
-  await store.dispatch('getTraining');
-  // Reset newEvent here
-  resetNewEvent();
-};
 
 const resetNewEvent = () => {
   newEvent.value = {
@@ -139,9 +123,7 @@ const resetNewEvent = () => {
     conducted_by: '',
     employees: [],
   };
-  clearCheckboxes();
 };
-
 
 
 // Watch for changes in the date picker and update the calendar
@@ -153,6 +135,16 @@ watch(date, (newDate) => {
 });
 
 
+// Watch for changes in training events and update the calendar
+watch(trainingEvents, (newEvents) => {
+  if (calendarRef.value) {
+    const calendarApi = calendarRef.value.getApi();
+    calendarApi.removeAllEvents(); // Remove old events
+    calendarApi.addEventSource(newEvents); // Add new events
+  }
+}, { deep: true });
+
+// Fetch training data on component mount
 onMounted(async () => {
   initFlowbite();
   await store.dispatch('getTraining'); // Dispatch the action to fetch training data
@@ -167,14 +159,6 @@ onMounted(async () => {
     isLoading.value = false; // Stop loading after a delay
   }, 2000);
 });
-
-watch(trainingEvents, (newEvents) => {
-  if (calendarRef.value) {
-    const calendarApi = calendarRef.value.getApi();
-    calendarApi.removeAllEvents(); // Remove old events
-    calendarApi.addEventSource(newEvents); // Add new events
-  }
-}, { deep: true });
 
 const calendarOptions = ref({
   plugins: [
@@ -208,18 +192,7 @@ const calendarOptions = ref({
   contentHeight: 'auto', // or set a specific numeric value
 });
 
-function openEditRightDrawer() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  editdrawerRef.value.classList.remove('translate-x-full');
-  editdrawerRef.value.classList.add('translate-x-0');
-}
 
-
-function openRightDrawer() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  drawerRef.value.classList.remove('translate-x-full');
-  drawerRef.value.classList.add('translate-x-0');
-}
 
 function openAddEventDialog() {
   // Logic to open the dialog to add a new event
@@ -251,6 +224,7 @@ function handleDateSelect(selectInfo) {
 
 }
 
+
 watch(trainingbyTitle, (newTraining) => {
   if (newTraining && newTraining.length > 0) {
     const trainingData = newTraining[0]; // Assuming you want the first item
@@ -277,6 +251,7 @@ async function handleEventClick(clickInfo) {
   openEditRightDrawer();
 }
 
+
 function handleEvents(events) {
   // Handle events set
 }
@@ -285,48 +260,166 @@ function handleWeekendsToggle() {
   // Handle weekends toggle
 }
 
+const updateEmployeeList = (employeeId) => {
+  // Initialize employees as an array if it's undefined
+  if (!Array.isArray(newEvent.value.employees)) {
+    newEvent.value.employees = [];
+  }
+
+  // Now proceed with the logic
+  const index = newEvent.value.employees.indexOf(employeeId);
+  if (index > -1) {
+    newEvent.value.employees.splice(index, 1);
+  } else {
+    newEvent.value.employees.push(employeeId);
+  }
+};
+
+const trainingCategories = computed(() => ({
+  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session is pending`,
+    date: session.CreatedAt // Format this date as needed
+  })),
+  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has no employees assigned`,
+    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
+  })),
+  Finished: store.state.trainingSessions.finished.map(session => ({
+    id: session.TrainingID,
+    title: `${session.Title} training session has finished`,
+    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
+  })),
+}));
+
+
+
+const addEvent = async () => {
+  await store.dispatch('addEvent', newEvent.value);
+  await store.dispatch('getTraining');
+  // Reset newEvent here
+  resetNewEvent();
+};
+
+const editEvent = async () => {
+  newEvent.value.employee_ids = [...selectedEmployeeIds.value]; 
+  console.log('Dispatching editEvent with:', newEvent.value);
+  await store.dispatch('editEvent', newEvent.value);
+  await store.dispatch('getTraining');
+  // Reset newEvent here
+  resetNewEvent();
+};
+
+
+
 function moveToday() {
   const calendarApi = calendarRef.value.getApi();
   calendar.value.move(new Date());
     calendarApi.gotoDate(new Date());
 }
 
+const trainingsMap = computed(() => ({
+  Upcoming: store.state.trainingsWithoutEmployees.map(training => ({
+    id: training.training_id,
+    title: `Training: ${training.title}`,
+    date: training.period_from // Format this date as needed
+  }))
+}))
+
+const isDrawerOpen = ref(false);
+const isEditDrawerOpen = ref(false);
+
+// ... your existing setup ...
+
+function openDrawer() {
+  isDrawerOpen.value = true;
+}
+
+function closeDrawer() {
+  isDrawerOpen.value = false;
+}
+
+function openRightDrawer() {
+  isDrawerOpen.value = true; // Opens the DaisyUI drawer
+}
+
+// Open the edit event drawer
+function openEditRightDrawer() {
+  isEditDrawerOpen.value = true; // Open the edit drawer
+}
+
+// Close the edit event drawer
+function closeEditRightDrawer() {
+  isEditDrawerOpen.value = false; // Close the edit drawer
+}
+
+const openModal = async () => {
+  await store.dispatch('getTrainingByID', newEvent.value.training_id);
+  isModalVisible.value = true;
+};
+
+
+const assignTraining = (sessionId) => {
+  selectedSessionId.value = sessionId;
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+
+
 
 </script>
 
+
 <template>
-<!--Add Modal Start-->
-<div class="text-center hidden">
-    <button 
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
-        type="button" 
-        data-drawer-target="dynamic-drawer" 
-        data-drawer-show="dynamic-drawer" 
-        data-drawer-placement="right" 
-        aria-controls="dynamic-drawer">
-        Show right drawer
-    </button>
-</div>
 
-<!-- dynamic drawer component -->
-<div ref="drawerRef"
-    id="dynamic-drawer" 
-    class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-    tabindex="-1" 
-    aria-labelledby="drawer-label">
-        
-    <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>Assign Training</h5>
-        <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-            </svg>
-            <span class="sr-only">Close menu</span>
+    <!-- Add Modal Start-->
+    <!-- drawer init and toggle -->
+    <div class="text-center hidden">
+        <button 
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
+            type="button" 
+            data-drawer-target="dynamic-drawer" 
+            data-drawer-show="dynamic-drawer" 
+            data-drawer-placement="right" 
+            aria-controls="dynamic-drawer">
+            Show right drawer
         </button>
+    </div>
 
-        <form @submit.prevent="addEvent" class="mb-6">
-        <!-- Title Field -->
+    <!-- dynamic drawer component -->
+    <div ref="drawerRef" class="drawer drawer-end" :class="{'z-50': isDrawerOpen}">
+  <input id="dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isDrawerOpen" />
+  <div class="drawer-content">
+    <!-- Main page content here -->
+  </div> 
+  <div class="drawer-side">
+    <label for="dynamic-drawer" class="drawer-overlay"></label>
+    <!-- Remove the 'overflow-y-hidden' class if you want the content to scroll when it overflows -->
+    <ul class="menu p-4 w-80 bg-base-100 text-base-content h-screen">
+      <!-- Your dynamic drawer content -->
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
+        </svg>Assign Training</h5>
+        <button
+          type="button"
+          @click="closeDrawer"
+          aria-controls="dynamic-drawer"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
+        >
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+          <span class="sr-only">Close menu</span>
+        </button>
+      <li>
+        <form class="mb-6" @submit.prevent="addEvent">
+          <div class="mb-6 px-4">
+          <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
             <input type="text" v-model="newEvent.title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Event Title" required>
@@ -355,33 +448,39 @@ function moveToday() {
             <label for="conducted_by" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Conducted By</label>
             <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
         </div>
-
+      
         <div class="mb-4">
+        </div>
           
 
-          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-        Choose Employee
-      </button>
-        </div>
+        <div class="flex flex-col space-y-2">
+  <button @click="openModal()" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+    Choose Employee
+  </button>
 
-        <!-- Submit Button -->
-        <div class="flex justify-start space-x-2">
-        <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
-          </svg> Save
-        </button>
-        <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg> Delete
-        </button>
-      </div>
-    </form>
+  <div class="flex space-x-2">
+    <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
+      Save
+    </button>
+    <button type="button" class="flex-1 text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-800">
+      Delete
+    </button>
+  </div>
+</div>
+</div>
+
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
         <!-- Dynamic content goes here -->
         
-    </div>
-<!--Add Modal End-->
 
-<!--Edit Modal Start-->
+
+    <!-- Add Modal End-->
+
+    <!--Edit Modal Start-->
 
     <!-- drawer init and toggle -->
     <div class="text-center hidden">
@@ -396,24 +495,32 @@ function moveToday() {
         </button>
     </div>
 
-    <!-- dynamic drawer component -->
-    <div ref="editdrawerRef"
-        id="edit-dynamic-drawer" 
-        class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-        tabindex="-1" 
-        aria-labelledby="drawer-label">
-        
-        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>Edit event</h5>
-        <button type="button" data-drawer-hide="edit-dynamic-drawer" aria-controls="edit-dynamic-drawer" class=" text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800 w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center" >
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-            </svg>
-            <span class="sr-only">Close menu</span>
-        </button>
-
-        <form @submit.prevent="editEvent" class="mb-6">
+    <!-- Edit Drawer Component -->
+    <div ref="editdrawerRef" class="drawer drawer-end" :class="{'z-50': isEditDrawerOpen}">
+  <input id="edit-dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isEditDrawerOpen" />
+  <div class="drawer-side">
+    <label for="edit-dynamic-drawer" class="drawer-overlay"></label>
+    <ul class="menu p-4 w-80 bg-base-100 text-base-content">
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+        <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
+        </svg>
+        Edit Event
+      </h5>
+      <button
+        type="button"
+        @click="closeEditRightDrawer"
+        aria-controls="edit-dynamic-drawer"
+        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+        </svg>
+        <span class="sr-only">Close menu</span>
+      </button>
+      <li class="flex flex-col items-center">
+        <form class="mb-6 w-full" @submit.prevent="editEvent">
+          <div class="mb-6 px-4">
         <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
@@ -445,72 +552,84 @@ function moveToday() {
         </div>
 
         <div class="mb-4">
-          
-          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0">
-          <div class="flex mb-4 -space-x-4 rtl:space-x-reverse">
-          <img v-for="(photo, index) in newEvent.photo" :key="index" :src="getPhotoUrl(photo)" class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" alt="Employee photo not found">
+        </div>
+
+        <div class="flex flex-col space-y-2">
+          <button @click="openModal()" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+            Choose Employee
+          </button>
+          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0" class="relative mt-4 flex gap-2">
+            <template v-for="(photo, index) in newEvent.photo" :key="index">
+              <div class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800 shadow-lg" :class="{ '-ml-4': index > 0 }">
+                <img v-if="photo" :src="getPhotoUrl(photo)" class="w-full h-full rounded-full" alt="Employee photo">
+                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-full h-full text-gray-300" viewBox="0 0 24 24">
+                  <path d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4Z"/>
+                </svg>
+              </div>
+            </template>
+          </div>
+
+          <div v-else>
+            <!-- Show text if no employees are assigned -->
+            <p class="mt-4 text-center">Training not assigned to any employee.</p>
+          </div>
+          <!-- Update and Delete Buttons -->
+          <div class="flex space-x-2">
+            <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
+              Update
+            </button>
+            <button type="button" class="flex-1 text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-800">
+              Delete
+            </button>
+          </div>
         </div>
         </div>
 
-        <div v-else>
-              <!-- Show text if no employees are assigned -->
-              <p>Training not assigned to any employee.</p>
-            </div>
 
-          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-        Choose Employee
-      </button>
-        </div>
-        
-
-
-        <!-- Submit Button -->
-        <div class="flex justify-start space-x-2">
-        <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
-            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
-                <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-            </svg> Update
-        </button>
-        <button type="submit" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
-            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z"/>
-                <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z"/>
-            </svg> Delete
-        </button>
-      </div>
-    </form>
-        
-    </div>
+            
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
 
     <!--Edit Modal End-->
 
-     <!-- Main modal -->
-     <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class=" py-12 hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-          <div class="relative p-4 w-full max-w-2xl max-h-full h-full">
-              <!-- Modal content -->
-              <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 flex flex-col">
-                <!-- Modal header -->
-                <div class="flex justify-between items-start p-4 md:p-5 border-b dark:border-gray-600">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Choose Employee
-                    </h3>
-                    <!-- Placeholder for alignment -->
-                    <div class="w-8 h-8"></div>
-                </div>
-                <!-- Absolute positioned Close button -->
-                <button type="button" class="absolute top-4 right-5 transform translate-x-1/2 -translate-y-1/2 text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800" data-modal-hide="static-modal">
-                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Close modal</span>
-                </button>
-                  <!-- Rest of your modal content -->
+     <!--Read Modal Start-->
 
-            <!-- Modal body -->
-            <div class="relative p-4 md:p-5 space-y-4 max-h-[500px] overflow-y-auto bg-[#f5f5f7] dark:bg-[#0F172A] border border-gray-600 rounded-b-lg">
-              <!-- Select All Checkbox -->
-              <div class="absolute top-0 right-0 pt-2 pr-4">
+     <!-- Main modal -->
+     <TransitionRoot as="template" :show="isModalVisible">
+    <Dialog as="div" class="relative z-50" @close="closeModal">
+      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <div class="fixed inset-0 bg-black/25" aria-hidden="true"></div>
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
+          <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="ease-in duration-200" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
+            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white  dark:bg-gray-700 p-6 text-left align-middle shadow-xl transition-all">
+              <!-- Modal header -->
+              <div class="flex justify-between items-start p-4 md:p-5 border-b dark:border-gray-600">
+                <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                  Choose Employee
+                </DialogTitle>
+                <!-- Placeholder for alignment -->
+                <div class="w-8 h-8"></div>
+              </div>
+              
+              <!-- Absolute positioned Close button -->
+              <button type="button" class="absolute top-4 right-5 text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800" @click="closeModal">
+                <!-- SVG for Close Icon -->
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <!-- ... SVG Code ... -->
+                <span class="sr-only">Close modal</span>
+              </button>
+
+              <!-- Modal body -->
+              <div class="relative p-4 md:p-5 space-y-4 max-h-[500px] overflow-y-auto bg-[#f5f5f7] dark:bg-[#0F172A] border border-gray-600 rounded-b-lg">
+                <div class="absolute top-0 right-0 pt-2 pr-4">
                 <label class="cursor-pointer flex items-center">
                   <span class="label-text text-sm text-gray-900 dark:text-gray-300">Select All</span>
                   <input type="checkbox" checked="checked" class="checkbox checkbox-success ml-2" v-model="allSelected" />
@@ -542,117 +661,129 @@ function moveToday() {
               </div>
             </div>
           </div>
-          <!-- Footer -->
-          <div class="flex justify-center items-center px-4 py-3">
-            <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-              Assign
-            </button>
-          </div>
-        </div>
 
-            <!-- Modal footer -->
+                <!-- Modal footer -->
+                <div class="flex justify-center items-center px-4 py-3">
+                  <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    Assign
+                  </button>
+                </div>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
         </div>
-    </div>
-</div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 
 <!--Read Modal End-->
 
-
 <!--Bawal-->
 <div class='flex flex-wrap min-h-full font-sans text-sm'>
-    <div class="w-full lg:w-1/4 px-2 mb-4">
-        <div class="mb-4">
-            <VDatePicker class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
-                <template #footer>
-                <div class="w-full px-4 pb-3">
-                    <button
-                    class="bg-green-600 hover:bg-green-700 text-gray-200 font-bold w-full px-3 py-1 rounded-md"
-                    @click="moveToday"
-                    >
-                    Today
-                    </button>
-                </div>
-                </template>
-            </VDatePicker>
-        </div>
-        <div class="max-w-xs px-2 py-0 sm:px-0">
-            <TabGroup>
-                <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-                    <Tab
-                        v-for="category in Object.keys(trainingCategories)"
-                        as="template"
-                        :key="category"
-                        v-slot="{ selected }"
-                    >
-                        <button
-                        :class="[
-                            'w-full rounded-lg py-1 text-sm font-medium leading-5', 
-                            'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
-                            selected
-                            ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                            : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
-                        ]"
-                        >
-                        {{ category }}
-                        </button>
-                    </Tab>
-                </TabList>
-                <TabPanels class="mt-2">
-                    <TabPanel
-                        v-for="(sessions, category) in trainingCategories"
-                        :key="category"
-                        :class="{
-                        'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700': !isLoading,
-                        'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
-                        }"
-                    >
-                        <div v-if="isLoading" class="flex justify-center items-center">
-                            <div class="bg-green-600 text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
-                                Loading...
-                            </div>
-                        </div>
-                        <ul v-else class="max-h-40 overflow-y-auto">
-                            <li
-                                v-for="session in sessions"
-                                :key="session.id"
-                                class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
-                            >
-                                    <h3 class="text-sm font-medium leading-5">
-                                    {{ session.title }}
-                                    </h3>
-                                <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
-                                    <li>{{ session.date }}</li>
-                                </ul>
-                                <!-- Conditionally render Action button based on category -->
-                                <div class="flex justify-end space-x-2 mt-2">
-                                    <button
-                                        v-if="category === 'Unassigned'"
-                                        type="button"
-                                        @click="assignTraining(session.id)"
-                                        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-                                    >
-                                    Assign
-                                    </button>
-                                    <button
-                                        v-else
-                                        type="button"
-                                        @click="viewTrainingDetails(session.id)"
-                                        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-                                    >
-                                        View Details
-                                    </button>
-                                </div>
-                            </li>
-                        </ul>
-                    </TabPanel>
-                </TabPanels>
-            </TabGroup>
-        </div>
+  <!-- Left sidebar for mini calendar and TabGroup -->
+  <div class="w-full lg:w-1/4 px-2 mb-4"> <!-- Sidebar takes 1/4 of the width on large screens -->
+    <!-- Mini calendar (VDatePicker) -->
+    <div class="mb-4">
+      <VDatePicker class="px-4" ref="calendar" v-model="date" :is-dark="isDark">
+        <template #footer>
+          <div class="w-full px-4 pb-3">
+            <button
+              class="bg-green-600 hover:bg-green-700 text-gray-200 font-bold w-full px-3 py-1 rounded-md"
+              @click="moveToday"
+            >
+              Today
+            </button>
+          </div>
+        </template>
+     </VDatePicker>
     </div>
-    <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
-        <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-[#f5f5f7] dark:bg-[#0F172A] px-3 py-7 rounded-xl border-2 border-gray-200 dark:border-gray-700'>
-            <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+
+    <!-- TabGroup Component -->
+    <div class="max-w-xs px-2 py-0 sm:px-0">
+  <TabGroup>
+    <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+      <Tab
+        v-for="category in Object.keys(trainingCategories)"
+        as="template"
+        :key="category"
+        v-slot="{ selected }"
+      >
+        <button
+          :class="[
+            'w-full rounded-lg py-1 text-sm font-medium leading-5', 
+            'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
+            selected
+              ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+              : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
+          ]"
+        >
+          {{ category }}
+        </button>
+      </Tab>
+    </TabList>
+    <TabPanels class="mt-2">
+      <TabPanel
+        v-for="(sessions, category) in trainingCategories"
+        :key="category"
+        :class="{
+          'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700': !isLoading,
+          'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
+        }"
+      >
+        <div v-if="isLoading" class="flex justify-center items-center">
+          <div class="text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
+            Loading...
+          </div>
         </div>
+        <ul v-else class="max-h-40 overflow-y-auto">
+          <li
+            v-for="session in sessions"
+            :key="session.id"
+            class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+          >
+            <h3 class="text-sm font-medium leading-5">
+              {{ session.title }}
+            </h3>
+            <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
+              <li>{{ session.date }}</li>
+            </ul>
+            <!-- Conditionally render Action button based on category -->
+            <div class="flex justify-end space-x-2 mt-2">
+              <button
+                v-if="category === 'Unassigned'"
+                @click="assignTraining(session.id)"
+                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+              >
+                Assign
+              </button>
+              <button
+                v-else
+                type="button"
+                @click="viewTrainingDetails(session.id)"
+                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+              >
+                View Details
+              </button>
+            </div>
+          </li>
+        </ul>
+      </TabPanel>
+    </TabPanels>
+  </TabGroup>
+</div>
+
+</div>
+
+
+  <!-- Main content area for FullCalendar -->
+  <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
+    <div class='flex-grow p-12 text-md text-black dark:text-green-400 bg-[#f5f5f7] dark:bg-[#0F172A] px-3 py-7 rounded-xl border-2 border-gray-200 dark:border-gray-700'>
+      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
     </div>
+  </div>
 </div>
 </template>
+
+
+
+

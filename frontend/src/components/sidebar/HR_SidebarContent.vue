@@ -74,6 +74,14 @@ const isAssignRouteActive = () => {
         >
         </SidebarLink> -->
         <SidebarLink
+            icon="ph:certificate"
+            :to="{ name: 'Certificate' }"
+            title="Certificate"
+            :active="isCurrentRoute('Certificate')"
+        >
+
+        </SidebarLink>
+        <SidebarLink
             icon="ic:round-people"
             :to="{ name: 'Backup and Restore' }"
             title="Backup and Restore"
