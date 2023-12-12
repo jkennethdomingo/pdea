@@ -11,13 +11,11 @@ import { errorToast, successToast } from '@/toast/index';
 import Button from '@/components/base/Button';
 import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
-import { TabGroup, TabList, Tab, TabPanels, TabPanel, TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { isDark } from '@/composables';
 
 
 const selectedEmployeeIds = ref([]);
-const isModalVisible = ref(false);
-const selectedSessionId = ref(null);
 
 const selectEmployee = (employeeId) => {
   const index = selectedEmployeeIds.value.indexOf(employeeId);
@@ -26,22 +24,17 @@ const selectEmployee = (employeeId) => {
   } else {
     selectedEmployeeIds.value.push(employeeId);
   }
-  console.log('selectedEmployeeIds after update:', selectedEmployeeIds.value);
 };
 
-
 const isSelected = (employeeId) => {
-  const selected = selectedEmployeeIds.value.includes(employeeId);
-  return selected;
+  return selectedEmployeeIds.value.includes(employeeId);
 };
 
 const selectAll = () => {
-  console.log('selectAll called');
   selectedEmployeeIds.value = employeeInfo.value.map(employee => employee.EmployeeID);
 };
 
 const clearAll = () => {
-  console.log('clearAll called');
   selectedEmployeeIds.value = [];
 };
 
@@ -75,8 +68,11 @@ const newEvent = ref({
   period_to: '',
   number_of_hours: '',
   conducted_by: '',
+  employees: [],
+  photos: [],
   employee_ids:[],
 });
+
 
 
 const trainingbyTitle = computed(() => store.state.trainingbyTitle);
@@ -92,7 +88,14 @@ const trainingEvents = computed(() => {
   }));
 });
 
-const trainees = computed(() => store.state.trainees);
+const employeeCheckboxes = ref([]);
+
+const clearCheckboxes = () => {
+  employeeCheckboxes.value.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+};
+
 
 const employeeInfo = computed(() => {
   return store.state.employeeInfo.map(employee => ({
@@ -114,7 +117,9 @@ const resetNewEvent = () => {
     period_to: '',
     number_of_hours: '',
     conducted_by: '',
+    employees: [],
   };
+  clearCheckboxes();
 };
 
 
@@ -208,6 +213,7 @@ function handleDateSelect(selectInfo) {
     period_to: selectInfo.startStr,
     number_of_hours: null,
     conducted_by: '',
+    employees: [],
   };
 
   date.value = selectInfo.startStr;
@@ -232,14 +238,6 @@ watch(trainingbyTitle, (newTraining) => {
   }
 }, { immediate: true });
 
-const initializeSelectedEmployees = () => {
-  if (newEvent.value && newEvent.value.employee_ids) {
-    selectedEmployeeIds.value = [...newEvent.value.employee_ids];
-  } else {
-    selectedEmployeeIds.value = [];
-  }
-};
-
 async function handleEventClick(clickInfo) {
   // Extract event data from clicked event
   const eventData = clickInfo.event;
@@ -259,6 +257,20 @@ function handleWeekendsToggle() {
   // Handle weekends toggle
 }
 
+const updateEmployeeList = (employeeId) => {
+  // Initialize employees as an array if it's undefined
+  if (!Array.isArray(newEvent.value.employees)) {
+    newEvent.value.employees = [];
+  }
+
+  // Now proceed with the logic
+  const index = newEvent.value.employees.indexOf(employeeId);
+  if (index > -1) {
+    newEvent.value.employees.splice(index, 1);
+  } else {
+    newEvent.value.employees.push(employeeId);
+  }
+};
 
 const trainingCategories = computed(() => ({
   Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
@@ -283,24 +295,15 @@ const trainingCategories = computed(() => ({
 const addEvent = async () => {
   await store.dispatch('addEvent', newEvent.value);
   await store.dispatch('getTraining');
-  await store.dispatch('fetchTrainingsWithoutEmployees');
-  await store.dispatch('fetchTrainingSessions');
   // Reset newEvent here
   resetNewEvent();
-  clearAll();
 };
 
 const editEvent = async () => {
-  newEvent.value.employee_ids = [...selectedEmployeeIds.value]; 
-  console.log('Dispatching editEvent with:', newEvent.value);
   await store.dispatch('editEvent', newEvent.value);
   await store.dispatch('getTraining');
-  await store.dispatch('fetchTrainingsWithoutEmployees');
-  await store.dispatch('fetchTrainingSessions');
   // Reset newEvent here
   resetNewEvent();
-  clearAll();
-  closeEditRightDrawer();
 };
 
 
@@ -338,7 +341,6 @@ function openRightDrawer() {
 
 // Open the edit event drawer
 function openEditRightDrawer() {
-  initializeSelectedEmployees();
   isEditDrawerOpen.value = true; // Open the edit drawer
 }
 
@@ -346,22 +348,6 @@ function openEditRightDrawer() {
 function closeEditRightDrawer() {
   isEditDrawerOpen.value = false; // Close the edit drawer
 }
-
-const openModal = async () => {
-  initializeSelectedEmployees();
-  isModalVisible.value = true;
-};
-
-
-const assignTraining = (sessionId) => {
-  selectedSessionId.value = sessionId;
-  isModalVisible.value = true;
-};
-
-const closeModal = () => {
-  isModalVisible.value = false;
-};
-
 
 
 
@@ -393,9 +379,9 @@ const closeModal = () => {
   <div class="drawer-side">
     <label for="dynamic-drawer" class="drawer-overlay"></label>
     <!-- Remove the 'overflow-y-hidden' class if you want the content to scroll when it overflows -->
-    <ul class="menu p-4 w-80 bg-base-100 text-base-content h-screen">
+    <ul class="p-4 w-80 dark:bg-base-100 bg-gray-200 text-base-content h-screen">
       <!-- Your dynamic drawer content -->
-      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-600 uppercase dark:text-gray-100"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>Assign Training</h5>
         <button
@@ -415,31 +401,31 @@ const closeModal = () => {
           <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Event Title" required>
+            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" placeholder="Event Title" required>
         </div>
 
         <!-- Period From Field -->
         <div class="mb-6">
             <label for="period_from" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period From</label>
-            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Period To Field -->
         <div class="mb-6">
             <label for="period_to" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period To</label>
-            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Number of Hours Field -->
         <div class="mb-6">
             <label for="number_of_hours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Number of Hours</label>
-            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Conducted By Field -->
         <div class="mb-6">
             <label for="conducted_by" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Conducted By</label>
-            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
+            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
       
         <div class="mb-4">
@@ -447,7 +433,7 @@ const closeModal = () => {
           
 
         <div class="flex flex-col space-y-2">
-  <button @click="openModal()" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+  <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
     Choose Employee
   </button>
 
@@ -493,8 +479,8 @@ const closeModal = () => {
   <input id="edit-dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isEditDrawerOpen" />
   <div class="drawer-side">
     <label for="edit-dynamic-drawer" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-80 bg-base-100 text-base-content">
-      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+    <ul class="p-4 w-80 dark:bg-base-100 bg-gray-200 text-base-content h-screen">
+      <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-600 uppercase dark:text-gray-100">
         <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
         </svg>
@@ -517,57 +503,51 @@ const closeModal = () => {
         <!-- Title Field -->
         <div class="mb-6">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Event Title" required>
+            <input type="text" v-model="newEvent.title" id="title" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" placeholder="Event Title" required>
         </div>
 
         <!-- Period From Field -->
         <div class="mb-6">
             <label for="period_from" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period From</label>
-            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_from" id="period_from" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Period To Field -->
         <div class="mb-6">
             <label for="period_to" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Period To</label>
-            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="date" v-model="newEvent.period_to" id="period_to" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Number of Hours Field -->
         <div class="mb-6">
             <label for="number_of_hours" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Number of Hours</label>
-            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+            <input type="number" v-model="newEvent.number_of_hours" id="number_of_hours" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
         </div>
 
         <!-- Conducted By Field -->
         <div class="mb-6">
             <label for="conducted_by" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Conducted By</label>
-            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Conductor's Name" required>
+            <input type="text" v-model="newEvent.conducted_by" id="conducted_by" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" placeholder="Conductor's Name" required>
         </div>
 
         <div class="mb-4">
         </div>
 
         <div class="flex flex-col space-y-2">
-          <button @click="openModal()" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+          <button data-modal-target="static-modal" data-modal-toggle="static-modal" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
             Choose Employee
           </button>
-          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0" class="relative mt-4 flex gap-2">
-            <template v-for="(photo, index) in newEvent.photo" :key="index">
-              <div class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800 shadow-lg" :class="{ '-ml-4': index > 0 }">
-                <img v-if="photo" :src="getPhotoUrl(photo)" class="w-full h-full rounded-full" alt="Employee photo">
-                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-full h-full text-gray-300" viewBox="0 0 24 24">
-                  <path d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4Z"/>
-                </svg>
-              </div>
-            </template>
+          <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0" class="mt-4 gap-2">
+            <img v-for="(photo, index) in newEvent.photo" :key="index" :src="getPhotoUrl(photo)" class="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800" alt="Employee photo not found">
           </div>
+          
 
-          <div v-else>
-            <!-- Show text if no employees are assigned -->
-            <p class="mt-4 text-center">Training not assigned to any employee.</p>
-          </div>
-          <!-- Update and Delete Buttons -->
-          <div class="flex space-x-2">
+        <div v-else>
+              <!-- Show text if no employees are assigned -->
+              <p class="mt-4 text-center">Training not assigned to any employee.</p>
+            </div>
+                  <!-- Update and Delete Buttons -->
+                  <div class="flex space-x-2">
             <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
               Update
             </button>
@@ -576,8 +556,7 @@ const closeModal = () => {
             </button>
           </div>
         </div>
-        </div>
-
+      </div>
 
             
         </form>
@@ -591,38 +570,31 @@ const closeModal = () => {
      <!--Read Modal Start-->
 
      <!-- Main modal -->
-     <TransitionRoot as="template" :show="isModalVisible">
-    <Dialog as="div" class="relative z-50" @close="closeModal">
-      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-black/25" aria-hidden="true"></div>
-      </TransitionChild>
+        <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class=" py-12 hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+          <div class="relative p-4 w-full max-w-2xl max-h-full h-full">
+              <!-- Modal content -->
+              <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 flex flex-col">
+                <!-- Modal header -->
+                <div class="flex justify-between items-start p-4 md:p-5 border-b dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Choose Employee
+                    </h3>
+                    <!-- Placeholder for alignment -->
+                    <div class="w-8 h-8"></div>
+                </div>
+                <!-- Absolute positioned Close button -->
+                <button type="button" class="absolute top-4 right-5 transform translate-x-1/2 -translate-y-1/2 text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800" data-modal-hide="static-modal">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+                  <!-- Rest of your modal content -->
 
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4 text-center">
-          <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="ease-in duration-200" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
-            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white  dark:bg-gray-700 p-6 text-left align-middle shadow-xl transition-all">
-              <!-- Modal header -->
-              <div class="flex justify-between items-start p-4 md:p-5 border-b dark:border-gray-600">
-                <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
-                  Choose Employee
-                </DialogTitle>
-                <!-- Placeholder for alignment -->
-                <div class="w-8 h-8"></div>
-              </div>
-              
-              <!-- Absolute positioned Close button -->
-              <button type="button" class="absolute top-4 right-5 text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800" @click="closeModal">
-                <!-- SVG for Close Icon -->
-                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                </svg>
-                <!-- ... SVG Code ... -->
-                <span class="sr-only">Close modal</span>
-              </button>
-
-              <!-- Modal body -->
-              <div class="relative p-4 md:p-5 space-y-4 max-h-[500px] overflow-y-auto bg-[#f5f5f7] dark:bg-[#0F172A] border border-gray-600 rounded-b-lg">
-                <div class="absolute top-0 right-0 pt-2 pr-4">
+            <!-- Modal body -->
+            <div class="relative p-4 md:p-5 space-y-4 max-h-[500px] overflow-y-auto bg-[#f5f5f7] dark:bg-[#0F172A] border border-gray-600 rounded-b-lg">
+              <!-- Select All Checkbox -->
+              <div class="absolute top-0 right-0 pt-2 pr-4">
                 <label class="cursor-pointer flex items-center">
                   <span class="label-text text-sm text-gray-900 dark:text-gray-300">Select All</span>
                   <input type="checkbox" checked="checked" class="checkbox checkbox-success ml-2" v-model="allSelected" />
@@ -654,20 +626,18 @@ const closeModal = () => {
               </div>
             </div>
           </div>
-
-                <!-- Modal footer -->
-                <div class="flex justify-center items-center px-4 py-3">
-                  <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    Assign
-                  </button>
-                </div>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
+          <!-- Footer -->
+          <div class="flex justify-center items-center px-4 py-3">
+            <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+              Assign
+            </button>
+          </div>
         </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+
+            <!-- Modal footer -->
+        </div>
+    </div>
+</div>
 
 <!--Read Modal End-->
 
@@ -744,6 +714,7 @@ const closeModal = () => {
             <div class="flex justify-end space-x-2 mt-2">
               <button
                 v-if="category === 'Unassigned'"
+                type="button"
                 @click="assignTraining(session.id)"
                 class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
               >
