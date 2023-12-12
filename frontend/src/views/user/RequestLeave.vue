@@ -394,8 +394,7 @@ aria-labelledby="drawer-label">
     :key="category"
     class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
   >
-    <div class="flex justify-center" v-if="isLoading && category === 'Pending'">
-      Loading...
+    <div class="loading loading-spinner" v-if="isLoading && category === 'Pending'">
     </div>
     <ul v-else class="max-h-40 overflow-y-auto ">
       <li

@@ -658,7 +658,7 @@ const closeModal = () => {
               <div class="flex-grow">
                 <div class="underline text-lg text-green-700 dark:text-gray-200  font-semibold text-center">{{ employee.first_name + ' ' + employee.surname }}</div>
                 <div class="text-md text-gray-800 dark:text-gray-200 mt-1">
-                  <p><span class="dark:text-green-400 text-green-800">ID:</span> {{ employee.EmployeeID }}</p>
+                  <p class="lg:tooltip" data-tip="Employee ID"><span class="dark:text-green-400 text-green-800">ID:</span> {{ employee.EmployeeID }}</p>
                   <p><span class="dark:text-green-400 text-green-800">IPCR:</span> {{ employee.IPCR }}</p>
                   <p><span class="dark:text-green-400 text-green-800">Date of Entry:</span> {{ employee.DateOfEntry }}</p>
                 </div>
@@ -734,8 +734,7 @@ const closeModal = () => {
           'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
         }"
       >
-        <div v-if="isLoading" class="flex justify-center">
-            Loading...
+        <div v-if="isLoading" class="loading loading-spinner">
           </div>
         <ul v-else class="max-h-40 overflow-y-auto">
           <li
