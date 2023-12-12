@@ -63,12 +63,6 @@ const selectedLeaveRequest = ref({});
 const EmployeeID = computed(() => store.state.employeeID);
 
 
-function openRightDrawer() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  drawerRef.value.classList.remove('translate-x-full');
-  drawerRef.value.classList.add('translate-x-0');
-}
-
 
 const employees = ref([]);
 
@@ -204,6 +198,7 @@ const calendarOptions = ref({
   contentHeight: 'auto', // or set a specific numeric value
 });
 
+
 const categories = computed(() => ({
   Pending: isLoading.value ? [] : store.state.leaveRequests.pending.map(request => ({
     id: request.LeaveID,
@@ -261,15 +256,12 @@ const approveAndCloseModal = async (id) => {
   };
 
 
-function openAddEventDialog() {
-  // Logic to open the dialog to add a new event
-}
 
 function handleDateSelect(selectInfo) {
 
   startDate.value = selectInfo.startStr;
   date.value = selectInfo.startStr;
-  openRightDrawer();
+  openDrawer();
 
 }
 
@@ -285,6 +277,40 @@ function handleEvents(events) {
 function handleWeekendsToggle() {
   // Handle weekends toggle
 }
+const isDrawerOpen = ref(false);
+
+// ... other reactive variables and setup ...
+
+function openDrawer() {
+   isDrawerOpen.value = true;
+}
+
+function closeDrawer() {
+  isDrawerOpen.value = false;
+}
+// Define a new reactive property for the leave request form
+const newLeaveRequest = ref({
+  employeeId: '',
+  leaveTypeId: '',
+  startDate: '',
+  endDate: '',
+  reason: ''
+});
+
+// Define openAddEventDialog function
+function openAddEventDialog() {
+  // Reset the leave request form
+  newLeaveRequest.value = {
+    employeeId: '',
+    leaveTypeId: '',
+    startDate: '',
+    endDate: '',
+    reason: ''
+  };
+
+  // Open the right drawer
+  openDrawer();
+}
 
 
 </script>
@@ -294,98 +320,108 @@ function handleWeekendsToggle() {
   <!-- Add Modal Start-->
     <!-- drawer init and toggle -->
     <div class="text-center hidden">
-        <button 
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
+      <button 
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
             type="button" 
             data-drawer-target="dynamic-drawer" 
             data-drawer-show="dynamic-drawer" 
             data-drawer-placement="right" 
             aria-controls="dynamic-drawer">
             Show right drawer
-        </button>
-    </div>
+      </button>
+  </div>
 
     <!-- dynamic drawer component -->
-    <div ref="drawerRef"
-        id="dynamic-drawer" 
-        class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-        tabindex="-1" 
-        aria-labelledby="drawer-label">
-        
-        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+  <div ref="drawerRef" class="drawer drawer-end" :class="{'z-50': isDrawerOpen}">
+    <input id="dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isDrawerOpen" />
+    <div class="drawer-content">
+      <!-- Main page content here (if you have any content that should be outside the drawer) -->
+    </div>
+    <div class="drawer-side">
+      <label for="dynamic-drawer" class="drawer-overlay"></label>
+      <ul class="p-4 w-80 dark:bg-base-100 bg-gray-200 text-base-content h-screen">
+        <!-- Drawer content transferred from your original drawer -->
+        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+            <svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>Add Leave</h5>
-        <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
+        </svg>
+          Add Leave
+        </h5>
+        <button type="button" @click="closeDrawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
             </svg>
-            <span class="sr-only">Close menu</span>
+          <span class="sr-only">Close menu</span>
         </button>
 
+        <!-- Your form and other content here -->
         <form class="mb-6" @submit.prevent="submitLeaveRequest">
-        <!-- Title Field -->
-        <div class="mb-4">
-  <label for="employeeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Employee</label>
-  <select v-model="employeeId" id="employeeSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    <!-- Non-selectable placeholder option -->
-    <option disabled selected value="">Please select an employee</option>
-
-    <!-- Employee options -->
-    <option v-for="employee in employees" :key="employee.EmployeeID" :value="employee.EmployeeID">
-      {{ employee.FirstName }} {{ employee.MiddleName }} {{ employee.Surname }}
-    </option>
-  </select>
-</div>
-
-<div class="mb-4">
-    <label for="leaveTypeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Leave Type</label>
-    <select v-model="leaveTypeId" id="leaveTypeSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-      <!-- Non-selectable placeholder option -->
-      <option disabled selected value="">Please select a leave type</option>
-
-      <!-- Leave type options -->
-      <option v-for="type in leaveTypes" :key="type.LeaveTypeID" :value="type.LeaveTypeID">
-        {{ type.LeaveTypeName }}
-      </option>
-    </select>
-  </div>
-
-  <!-- Start Date Field -->
-  <div class="mb-6">
-    <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start Date</label>
-    <input type="date" id="start_date" v-model="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
-  </div>
-
-  <!-- End Date Field -->
-  <div class="mb-6">
-    <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End Date</label>
-    <input type="date" id="end_date" v-model="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
-  </div>
-
-  <!-- Reason Field -->
-  <div class="mb-6">
-    <label for="reason" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Reason for Leave</label>
-    <textarea id="reason" v-model="reason" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required></textarea>
-  </div>
-
-  <!-- Conducted By Field (Removed as it's not in the DB schema) -->
-
-  <!-- Submit Button -->
-  <div class="flex justify-start space-x-2">
-  <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
-          </svg> Save
-  </button>
-  <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg> Delete
-  </button>
-
-</div>
-</form>
-        <!-- Dynamic content goes here -->
-        
+  <div class="mb-6 px-4">
+    <!-- Select Employee Field -->
+    <div class="mb-6">
+      <label for="employeeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        Select Employee
+      </label>
+      <select v-model="employeeId" id="employeeSelect" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:border-green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600">
+        <option disabled selected value="">Please select an employee</option>
+        <option v-for="employee in employees" :key="employee.EmployeeID" :value="employee.EmployeeID">
+          {{ employee.FirstName }} {{ employee.MiddleName }} {{ employee.Surname }}
+        </option>
+      </select>
     </div>
+
+    <!-- Select Leave Type Field -->
+    <div class="mb-6">
+      <label for="leaveTypeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        Select Leave Type
+      </label>
+      <select v-model="leaveTypeId" id="leaveTypeSelect" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:border-green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600">
+        <option disabled selected value="">Please select a leave type</option>
+        <option v-for="type in leaveTypes" :key="type.LeaveTypeID" :value="type.LeaveTypeID">
+          {{ type.LeaveTypeName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Start Date Field -->
+    <div class="mb-6">
+      <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        Start Date
+      </label>
+      <input type="date" id="start_date" v-model="startDate" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:border-green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
+    </div>
+
+    <!-- End Date Field -->
+    <div class="mb-6">
+      <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        End Date
+      </label>
+      <input type="date" id="end_date" v-model="endDate" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:border-green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required>
+    </div>
+
+    <!-- Reason for Leave Field -->
+    <div class="mb-6">
+      <label for="reason" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        Reason for Leave
+      </label>
+      <textarea id="reason" v-model="reason" rows="4" class="bg-gray-300 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-green-500 focus:border-green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-green-500 dark:focus:border-green-600" required></textarea>
+    </div>
+
+    <!-- Submit and Delete Buttons -->
+    <div class="flex space-x-2">
+      <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
+        Save
+      </button>
+      <button type="button" class="flex-1 text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-800">
+        Delete
+      </button>
+    </div>
+  </div>
+</form>
+
+      </ul>
+    </div>
+  </div>
 
     <!-- Add Modal End-->
     
