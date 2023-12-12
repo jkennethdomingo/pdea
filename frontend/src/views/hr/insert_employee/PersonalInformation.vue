@@ -49,20 +49,16 @@ onMounted(() => {
 });
 
 // Your SVG icon as a string
-const svgIcon = `
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
-  <path fill="currentColor" fill-rule="evenodd" 
-    d="M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0Zm0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5H8Z" 
-    clip-rule="evenodd"/>
-</svg>`;
-
-// Encode the SVG icon to Base64
-const svgBase64 = btoa(svgIcon);
 
 // Create a data URL for the SVG
-const userImage = ref(`data:image/svg+xml;base64,${svgBase64}`);
 
 const fileInput = ref(null);
+
+const photoPreviewUrl = computed({
+  get: () => store.state.photoPreviewUrl,
+  set: (url) => store.commit('updatePhotoPreviewUrl', url)
+});
+
 
 const triggerFileInput = () => {
   fileInput.value.click();
@@ -72,10 +68,15 @@ const handleFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
+    store.commit('setSelectedFile', file);
     reader.onload = (e) => {
-      userImage.value = e.target.result; // Set the userImage to the Data URL
+      // Update Vuex store with the new image name
+      store.commit('updateFormDataPicture', { path: 'page1.photo', value: file.name });
     };
-    reader.readAsDataURL(file); // Read the file
+    reader.readAsDataURL(file);
+
+    // Update the photo preview URL in Vuex store
+    photoPreviewUrl.value = URL.createObjectURL(file);
   }
 };
 
@@ -157,33 +158,17 @@ const designationsDropdown = computed(() => store.state.dropdownData.designation
 const positionsDropdown = computed(() => store.state.dropdownData.positions);
 const sectionsDropdown = computed(() => store.state.dropdownData.sections);
 
-// Debounce handleSubmit to prevent double submission
-const isSubmitting = ref(false);
-const handleSubmit = async () => {
-  if (isSubmitting.value) return;
-  isSubmitting.value = true;
-
-  try {
-    await store.dispatch('submitFormData');
-    // Success feedback (toast, modal, etc.) goes here
-  } catch (error) {
-    console.error('Error submitting form data:', error);
-    // Error feedback (toast, modal, etc.) goes here
-  } finally {
-    isSubmitting.value = false;
-  }
-};
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
+  <form>
     <p class="text-xl text-gray-900 dark:text-white font-bold">Personal Information</p>
 
 <!-- Employee ID -->
 <div class="flex items-center space-x-4 mb-4">
   <div class="relative h-32 w-32">
     <!-- Image bound with userImage variable -->
-    <img :src="userImage" alt="Employee" class="w-28 h-28 object-cover rounded-2xl">
+    <img :src="photoPreviewUrl" alt="Employee" class="w-28 h-28 object-cover rounded-2xl">
     <input type="file" ref="fileInput" @change="handleFileChange" class="hidden" />
     <!-- Button to trigger file input -->
     <button @click="triggerFileInput" class="absolute -right-0 bottom-4 text-white p-1 text-xs bg-green-400 hover:bg-green-500 font-medium tracking-wider rounded-full transition ease-in duration-300">
@@ -192,6 +177,7 @@ const handleSubmit = async () => {
       </svg>
     </button>
   </div>
+  
 
   
   <div class="flex flex-col"> <!-- Container for the Employee ID field -->
@@ -328,10 +314,11 @@ const handleSubmit = async () => {
         </div>
         <div class="mb-4 md:ml-2">
           <label for="philhealth" class="block text-gray-700 text-sm dark:text-white mb-2">PHILHEALTH No.:</label>
-          <input type="text" id="philhealth" v-model="formData.philhealth_no" placeholder="0123-456789-12" :class="{'border-red-500': !isPhilHealthValid}" class="shadow appearance-none  dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-800 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
-          @input="philHealthTouched = true">
-          <p v-if="!isPhilHealthValid" class="text-red-500 text-xs italic">Invalid format.</p>
+          <input type="text" id="philhealth" v-model="formData.philhealth_no" placeholder="00-123456789-0" :class="{'border-red-500': !isPhilHealthValid}" class="shadow appearance-none  dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-800 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
+            @input="philHealthTouched = true">
+          <p v-if="!isPhilHealthValid" class="text-red-500 text-xs italic">Please enter a valid PHILHEALTH number in the format 00-123456789-0.</p>
         </div>
+
         <div class="mb-4 md:mr-2">
           <label for="gsis" class="block text-gray-700 text-sm dark:text-white mb-2">SSS No.:</label>
           <input type="text" id="sss" v-model="formData.sss_no" placeholder="01-2345678-9" :class="{'border-red-500': !isSssValid}" class="shadow appearance-none  dark:bg-dark-eval-2 border rounded w-full py-2 px-3 text-gray-800 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline"

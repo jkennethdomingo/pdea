@@ -227,4 +227,20 @@ setTodayTrainingCount(state, count) {
 assignedTrainees(state, trainees) {
   state.trainees = trainees;
 },
+
+updateFormDataPicture(state, { path, value }) {
+  const keys = path.split('.');
+  let current = state.formData;
+  for (let i = 0; i < keys.length - 1; i++) {
+    current = current[keys[i]];
+  }
+  current[keys[keys.length - 1]] = value;
+},
+
+updatePhotoPreviewUrl(state, url) {
+  state.photoPreviewUrl = url;
+},
+ setSelectedFile(state, file) {
+    state.formData.page1.selectedFile = file;
+  },
 };

@@ -66,13 +66,13 @@ const isAssignRouteActive = () => {
             />
         </SidebarCollapsible>
 
-        <!-- <SidebarLink
+        <SidebarLink
             icon="ic:round-people"
             :to="{ name: 'Beta' }"
             title="Beta"
             :active="isCurrentRoute('Beta')"
         >
-        </SidebarLink> -->
+        </SidebarLink>
         <SidebarLink
             icon="ph:certificate"
             :to="{ name: 'Certificate' }"
