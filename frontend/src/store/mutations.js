@@ -241,6 +241,6 @@ updatePhotoPreviewUrl(state, url) {
   state.photoPreviewUrl = url;
 },
  setSelectedFile(state, file) {
-    state.formData.page1.selectedFile = file;
+    state.selectedFile = file;
   },
 };

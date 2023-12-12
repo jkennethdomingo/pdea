@@ -45,14 +45,17 @@ const handleSubmit = async () => {
 
   try {
     await store.dispatch('submitFormData');
-    // Success feedback
+    // After successful form submission, upload the file
+    await store.dispatch('uploadFile');
+    // Success feedback for form and file upload
   } catch (error) {
-    console.error('Error submitting form data:', error);
+    console.error('Error:', error);
     // Error feedback
   } finally {
     isSubmitting.value = false;
   }
 };
+
 </script>
 
 <style>
