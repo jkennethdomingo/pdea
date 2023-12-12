@@ -78,6 +78,34 @@ export const actions = {
             commit('setIsSubmitting', false);
         }
     },
+
+    async uploadFile({ commit, state }) {
+        if (!state.selectedFile) return;
+
+        try {
+            commit('setIsUploading', true);
+            let formData = new FormData();
+            formData.append('file', state.selectedFile);
+            formData.append('EmployeeID', state.formData.page1.EmployeeID);
+            for (let [key, value] of formData.entries()) {
+              console.log(key, value);
+            }
+            
+
+
+            const response = await apiService.post('employee/insertWithPhoto', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            // Handle the file upload response here
+            console.log(response.data);
+        } catch (error) {
+            console.error('File upload error:', error);
+        } finally {
+            commit('setIsUploading', false);
+        }
+    },
     async addInventory({ commit }, inventoryData) {
         try {
             commit('setIsInserting', true); // Optional: mutation to set a loading state
