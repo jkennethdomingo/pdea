@@ -66,8 +66,8 @@ onMounted(() => {
                                     <div class="flex items-center">
                                         <div class="flex flex-col">
                                             <!-- Display name and position -->
-                                            <div class="text-xl text-gray-200 font-bold leading-none">{{ agent.first_name }} {{ agent.surname }}</div>
-                                            <div class="text-gray-400 my-1">
+                                            <div class="text-xl dark:text-gray-200 text-gray-800 font-bold leading-none">{{ agent.first_name }} {{ agent.surname }}</div>
+                                            <div class="text-gray-700 dark:text-gray-400 my-1">
                                                 <!-- Display Employee ID -->
                                                 <span class="mr-1">{{ agent.PositionName }} {{ agent.EmployeeID }}</span>
                                             </div>
@@ -79,7 +79,7 @@ onMounted(() => {
                                    <!-- View button -->
                                     <button
                                         @click="openViewModal"
-                                        class="bg-green-400 hover:bg-green-500 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
+                                        class="bg-green-600 hover:bg-green-700 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
                                     >
                                         View
                                     </button>
@@ -89,10 +89,10 @@ onMounted(() => {
                                         <Dialog as="div" class="relative z-10" @close="closeViewModal">
                                             <TransitionChild
                                             as="template"
-                                            enter="ease-out duration-300"
+                                            enter="duration-300 ease-out"
                                             enter-from="opacity-0"
                                             enter-to="opacity-100"
-                                            leave="ease-in duration-200"
+                                            leave="duration-200 ease-in"
                                             leave-from="opacity-100"
                                             leave-to="opacity-0"
                                             >
@@ -101,15 +101,15 @@ onMounted(() => {
                                         <div class="fixed inset-0 overflow-y-auto">
                                             <div class="flex min-h-full items-center justify-center p-4 text-center">
                                             <TransitionChild
-                                                as="template"
-                                                enter="ease-out duration-300"
-                                                enter-from="opacity-0 scale-95"
-                                                enter-to="opacity-100 scale-100"
-                                                leave="ease-in duration-200"
-                                                leave-from="opacity-100 scale-100"
-                                                leave-to="opacity-0 scale-95"
+                                            as="template"
+                                            enter="duration-300 ease-out"
+                                            enter-from="opacity-0 scale-95"
+                                            enter-to="opacity-100 scale-100"
+                                            leave="duration-200 ease-in"
+                                            leave-from="opacity-100 scale-100"
+                                            leave-to="opacity-0 scale-95"
                                             >
-                                                <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
+                                                <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
                                                 <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
                                                     View Details
                                                 </DialogTitle>
@@ -137,7 +137,7 @@ onMounted(() => {
                                     <!-- Assign button -->
                                 <button
                                     @click="openModal"
-                                    class="bg-green-400 hover:bg-green-500 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
+                                    class="bg-green-600 hover:bg-green-700 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
                                 >
                                     Assign
                                 </button>
@@ -167,7 +167,7 @@ onMounted(() => {
                                             leave-from="opacity-100 scale-100"
                                             leave-to="opacity-0 scale-95"
                                         >
-                                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
+                                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
                                             <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                                                 Payment successful
                                             </DialogTitle>

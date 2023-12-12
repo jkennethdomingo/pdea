@@ -109,11 +109,11 @@ onMounted(async () => {
               </div>
               <div class="flex pt-2  text-sm text-gray-400">
                 <button data-modal-target="timeline-modal" data-modal-toggle="timeline-modal" 
-                    class="flex-no-shrink bg-green-400 hover:bg-green-500 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300">
+                    class="flex-no-shrink bg-green-600 hover:bg-green-700 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300">
                     View
                 </button>
                 <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" 
-                    class="flex-no-shrink bg-green-400 hover:bg-green-500 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300">
+                    class="flex-no-shrink bg-green-600 hover:bg-green-700 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300">
                     Assign
                 </button>
 

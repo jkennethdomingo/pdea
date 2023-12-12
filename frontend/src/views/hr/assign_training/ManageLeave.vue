@@ -409,7 +409,7 @@ function openAddEventDialog() {
 
     <!-- Submit and Delete Buttons -->
     <div class="flex space-x-2">
-      <button type="submit" class="flex-1 text-white bg-green-700 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
+      <button type="submit" class="flex-1 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-800">
         Save
       </button>
       <button type="button" class="flex-1 text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-800">

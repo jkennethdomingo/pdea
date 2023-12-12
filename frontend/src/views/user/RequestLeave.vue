@@ -324,7 +324,7 @@ aria-labelledby="drawer-label">
                   <!-- Submit Button -->
                   <!-- Submit Button -->
                   <div class="flex justify-start space-x-2">
-                  <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
+                  <button type="submit" class="text-white justify-center flex items-center bg-green-600 hover:bg-green-700 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
                     </svg> Save
                   </button>
