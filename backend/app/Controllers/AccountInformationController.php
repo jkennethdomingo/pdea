@@ -102,6 +102,7 @@ class AccountInformationController extends ResourceController
             'Password' => $hashedPassword,
             'DateOfEntry' => $jsonData->DateOfEntry ?? date("Y-m-d"),
             'IPCR' => $jsonData->IPCR,
+            'photo' => $jsonData->photo ?? null,
         ];
     
         // Insert the data and check for success
@@ -112,6 +113,25 @@ class AccountInformationController extends ResourceController
     
         // If the insert was successful, return the cs_id_no
         return $jsonData->EmployeeID;
+    }
+
+    public function uploadEmployeePhoto()
+    {
+        $file = $this->request->getFile('file');
+
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newFileName = $file->getClientName();
+            
+            // Move the file to the desired directory with the new name
+            $file->move(ROOTPATH . 'public/uploads', $newFileName);
+
+            // Update the photo name in the database
+
+            // Return a success response
+            return $this->response->setJSON(['status' => 'success', 'message' => 'File uploaded successfully', 'fileName' => $newFileName]);
+        }
+
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to upload file']);
     }
 
     private function insertAddress($json) {

@@ -15,6 +15,7 @@ $routes->group('api', function($routes)
 
     $routes->group('employee', function($routes) {
         $routes->post('insert', 'AccountInformationController::create');
+        $routes->post('insertWithPhoto', 'AccountInformationController::uploadEmployeePhoto');
         $routes->post('getDropdownData', 'AccountInformationController::getDropdownData');
         $routes->post('getEmployeeInformation', 'AccountInformationController::getEmployeeInformation');
     });
