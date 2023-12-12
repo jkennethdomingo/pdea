@@ -474,7 +474,7 @@ function openAddEventDialog() {
     :key="category"
     class="rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
   >
-    <div v-if="isLoading && category === 'Pending'">
+    <div class="flex justify-center" v-if="isLoading && category === 'Pending'">
       Loading...
     </div>
     <ul v-else class="max-h-40 overflow-y-auto ">

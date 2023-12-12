@@ -10,6 +10,14 @@ import { useStore } from 'vuex';
 import apiService from '@/composables/axios-setup';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { isDark } from '@/composables';
+import {
+    TransitionRoot,
+    TransitionChild,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+  } from '@headlessui/vue'
+
 
 const store = useStore();
 const calendarRef = ref(null);
@@ -27,12 +35,6 @@ const EmployeeID = computed(() => store.state.employeeID);
 const isLoading = ref(true); 
 const leaveTypesWithBalance = computed(() => store.state.employeeLeaveTypesWithBalance);
 
-
-function openRightDrawer() {
-  // Remove 'translate-x-full' and add 'translate-x-0' to show the drawer
-  drawerRef.value.classList.remove('translate-x-full');
-  drawerRef.value.classList.add('translate-x-0');
-}
 
 
 // Fetch employees data
@@ -198,7 +200,36 @@ const CancelRequest = async (id) => {
   // Implement the denial logic, possibly dispatching a Vuex action
   await store.dispatch('deleteEmployeeLeaveRequest', id);
   await store.dispatch('fetchEmployeeLeaveRequests', EmployeeID.value);
+  show.value = false;
 };
+
+const show = ref(false);
+const viewModalOpen = ref(false);
+const openViewModal = (post) => {
+  viewModalOpen.value = true;
+};
+
+const closeModal = () => {
+  viewModalOpen.value = false;
+};
+
+function toggleModal() {
+  show.value = !show.value;
+}
+
+const isDrawerOpen = ref(false);
+
+function openDrawer() {
+  isDrawerOpen.value = true;
+}
+
+function closeDrawer() {
+  isDrawerOpen.value = false;
+}
+
+function openRightDrawer() {
+  isDrawerOpen.value = true; // Opens the DaisyUI drawer
+}
 
 </script>
 
@@ -219,83 +250,97 @@ const CancelRequest = async (id) => {
         </button>
     </div>
 
-    <!-- dynamic drawer component -->
     <div ref="drawerRef"
-        id="dynamic-drawer" 
-        class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
-        tabindex="-1" 
-        aria-labelledby="drawer-label">
-        
-        <h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-        </svg>Request Leave</h5>
-        <button type="button" data-drawer-hide="dynamic-drawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
+id="dynamic-drawer" 
+class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" 
+tabindex="-1" 
+aria-labelledby="drawer-label">
+</div>
+
+
+<div ref="drawerRef" class="drawer drawer-end" :class="{'z-50': isDrawerOpen}">
+    <input id="dynamic-drawer" type="checkbox" class="drawer-toggle" v-model="isDrawerOpen" />
+    <div class="drawer-content">
+      <!-- Main page content here (if you have any content that should be outside the drawer) -->
+    </div>
+
+    <div class="drawer-side">
+      <label for="dynamic-drawer" class="drawer-overlay"></label>
+      <ul class="p-4 w-80 dark:bg-base-100 bg-gray-200 text-base-content h-screen">
+<h5 id="drawer-label" class="inline-flex items-center mb-6 text-base font-semibold text-gray-500 uppercase dark:text-gray-400"><svg class="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
+</svg>Request Leave</h5>
+        <button type="button" @click="closeDrawer" aria-controls="dynamic-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
             </svg>
-            <span class="sr-only">Close menu</span>
+          <span class="sr-only">Close menu</span>
         </button>
 
         <form class="mb-6" @submit.prevent="submitLeaveRequest">
-        <!-- Title Field -->
-        <div class="mb-4">
-    <input 
-  type="hidden" 
-  id="employeeName" 
-  v-model="EmployeeID"
-  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-  readonly
->
-</div>
+            <div class="mb-6 px-4">
+              <!-- Title Field -->
+              <div class="mb-4">
+              <input 
+                  type="hidden" 
+                  id="employeeName" 
+                  v-model="EmployeeID"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                  readonly
+                  >
+              </div>
 
-<div class="mb-4">
-    <label for="leaveTypeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Leave Type</label>
-    <select v-model="leaveTypeId" id="leaveTypeSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-  <option disabled value="">Please select a leave type</option>
-  <option v-for="type in leaveTypesWithBalance" :key="type.LeaveTypeID" :value="type.LeaveTypeID">
-    {{ type.LeaveTypeName }} ({{ type.RemainingBalance }} days remaining)
-  </option>
-</select>
+              <div class="mb-4">
+                  <label for="leaveTypeSelect" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Leave Type</label>
+                  <select v-model="leaveTypeId" id="leaveTypeSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  <option disabled value="">Please select a leave type</option>
+                  <option v-for="type in leaveTypesWithBalance" :key="type.LeaveTypeID" :value="type.LeaveTypeID">
+                  {{ type.LeaveTypeName }} ({{ type.RemainingBalance }} days remaining)
+                  </option>
+                  </select>
 
+                  </div>
+
+                  <!-- Start Date Field -->
+                  <div class="mb-6">
+                  <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start Date</label>
+                  <input type="date" id="start_date" v-model="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                  </div>
+
+                  <!-- End Date Field -->
+                  <div class="mb-6">
+                  <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End Date</label>
+                  <input type="date" id="end_date" v-model="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                  </div>
+
+                  <!-- Reason Field -->
+                  <div class="mb-6">
+                  <label for="reason" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Reason for Leave</label>
+                  <textarea id="reason" v-model="reason" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required></textarea>
+                  </div>
+
+                  <!-- Conducted By Field (Removed as it's not in the DB schema) -->
+
+                  <!-- Submit Button -->
+                  <!-- Submit Button -->
+                  <div class="flex justify-start space-x-2">
+                  <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
+                    </svg> Save
+                  </button>
+                  <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg> Delete
+                  </button>
+                  </div>
+
+              </div>
+            </form>
+          </ul>
+              <!-- Dynamic content goes here -->
+
+      </div>
   </div>
-
-  <!-- Start Date Field -->
-  <div class="mb-6">
-    <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start Date</label>
-    <input type="date" id="start_date" v-model="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
-  </div>
-
-  <!-- End Date Field -->
-  <div class="mb-6">
-    <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End Date</label>
-    <input type="date" id="end_date" v-model="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
-  </div>
-
-  <!-- Reason Field -->
-  <div class="mb-6">
-    <label for="reason" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Reason for Leave</label>
-    <textarea id="reason" v-model="reason" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required></textarea>
-  </div>
-
-  <!-- Conducted By Field (Removed as it's not in the DB schema) -->
-
-  <!-- Submit Button -->
-    <!-- Submit Button -->
-    <div class="flex justify-start space-x-2">
-  <button type="submit" class="text-white justify-center flex items-center bg-green-700 hover:bg-green-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-gray-300">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M224 30v256h-64l96 128l96-128h-64V30h-64zM32 434v48h448v-48H32z"/>
-          </svg> Save
-  </button>
-  <button type="" class="text-white justify-center flex items-center bg-red-700 hover:bg-red-600 w-40 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-gray-300">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg> Delete
-  </button>
-
-</div>
-</form>
-        <!-- Dynamic content goes here -->
-        
-    </div>
 
     <!-- Add Modal End-->
 
@@ -310,7 +355,7 @@ const CancelRequest = async (id) => {
         <template #footer>
           <div class="w-full px-4 pb-3">
             <button
-              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold w-full px-3 py-1 rounded-md"
+              class="bg-green-600 hover:bg-green-700 text-white font-bold w-full px-3 py-1 rounded-md"
               @click="moveToday"
             >
               Today
@@ -349,7 +394,7 @@ const CancelRequest = async (id) => {
     :key="category"
     class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
   >
-    <div v-if="isLoading && category === 'Pending'">
+    <div class="flex justify-center" v-if="isLoading && category === 'Pending'">
       Loading...
     </div>
     <ul v-else class="max-h-40 overflow-y-auto ">
@@ -370,23 +415,118 @@ const CancelRequest = async (id) => {
           v-if="category === 'Pending'"
         >
 
+        <button
+  type="button"
+  @click="openViewModal(post)"
+  class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+>
+  View
+</button>
+
+<TransitionRoot :show="viewModalOpen" as="template">
+  <Dialog as="div" @close="() => viewModalOpen.value = false" class="relative z-10">
+    <TransitionChild
+      as="template"
+      enter="duration-300 ease-out"
+      enter-from="opacity-0"
+      enter-to="opacity-100"
+      leave="duration-200 ease-in"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
+      <div class="fixed inset-0 bg-black/25" />
+    </TransitionChild>
+
+    <div class="fixed inset-0 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4 text-center">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0 scale-95"
+          enter-to="opacity-100 scale-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100 scale-100"
+          leave-to="opacity-0 scale-95"
+        >
+          <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
+            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
+             You are requesting for a leave
+            </DialogTitle>
+            <div class="mt-2">
+              <p class="text-sm text-gray-800 dark:text-gray-200">
+                Reason for leave: 
+
+                <!-- Include other relevant details here -->
+              </p>
+            </div>
+
+            <div class="mt-4">
+              <button
+              type="button"
+              class="flex justify-end rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+              @click="closeModal"
+            >
+              Close
+            </button>
+            </div>
+          </DialogPanel>
+        </TransitionChild>
+      </div>
+    </div>
+  </Dialog>
+</TransitionRoot>
+
+
       <button
-        type="button"
-        @click="approveRequest(post.id)"
-        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-      >
-        View
-      </button>
+    @click="toggleModal"
+    class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1">
+    Cancel
+  </button>
 
-      
+  <TransitionRoot :show="show" as="template">
+  <Dialog as="div" @close="toggleModal" class="relative z-10">
+    <TransitionChild
+      as="template"
+      enter="duration-300 ease-out"
+      enter-from="opacity-0"
+      enter-to="opacity-100"
+      leave="duration-200 ease-in"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
+      <div class="fixed inset-0 bg-black/25" />
+    </TransitionChild>
+
+    <div class="fixed inset-0 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4 text-center">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0 scale-95"
+          enter-to="opacity-100 scale-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100 scale-100"
+          leave-to="opacity-0 scale-95"
+        >
+          <DialogPanel class="max-w-xs transform overflow-hidden rounded-2xl bg-[#f5f5f7] dark:bg-base-100 border border-green-500 shadow-xl transition-all">
+            <DialogTitle class="flex justify-center font-semibold text-xl text-red-600 dark:text-red-600">Wait!</DialogTitle>
+            <div class="mt-2">
+              <p class="text-lg font-bold text-center text-gray-800 dark:text-gray-200">
+                Are you sure you want to cancel your Leave Request?
+              </p>
+            </div>
+            <div class="modal-action flex justify-center pt-2 pb-2 space-x-3">
+              <button @click="CancelRequest(post.id)" class="text-xs px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg">Yes</button>
+              <button @click="toggleModal" class="text-xs px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg">No</button>
+            </div>
+          </DialogPanel>
+        </TransitionChild>
+      </div>
+    </div>
+  </Dialog>
+</TransitionRoot>
 
 
-          <button
-            @click="CancelRequest(post.id)"
-            class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
-          >
-            Cancel
-          </button>
         </div>
       </li>
     </ul>
@@ -395,6 +535,9 @@ const CancelRequest = async (id) => {
       </TabGroup>
     </div>
   </div>
+
+  
+  
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->

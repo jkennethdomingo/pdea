@@ -734,11 +734,9 @@ const closeModal = () => {
           'rounded-xl bg-[#f5f5f7] dark:bg-[#0F172A] p-4': isLoading
         }"
       >
-        <div v-if="isLoading" class="flex justify-center items-center">
-          <div class="text-white dark:text-white font-medium text-sm px-4 py-2 rounded-md shadow-md">
+        <div v-if="isLoading" class="flex justify-center">
             Loading...
           </div>
-        </div>
         <ul v-else class="max-h-40 overflow-y-auto">
           <li
             v-for="session in sessions"
