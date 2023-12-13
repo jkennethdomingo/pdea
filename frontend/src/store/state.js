@@ -128,6 +128,7 @@ export const state = {
         department: [],
         provincial_office: [],
         regional_office: [],
+        divisions: [],
     },
     loadingStates: {
         isLoggingIn: false,

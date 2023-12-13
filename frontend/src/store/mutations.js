@@ -15,6 +15,7 @@ export const mutations = {
         state.dropdownData.designations = payload.designations;
         state.dropdownData.positions = payload.positions;
         state.dropdownData.sections = payload.sections;
+        state.dropdownData.divisions = payload.divisions;
     },
     setIsLoggingIn(state, status) {
         state.loadingStates.isLoggingIn = status;

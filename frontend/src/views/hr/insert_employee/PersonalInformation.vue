@@ -157,6 +157,7 @@ setupWatchers('permanentForm');
 const designationsDropdown = computed(() => store.state.dropdownData.designations);
 const positionsDropdown = computed(() => store.state.dropdownData.positions);
 const sectionsDropdown = computed(() => store.state.dropdownData.sections);
+const divisionsDropdown = computed(() => store.state.dropdownData.divisions);
 
 </script>
 
@@ -513,14 +514,24 @@ const sectionsDropdown = computed(() => store.state.dropdownData.sections);
       <!-- Other sections... -->
     <!-- Dropdowns for Designation, Position, and Section -->
     <div class="flex flex-row items-end gap-4">
-  <!-- Designation -->
+
+              <!-- Division -->
   <div class="flex flex-col w-1/3">
-    <label for="designation" class="text-sm mb-1 dark:text-white">Designation:</label>
-    <select id="designation" v-model="formData.designation" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
-      <option value="" disabled>Select Designation</option>
-      <option v-for="designation in designationsDropdown" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
+    <label for="division" class="text-sm mb-1 dark:text-white">Division:</label>
+    <select id="division" v-model="formData.division" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
+      <option value="" disabled selected>Select division</option>
+      <option v-for="division in divisionsDropdown" :key="division.DivisionID" :value="division.DivisionID">{{ division.DivisionName }}</option>
     </select>
   </div>
+        <!-- Section -->
+  <div class="flex flex-col w-1/3">
+    <label for="section" class="text-sm mb-1 dark:text-white">Section:</label>
+    <select id="section" v-model="formData.section" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
+      <option value="" disabled selected>Select Section</option>
+      <option v-for="section in sectionsDropdown" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
+    </select>
+  </div>
+
 
   <!-- Position -->
   <div class="flex flex-col w-1/3">
@@ -531,14 +542,16 @@ const sectionsDropdown = computed(() => store.state.dropdownData.sections);
     </select>
   </div>
 
-  <!-- Section -->
+
+  <!-- Designation -->
   <div class="flex flex-col w-1/3">
-    <label for="section" class="text-sm mb-1 dark:text-white">Section:</label>
-    <select id="section" v-model="formData.section" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
-      <option value="" disabled selected>Select Section</option>
-      <option v-for="section in sectionsDropdown" :key="section.SectionID" :value="section.SectionID">{{ section.SectionName }}</option>
+    <label for="designation" class="text-sm mb-1 dark:text-white">Designation:</label>
+    <select id="designation" v-model="formData.designation" class="dark:text-white shadow border rounded py-2 px-3 leading-tight dark:bg-dark-eval-2 focus:outline-none focus:shadow-outline w-full">
+      <option value="" disabled>Select Designation</option>
+      <option v-for="designation in designationsDropdown" :key="designation.DesignationID" :value="designation.DesignationID">{{ designation.DesignationName }}</option>
     </select>
   </div>
+
 </div>
 
 
