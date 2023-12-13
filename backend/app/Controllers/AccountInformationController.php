@@ -36,6 +36,8 @@ class AccountInformationController extends ResourceController
     protected $designationModel;
     protected $positionModel;
     protected $authRoleModel;
+    protected $DivisionModel;
+    protected $EmployeeDivisionModel;
 
     public function __construct()
     {
@@ -63,6 +65,8 @@ class AccountInformationController extends ResourceController
         $this->designationModel = Services::DesignationModel();
         $this->positionModel = Services::PositionModel();
         $this->authRoleModel = Services::AuthRoleModel();
+        $this->DivisionModel = Services::DivisionModel();
+        $this->EmployeeDivisionModel = Services::EmployeeDivisionModel();
     }
 
     private function hashPassword($password)
@@ -641,6 +645,17 @@ class AccountInformationController extends ResourceController
         $this->insertDataAndRollbackOnFailure(
             $this->employeePositionModel,
             $positionData,
+            $this->personalInformationModel
+        );
+        // Insert data into employee_division table
+        $divisionData = [
+            'EmployeeID' => $EmployeeID,
+            'DivisionID' => $json->division,
+        ];
+
+        $this->insertDataAndRollbackOnFailure(
+            $this->EmployeeDivisionModel,
+            $divisionData,
             $this->personalInformationModel
         );
 

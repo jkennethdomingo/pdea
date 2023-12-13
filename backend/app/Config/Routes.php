@@ -83,20 +83,20 @@ $routes->group('api', function($routes)
         $routes->get('restore', 'RestoreDatabaseController::restore');
     });
 
-    $routes->group('hrDashboard', function($routes) {
-        $routes->post('getTodaysLeavesCount', 'HumanResourceDashboardController::getTodaysLeavesCount');
-        $routes->post('getTodayTrainingCount', 'HumanResourceDashboardController::getTodayTrainingCount');
-        $routes->post('getTodayOnTrainingCount', 'HumanResourceDashboardController::getTodayOnTrainingCount');
-        $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardController::getActiveEmployeesCount');
-        $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages');
-        $routes->post('getTrainingCountsForLast13Days', 'HumanResourceDashboardController::getTrainingCountsForLast13Days');
-        $routes->post('getActiveEmployeesCountForLast13Days', 'HumanResourceDashboardController::getActiveEmployeesCountForLast13Days');
-        $routes->post('getCombinedEvents', 'HumanResourceDashboardController::getCombinedEvents');
-        $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents');
-        $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardController::fetchRecentlyApprovedLeaves');
-        $routes->post('fetchUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchUpcomingTrainingsWithNoAssignedEmployees');
-        $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
-    });
+    // $routes->group('hrDashboard', function($routes) {
+    //     $routes->post('getTodaysLeavesCount', 'HumanResourceDashboardController::getTodaysLeavesCount');
+    //     $routes->post('getTodayTrainingCount', 'HumanResourceDashboardController::getTodayTrainingCount');
+    //     $routes->post('getTodayOnTrainingCount', 'HumanResourceDashboardController::getTodayOnTrainingCount');
+    //     $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardController::getActiveEmployeesCount');
+    //     $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages');
+    //     $routes->post('getTrainingCountsForLast13Days', 'HumanResourceDashboardController::getTrainingCountsForLast13Days');
+    //     $routes->post('getActiveEmployeesCountForLast13Days', 'HumanResourceDashboardController::getActiveEmployeesCountForLast13Days');
+    //     $routes->post('getCombinedEvents', 'HumanResourceDashboardController::getCombinedEvents');
+    //     $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents');
+    //     $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardController::fetchRecentlyApprovedLeaves');
+    //     $routes->post('fetchUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchUpcomingTrainingsWithNoAssignedEmployees');
+    //     $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees');
+    // });
 
     $routes->group('hrDashboard', function($routes) {
         $routes->post('getTodayOnTrainingCount', 'HumanResourceDashboardRemasteredController::getTodayOnTrainingCount'); //Statistics
@@ -105,6 +105,8 @@ $routes->group('api', function($routes)
         $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardRemasteredController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees'); //Statistics
         $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardRemasteredController::getActiveEmployeesCount'); //Statistics
         $routes->post('getTodayTrainingCount', 'HumanResourceDashboardRemasteredController::getTodayTrainingCount'); //Sales
+        $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents'); //Calendar Upcoming Events
+        $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages'); // Pie Chart
     });
 
     $routes->post('insert', 'TestArea::create');

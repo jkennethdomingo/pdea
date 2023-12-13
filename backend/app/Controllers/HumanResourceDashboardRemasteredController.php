@@ -29,11 +29,38 @@ class HumanResourceDashboardRemasteredController extends ResourceController
         $this->leaveBalanceModel = Services::LeaveBalanceModel(); // Corrected syntax
     }
 
+    public function getEmployeeStatusPercentages()
+    {
+        $totalEmployeesCount = $this->personalInformationModel->countAllResults();
+        if ($totalEmployeesCount == 0) {
+            return $this->respond([
+                'activePercentage' => 0,
+                'onTrainingPercentage' => 0,
+                'onLeavePercentage' => 0
+            ]);
+        }
+
+        $activeEmployeesCount = $this->countActiveEmployees();
+        $onTrainingCount = $this->countTodayOnTraining();
+        $onLeaveCount = $this->countTodaysLeaves();
+
+        $activePercentage = ($activeEmployeesCount / $totalEmployeesCount) * 100;
+        $onTrainingPercentage = ($onTrainingCount / $totalEmployeesCount) * 100;
+        $onLeavePercentage = ($onLeaveCount / $totalEmployeesCount) * 100;
+
+        return $this->respond([
+            'activePercentage' => round($activePercentage, 2),
+            'onTrainingPercentage' => round($onTrainingPercentage, 2),
+            'onLeavePercentage' => round($onLeavePercentage, 2)
+        ]);
+    }
+
     public function getTodayOnTrainingCount(): ResponseInterface
     {
         $count = $this->countTodayOnTraining(); // Renamed function for consistency
         return $this->respond(['todaysOnTrainingCount' => $count]);
     }
+    
 
     private function countTodayOnTraining(): int // Renamed function for consistency
     {

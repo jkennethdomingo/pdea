@@ -39,6 +39,8 @@ use App\Models\EmployeeLeavesModel;
 use App\Models\InternalEmployeeTrainingModel;
 use App\Models\TrainingModel;
 use App\Models\LeaveRequestNotesModel;
+use App\Models\DivisionModel;
+use App\Models\EmployeeDivisionModel;
 
 /**
  * Services Configuration file.
@@ -432,6 +434,26 @@ class Services extends BaseService
         }
 
         return new LeaveRequestNotesModel();
+    }
+    
+    public static function Division($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('Division');
+        }
+
+        return new Division();
+    }
+    
+    public static function EmployeeDivision($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('EmployeeDivision');
+        }
+
+        return new EmployeeDivision();
     }
 
 }
