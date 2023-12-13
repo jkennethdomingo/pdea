@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import ApexCharts from 'apexcharts'
 import BaseCard from '@/components/ui/BaseCard.vue'
 import { isDark } from '@/composables';
@@ -13,94 +13,95 @@ const calendar = ref(null);
 // Vuex state
 const activeEmployees = computed(() => store.state.activeEmployees);
 const todayTrainingCount = computed(() => store.state.todayTrainingCount);
+const upcomingEmployeeBirthdays = computed(() => store.state.upcomingEmployeeBirthdays);
+const upcomingTraining = computed(() => store.state.upcomingTraining);
+const upcomingEmployeeOnLeave = computed(() => store.state.upcomingEmployeeOnLeave);
 
+const attributes = ref([]);
 const apiUrl = 'hrDashboard';
-
-function moveToday() {
-  calendar.value.move(new Date());
-}
 const selectedColor = ref('blue');
 const date = new Date();
 const year = date.getFullYear();
 const month = date.getMonth();
-const attributes = ref([
-  // ... other attributes
-  {
-    key: 'rangeStart',
-    dates: new Date(2019, 3, 15),
-    customData: { class: 'start-date' } // Custom class for start date
-  },
-  {
-    key: 'rangeEnd',
-    dates: new Date(2019, 3, 19),
-    customData: { class: 'end-date' } // Custom class for end date
-  },
-  {
-    key: 'range',
-    highlight: true,
-    dates: { start: new Date(2019, 3, 15), end: new Date(2019, 3, 19) },
+
+const employeeStatusChartEl = ref(null);
+
+function moveToday() {
+  calendar.value.move(new Date());
+}
+
+function generateAttributes() {
+    const birthdayAttributes = store.state.upcomingEmployeeBirthdays.map(event => ({
+    key: `birthday-${event.EmployeeID}`,
+    highlight: {
+      color: 'blue',
+      fillMode: 'light',
+    },
+    dates: new Date(event.date_of_birth),
+    popover: { visibility: 'hover', content: () => ` ${event.first_name} ${event.surname}` },
+  }));
+
+
+const trainingAttributes = store.state.upcomingTraining.map(event => ({
+    key: `training-${event.training_id}`,
     highlight: {
       color: 'green',
       fillMode: 'solid',
-      contentClass: 'italic',
     },
-  },
-  // ... other attributes
-]);
+    dates: { start: new Date(event.period_from), end: new Date(event.period_to) },
+    popover: { content: () => ` ${event.title}` },
+  }));
+
+  const leaveAttributes = store.state.upcomingEmployeeOnLeave.map(event => ({
+    key: `leave-${event.id}`,
+    highlight: {
+      color: 'red',
+      fillMode: 'outline',
+    },
+    dates: { start: new Date(event.start_date), end: new Date(event.end_date) },
+    popover: { content: () => `${event.LeaveTypeName}` },
+  }));
+
+  attributes.value = [...birthdayAttributes, ...trainingAttributes, ...leaveAttributes];
+}
+
+watch([upcomingEmployeeBirthdays, upcomingTraining, upcomingEmployeeOnLeave], generateAttributes, { immediate: true });
 
 
 onMounted(async () => {
-  await store.dispatch('fetchChartCountData', apiUrl);
-  let earningChart = new ApexCharts(earningChartEl.value, {
-    series: [30, 70],
-        chart: {
-            type: 'pie',
-            toolbar: {
-                show: false,
-            },
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        legend: { show: false },
-        comparedResult: [2, 8],
-        labels: ['Sales', ''],
-        stroke: { width: 0 },
-        colors: ['#f8963e', '#10e2b8'],
-        grid: {
-            padding: {
-                right: -20,
-                bottom: -8,
-                left: -20,
-            },
-        },
-        plotOptions: {
-            pie: {
-                donut: {
-                    labels: {
-                        show: true,
-                        name: {
-                            offsetY: 15,
-                        },
-                        value: {
-                            offsetY: -20,
-                            formatter(val) {
-                                return `${parseInt(val)}%`
-                            },
-                        },
-                        total: {
-                            show: true,
-                            label: 'Sales',
-                            formatter() {
-                                return '30%'
-                            },
-                        },
-                    },
-                },
-            },
-        },
-    })
-  earningChart.render();
+await store.dispatch('fetchChartCountData', apiUrl);
+await store.dispatch('fetchEmployeeStatusPercentages');
+
+const { activePercentage, onTrainingPercentage, onLeavePercentage } = store.state.employeeStatusPercentages;
+
+let employeeStatusChart = new ApexCharts(employeeStatusChartEl.value, {
+series: [activePercentage, onTrainingPercentage, onLeavePercentage],
+chart: {
+    type: 'pie',
+    toolbar: { show: false },
+},
+labels: ['Active', 'On Training', 'On Leave'],
+colors: ['#f8963e', '#10e2b8', '#3498db'],
+dataLabels: { enabled: false },
+legend: { show: false },
+stroke: { width: 0 },
+plotOptions: {
+    pie: {
+    donut: {
+        labels: {
+        show: true,
+        total: {
+            show: true,
+            label: 'Total',
+            formatter: () => '100%'
+        }
+        }
+    }
+    }
+}
+});
+
+employeeStatusChart.render();
 });
 </script>
 
@@ -166,8 +167,8 @@ onMounted(async () => {
                 </BaseCard>
                 </div>
 
-                <!-- Earning card -->
-                <BaseCard noHeader class="grid grid-cols-2 items-center"> <!-- Added items-center for vertical alignment -->
+                <!-- Employee Status Distribution Card -->
+            <BaseCard noHeader class="grid grid-cols-2 items-center"> <!-- Added items-center for vertical alignment -->
                 <div class="flex flex-col gap-2"> <!-- Reduced gap and switched to flex for a tighter layout -->
                     <h4 class="text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
                     <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
@@ -181,9 +182,9 @@ onMounted(async () => {
                     </p>
                 </div>
 
-                <!-- Donut chart with corrected classes -->
-                <div class="flex w-full h-full items-center justify-center"> <!-- Corrected class list for flexbox layout -->
-                    <div ref="earningChartEl"></div>
+                <!-- Donut chart for Employee Status -->
+                <div class="flex w-full h-full items-center justify-center"> 
+                    <div ref="employeeStatusChartEl"></div>
                 </div>
             </BaseCard>
             </div>
@@ -193,16 +194,44 @@ onMounted(async () => {
                 title="Calendar of Events"
             >
                 <div class="p-6">
-                    <VCalendar ref="calendar" :attributes='attributes'  expanded :rows="2" :is-dark="isDark" transparent borderless>
-                        <template #footer>
-                            <div class="w-full px-4 pb-3">
-                                <button
-                                class="bg-green-600 hover:bg-green-700 text-white font-bold w-full px-3 py-1 rounded-md"
-                                @click="moveToday"
-                                >
-                                Today
-                                </button>
+                    <VCalendar 
+                        ref="calendar" 
+                        :attributes="attributes" 
+                        expanded 
+                        :rows="2" 
+                        :is-dark="isDark" 
+                        transparent 
+                        borderless
+                    >
+                        <!-- day-popover slot to show event details -->
+                        <template #day-popover="{ day, dayTitle, attributes }">
+                        <div class="bg-white shadow-lg rounded-lg p-4">
+                            <div class="font-bold mb-2">{{ dayTitle }}</div>
+                            <div v-for="attr in attributes" :key="attr.key" class="mb-1">
+                            <!-- Custom content based on the type of event -->
+                            <div v-if="attr.key.startsWith('birthday-')">
+                                <span class="text-blue-500 font-semibold">Birthday:</span> {{ attr.popover.content() }}
                             </div>
+                            <div v-else-if="attr.key.startsWith('training-')">
+                                <span class="text-green-500 font-semibold">Training:</span> {{ attr.popover.content() }}
+                            </div>
+                            <div v-else-if="attr.key.startsWith('leave-')">
+                                <span class="text-red-500 font-semibold">Leave:</span> {{ attr.popover.content() }}
+                            </div>
+                            </div>
+                        </div>
+                        </template>
+
+                        <!-- Existing footer slot -->
+                        <template #footer>
+                        <div class="w-full px-4 pb-3">
+                            <button
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold w-full px-3 py-1 rounded-md"
+                            @click="moveToday"
+                            >
+                            Today
+                            </button>
+                        </div>
                         </template>
                     </VCalendar>
                 </div> 
