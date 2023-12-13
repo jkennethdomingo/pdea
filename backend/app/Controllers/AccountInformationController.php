@@ -716,6 +716,7 @@ class AccountInformationController extends ResourceController
             'sections' => $this->sectionModel->findAll(),
             'designations' => $this->designationModel->findAll(),
             'positions' => $this->positionModel->findAll(),
+            'divisions' => $this->DivisionModel->findAll(),
         ];
 
         return $this->respond($data);

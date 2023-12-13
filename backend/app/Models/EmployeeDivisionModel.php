@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 
 class EmployeeDivisionModel extends Model
 {
-    protected $table            = 'employeedivisions';
-    protected $primaryKey       = 'id';
+    protected $table            = 'employee_division';
+    protected $primaryKey       = 'EmpDivID';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = ['DivisionID', 'EmployeeID',];
 
     // Dates
     protected $useTimestamps = false;

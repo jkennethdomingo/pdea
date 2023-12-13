@@ -436,24 +436,24 @@ class Services extends BaseService
         return new LeaveRequestNotesModel();
     }
     
-    public static function Division($getShared = true)
+    public static function DivisionModel($getShared = true)
     {
         if ($getShared)
         {
-            return static::getSharedInstance('Division');
+            return static::getSharedInstance('DivisionModel');
         }
 
-        return new Division();
+        return new DivisionModel();
     }
     
-    public static function EmployeeDivision($getShared = true)
+    public static function EmployeeDivisionModel($getShared = true)
     {
         if ($getShared)
         {
-            return static::getSharedInstance('EmployeeDivision');
+            return static::getSharedInstance('EmployeeDivisionModel');
         }
 
-        return new EmployeeDivision();
+        return new EmployeeDivisionModel();
     }
 
 }
