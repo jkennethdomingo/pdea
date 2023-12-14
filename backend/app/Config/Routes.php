@@ -105,7 +105,7 @@ $routes->group('api', function($routes)
         $routes->post('fetchCountOfUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardRemasteredController::fetchCountOfUpcomingTrainingsWithNoAssignedEmployees'); //Statistics
         $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardRemasteredController::getActiveEmployeesCount'); //Statistics
         $routes->post('getTodayTrainingCount', 'HumanResourceDashboardRemasteredController::getTodayTrainingCount'); //Sales
-        $routes->post('getUpcomingEvents', 'HumanResourceDashboardController::getUpcomingEvents'); //Calendar Upcoming Events
+        $routes->post('getUpcomingEvents', 'HumanResourceDashboardRemasteredController::getUpcomingEvents'); //Calendar Upcoming Events
         $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages'); // Pie Chart
     });
 

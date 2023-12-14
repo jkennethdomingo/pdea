@@ -29,6 +29,53 @@ class HumanResourceDashboardRemasteredController extends ResourceController
         $this->leaveBalanceModel = Services::LeaveBalanceModel(); // Corrected syntax
     }
 
+    public function getUpcomingEvents()
+    {
+        $today = date('Y-m-d');
+
+        // Fetch employee birthdays
+        $birthdays = $this->personalInformationModel->getUpcomingBirthdays($today);
+
+        // Fetch training data including the employees involved
+        $trainingQuery = $this->trainingModel->builder(); // Corrected line
+        $trainingQuery->select('training.*, GROUP_CONCAT(DISTINCT personal_information.first_name, " ", personal_information.surname ORDER BY personal_information.first_name ASC) as participants');
+        $trainingQuery->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left');
+        $trainingQuery->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left');
+        $trainingQuery->where('training.period_from >=', $today); // Only get training starting today or in the future
+        $trainingQuery->groupBy('training.training_id');
+        $training = $trainingQuery->get()->getResult();
+
+        // Fetch employee on leave data
+        $leaveQuery = $this->employeeLeavesModel->builder(); // Corrected line
+        $leaveQuery->select('
+            employee_leaves.id,
+            employee_leaves.EmployeeID,
+            employee_leaves.leave_type_id,
+            employee_leaves.start_date,
+            employee_leaves.end_date,
+            employee_leaves.reason,
+            employee_leaves.status,
+            personal_information.surname,
+            personal_information.first_name,
+            leave_type.LeaveTypeName
+        ');
+        $leaveQuery->join('personal_information', 'employee_leaves.EmployeeID = personal_information.EmployeeID', 'inner');
+        $leaveQuery->join('leave_type', 'employee_leaves.leave_type_id = leave_type.LeaveTypeID', 'inner');
+        $leaveQuery->where('employee_leaves.start_date >=', $today); // Only get leaves starting today or in the future
+        $employeeOnLeave = $leaveQuery->get()->getResult();
+
+        // Combine the datasets
+        $data = [
+            'upcomingEmployeeBirthdays' => $birthdays,
+            'upcomingTraining' => $training,
+            'upcomingEmployeeOnLeave' => $employeeOnLeave,
+        ];
+
+        // Return the combined response
+        return $this->respond($data);
+    }
+
+
     public function getEmployeeStatusPercentages()
     {
         $totalEmployeesCount = $this->personalInformationModel->countAllResults();
