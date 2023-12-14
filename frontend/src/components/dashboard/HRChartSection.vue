@@ -33,7 +33,7 @@ function generateAttributes() {
     const birthdayAttributes = store.state.upcomingEmployeeBirthdays.map(event => ({
     key: `birthday-${event.EmployeeID}`,
     highlight: {
-      color: 'blue', //TODO: color jd
+      color: 'red', //TODO: color jd
       fillMode: 'light',
     },
     dates: new Date(event.date_of_birth),
@@ -54,7 +54,7 @@ const trainingAttributes = store.state.upcomingTraining.map(event => ({
   const leaveAttributes = store.state.upcomingEmployeeOnLeave.map(event => ({
     key: `leave-${event.id}`,
     highlight: {
-      color: 'red', //TODO: color jd
+      color: 'orange', //TODO: color jd
       fillMode: 'outline',
     },
     dates: { start: new Date(event.start_date), end: new Date(event.end_date) },
@@ -265,7 +265,7 @@ const setActiveTab = (tab) => {
                         <template #footer>
                         <div class="w-full px-4 pb-3">
                             <button
-                            class="bg-green-600 hover:bg-green-700 text-white font-bold w-full px-3 py-1 rounded-md"
+                            class="bg-[#10e2b8] hover:bg-[#57ae9d] text-white font-bold w-full px-3 py-1 rounded-md"
                             @click="moveToday"
                             >
                             Today

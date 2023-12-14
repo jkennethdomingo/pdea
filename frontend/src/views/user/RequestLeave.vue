@@ -453,7 +453,7 @@ aria-labelledby="drawer-label">
             </DialogTitle>
             <div class="mt-2">
               <p class="text-sm text-gray-800 dark:text-gray-200">
-                Reason for leave: 
+                Reason for leave: <!--TODO Static Modal For Reason Leave-->
 
                 <!-- Include other relevant details here -->
               </p>
@@ -541,7 +541,7 @@ aria-labelledby="drawer-label">
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->
     <div class="flex-grow p-12 text-md text-black dark:text-green-400 bg-white dark:bg-[#0F172A] px-3 py-7 rounded-xl">
-      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar>
+      <FullCalendar ref="calendarRef" :options="calendarOptions"></FullCalendar> <!--TODO Not showing in Calendar-->
     </div>
   </div>
 </div>

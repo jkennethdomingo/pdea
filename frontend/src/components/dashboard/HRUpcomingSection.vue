@@ -59,7 +59,7 @@ const training = upcomingTraining.value.map(train => ({
     date: `${train.period_from} to ${train.period_to}`,
     commentCount: 'Conducted by ' + train.conducted_by,
     shareCount: train.participants ? 'Assigned' : 'Unassigned',
-    shareCountColor: train.participants ? '' : 'text-red-500'
+    shareCountColor: train.participants ? 'text-green-600 dark:text-green-400' : 'text-red-500'
 }));
 
 const leaves = upcomingEmployeeOnLeave.value.map(leave => ({
@@ -82,9 +82,9 @@ const categories = ref({
 });
 </script>
 
-<template>
+<template> <!--TODO Bug Upcoming Events-->
     <section class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <h2 class="sr-only">Upcoming Events</h2>
+        <h2 class="sr-only">Upcoming Events</h2> 
 
         <!-- Upcoming Events -->
         <BaseCard title="Upcoming Events">
@@ -102,7 +102,7 @@ const categories = ref({
                             'w-full rounded-lg py-1 text-sm font-medium leading-5', 
                             'ring-white/60 ring-offset-2 ring-offset-black focus:outline-none focus:ring-2',
                             selected
-                                ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
+                                ? 'bg-[#10e2b8] text-white dark:text-gray-800 shadow'
                                 : 'text-gray-600 dark:text-gray-200 hover:bg-white/[0.12] hover:text-green-500',
                         ]"
                         >
@@ -112,9 +112,9 @@ const categories = ref({
                     </TabList>
     
                     <TabPanels class="mt-2">
-                        <TabPanel v-for="(posts, idx) in Object.values(categories)" :key="idx" class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700">
+                        <TabPanel v-for="(posts, idx) in Object.values(categories)" :key="idx" class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto">
                             <ul>
-                            <li v-for="post in posts" :key="post.id" class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500">
+                            <li v-for="post in posts" :key="post.id" class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-600">
                                 <h3 class="text-sm font-medium leading-5">{{ post.title }}</h3>
                                 <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300">
                                 <li>{{ post.date }}</li>
@@ -131,120 +131,83 @@ const categories = ref({
             </div>
         </BaseCard>
 
-        <!-- Recent cards -->
+        <!-- Recent cards --> <!-- TODO Static Recently Approved-->
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
             <!-- Recent contacts -->
-            <BaseCard
-                title="Recently Approved Leaves"
-                :actions="[{ title: 'View', to: '#' }]"
-            >
-                <div
-                    class="mt-4 flex items-center justify-between"
-                    v-for="i in 4"
-                    :key="i"
-                >
-                    <div class="flex items-center gap-2">
-                        <img
-                            class="w-10 h-10 rounded-md object-cover"
-                            src="https://placekitten.com/200/300"
-                        />
+            <BaseCard title="Recently Approved Leaves" :actions="[{ title: 'View', to: '#' }]">
+                <!-- Scrollable container -->
+                <div class="max-h-64 overflow-y-auto"> <!-- Adjust max-h-64 as needed -->
+                    <div
+                        class="mt-4 flex items-center justify-between"
+                        v-for="i in 10"
+                        :key="i"
+                    >
+                        <div class="flex items-center gap-2">
+                            <img
+                                class="w-10 h-10 rounded-md object-cover"
+                                src="@/assets/images/avatar.jpg" alt="Avatar"
+                            />
+                            <div>
+                                <h5 class="text-xs text-gray-600 dark:text-gray-300">
+                                    Jose Anyayahan
+                                </h5>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">
+                                    ID: 111002
+                                </p>
+                            </div>
+                        </div>
                         <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                Name
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                email@example.com
+                            <p class="text-xs text-gray-600 dark:text-gray-300">
+                                Sick Leave &middot; 12-14-23 - 12-20-23
                             </p>
                         </div>
+                        <Button
+                            sr-text="Actions"
+                            size="sm"
+                            icon-only
+                            icon="mdi:dots-vertical"
+                            variant="secondary"
+                        />
                     </div>
-                    <Button
-                        sr-text="Actions"
-                        size="sm"
-                        icon-only
-                        icon="mdi:dots-vertical"
-                        variant="secondary"
-                    />
                 </div>
             </BaseCard>
 
-            <!-- Recent transactions -->
-            <BaseCard
-                title="Unassigned Trainings"
-                :actions="[{ title: 'View', to: '#' }]"
-            >
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            icon="mdi:plus-circle-outline"
-                            aria-hidden="true"
-                            class="w-6 h-6 text-green-500"
-                        />
+
+            <!-- Recent transactions -->  <!--TODO Unassigned Training-->
+            <BaseCard title="Unassigned Trainings" :actions="[{ title: 'View', to: '#' }]">
+                <div class="max-h-32 overflow-y-auto">
+                    <div
+                        class="mt-4 flex items-center justify-between"
+                        v-for="i in 5"
+                        :key="i"
+                    >
+                        <div class="flex items-center gap-4">
+                            <!-- SVG icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 48 48" class="w-10 h-10 rounded-md">
+                                <path fill="currentColor" fill-rule="evenodd" d="M6 6h31v5h-2V8H8v23h21.387v2H6zm30 13a3 3 0 1 0 0-6a3 3 0 0 0 0 6m2.031 2.01c1.299 0 2.327.584 3 1.486c.629.845.895 1.89.955 2.855a7.626 7.626 0 0 1-.397 2.92c-.3.87-.807 1.77-1.589 2.387V40.5a1.5 1.5 0 0 1-2.98.247L35.73 33h-.298l-1.458 7.776A1.5 1.5 0 0 1 31 40.5V26.233a63.223 63.223 0 0 0-.592.919l-.078.123l-.02.032l-.005.009a1.5 1.5 0 0 1-1.274.707h-5a1.5 1.5 0 1 1 0-3h4.177c.243-.376.563-.864.899-1.354c.35-.511.736-1.052 1.08-1.476c.167-.207.354-.423.542-.6c.092-.087.22-.2.376-.3a1.72 1.72 0 0 1 .926-.282z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h5 class="text-xs text-gray-600 dark:text-gray-300">
+                                    Holding a Gun
+                                </h5>
+                            </div>
+                        </div>
                         <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                Gillette
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                17 Oct, 2021
+                            <p class="text-xs text-gray-600 dark:text-gray-300">
+                                Sick Leave &middot; 12-14-23 - 12-20-23
                             </p>
                         </div>
-                    </div>
-
-                    <span class="text-base font-medium text-green-500"
-                        >+$360.00</span
-                    >
-                </div>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            icon="mdi:minus-circle-outline"
-                            aria-hidden="true"
-                            class="w-6 h-6 text-red-500"
+                        <Button
+                            sr-text="Actions"
+                            size="sm"
+                            icon-only
+                            icon="mdi:dots-vertical"
+                            variant="secondary"
                         />
-                        <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                IBM
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                01 Oct, 2021
-                            </p>
-                        </div>
                     </div>
-
-                    <span class="text-base font-medium text-red-500"
-                        >-$254.00</span
-                    >
-                </div>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            icon="mdi:checkbox-blank-circle-outline"
-                            aria-hidden="true"
-                            class="w-6 h-6 text-gray-500"
-                        />
-
-                        <div>
-                            <h5
-                                class="text-xs text-gray-600 dark:text-gray-300"
-                            >
-                                Louis Vuitton
-                            </h5>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">
-                                8 Oct, 2021
-                            </p>
-                        </div>
-                    </div>
-
-                    <span class="text-base font-medium text-gray-500"
-                        >Pending</span
-                    >
                 </div>
             </BaseCard>
+
         </div>
     </section>
 </template>

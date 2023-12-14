@@ -1,9 +1,9 @@
-<template>
+<template> <!--TODO Backup and Restore-->
     <div>
       <button @click="backupDatabase">Backup Database</button>
       <button @click="restoreDatabase">Restore Database</button>
     </div>
-  </template>
+  </template> 
 <script>
 import apiService from '@/composables/axios-setup'; // Adjust the path based on your project structure
 

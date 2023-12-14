@@ -666,7 +666,7 @@ const closeModal = () => {
                 <!-- Modal footer -->
                 <div class="flex justify-center items-center px-4 py-3">
                   <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    Assign
+                    Assign <!--TODO Can't directly assign-->
                   </button>
                 </div>
               </div>
@@ -760,7 +760,7 @@ const closeModal = () => {
                 @click="viewTrainingDetails(session.id)"
                 class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
               >
-                View Details
+                View Details 
               </button>
             </div>
           </li>
@@ -822,7 +822,7 @@ const closeModal = () => {
                   class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   @click="viewTrainingDetailsClose"
                 >
-                  Got it, thanks!
+                  Got it, thanks! <!--TODO static modal They are connected with Finished and Upcoming-->
                 </button>
               </div>
             </DialogPanel>
