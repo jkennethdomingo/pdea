@@ -28,6 +28,48 @@ const categories = ref({
         commentCount: 3,
         shareCount: 2,
         },
+        {
+        id: 3,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
+        {
+        id: 4,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
+        {
+        id: 5,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
+        {
+        id: 6,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
+        {
+        id: 6,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
+        {
+        id: 6,
+        title: "So you've bought coffee... now what?",
+        date: '2h ago',
+        commentCount: 3,
+        shareCount: 2,
+        },
     ],
     Popular: [
         {
@@ -113,8 +155,7 @@ const categories = ref({
                         <TabPanel
                         v-for="(posts, idx) in Object.values(categories)"
                         :key="idx"
-                        class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
-                        >
+                        class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700 overflow-auto max-h-96">
                         <ul>
                             <li
                             v-for="post in posts"

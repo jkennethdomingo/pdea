@@ -77,11 +77,11 @@ const { activePercentage, onTrainingPercentage, onLeavePercentage } = store.stat
 let employeeStatusChart = new ApexCharts(employeeStatusChartEl.value, {
 series: [activePercentage, onTrainingPercentage, onLeavePercentage],
 chart: {
-    type: 'pie',
+    type: 'donut',
     toolbar: { show: false },
 },
 labels: ['Active', 'On Training', 'On Leave'],
-colors: ['#f8963e', '#10e2b8', '#3498db'],
+colors: ['#10e2b8', '#10e2b8', '#ffa700'],
 dataLabels: { enabled: false },
 legend: { show: false },
 stroke: { width: 0 },
@@ -103,6 +103,12 @@ plotOptions: {
 
 employeeStatusChart.render();
 });
+
+const activeTab = ref('today');
+
+const setActiveTab = (tab) => {
+    activeTab.value = tab;
+};
 </script>
 
 <template>
@@ -168,11 +174,16 @@ employeeStatusChart.render();
                 </div>
 
                 <!-- Employee Status Distribution Card -->
-            <BaseCard noHeader class="grid grid-cols-2 items-center"> <!-- Added items-center for vertical alignment -->
-                <div class="flex flex-col gap-2"> <!-- Reduced gap and switched to flex for a tighter layout -->
-                    <h4 class="text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
+            <BaseCard noHeader class="items-center"> <!-- Added items-center for vertical alignment -->
+                <div role="tablist" class="tabs tabs-bordered">
+                    <a role="tab" class="tab" :class="{ 'tab-active': activeTab === 'today' }" @click="setActiveTab('today')">Today</a>
+                    <a role="tab" class="tab" :class="{ 'tab-active': activeTab === 'monthly' }" @click="setActiveTab('monthly')">Monthly</a>
+                    <a role="tab" class="tab" :class="{ 'tab-active': activeTab === 'annually' }" @click="setActiveTab('annually')">Annually</a>
+                </div>
+                <div v-if="activeTab === 'today'"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                    <h4 class="flex justify-center text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
                     <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
-                        This Month
+                        Today
                     </p>
                     <p class="text-base font-medium text-green-400">
                         +20.5%
@@ -180,12 +191,41 @@ employeeStatusChart.render();
                     <p class="text-2xl font-medium text-gray-800 dark:text-gray-200">
                         $5070.80
                     </p>
-                </div>
-
-                <!-- Donut chart for Employee Status -->
-                <div class="flex w-full h-full items-center justify-center"> 
+                    <div class="flex w-full h-full items-center justify-center"> 
                     <div ref="employeeStatusChartEl"></div>
+                    </div>
                 </div>
+                <div v-if="activeTab === 'monthly'"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                    <h4 class="flex justify-center text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
+                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
+                        Monthly
+                    </p>
+                    <p class="text-base font-medium text-green-400">
+                        +20.5%
+                    </p>
+                    <p class="text-2xl font-medium text-gray-800 dark:text-gray-200">
+                        $5070.80
+                    </p>
+                    <div class="flex w-full h-full items-center justify-center"> 
+                    <div ref="employeeStatusChartEl"></div>
+                    </div>
+                </div>
+                <div v-if="activeTab === 'annually'"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                    <h4 class="flex justify-center text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
+                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
+                        Annually
+                    </p>
+                    <p class="text-base font-medium text-green-400">
+                        +20.5%
+                    </p>
+                    <p class="text-2xl font-medium text-gray-800 dark:text-gray-200">
+                        $5070.80
+                    </p>
+                    <div class="flex w-full h-full items-center justify-center"> 
+                    <div ref="employeeStatusChartEl"></div>
+                    </div>
+                </div>
+                
             </BaseCard>
             </div>
 
