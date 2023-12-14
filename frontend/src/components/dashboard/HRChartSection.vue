@@ -7,7 +7,6 @@ import { Icon } from '@iconify/vue'
 import { useStore } from 'vuex';
 
 const store = useStore();
-const earningChartEl = ref(null)
 const calendar = ref(null);
 
 // Vuex state

@@ -1,8 +1,8 @@
 <script setup>
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import HRStatisticsSection from '@/components/dashboard/HRStatisticsSection.vue'
-import HRSalesSection from '@/components/dashboard/HRChartSection.vue'
-import HRLatestSection from '@/components/dashboard/HRUpcomingSection.vue'
+import HRChartSection from '@/components/dashboard/HRChartSection.vue'
+import HRUpcomingSection from '@/components/dashboard/HRUpcomingSection.vue'
 </script>
 
 <template>
@@ -16,12 +16,12 @@ import HRLatestSection from '@/components/dashboard/HRUpcomingSection.vue'
         </template>
 
         <HRStatisticsSection />
-        <HRSalesSection />
+        <HRChartSection />
         <!-- Statistics section -->
 
         <!-- Sales section -->
 
         <!-- Latest users & transaction section -->
-        <HRLatestSection />
+        <HRUpcomingSection />
     </PageWrapper>
 </template>
