@@ -59,6 +59,7 @@ const training = upcomingTraining.value.map(train => ({
     date: `${train.period_from} to ${train.period_to}`,
     commentCount: 'Conducted by ' + train.conducted_by,
     shareCount: train.participants ? 'Assigned' : 'Unassigned',
+    shareCountColor: train.participants ? '' : 'text-red-500'
 }));
 
 const leaves = upcomingEmployeeOnLeave.value.map(leave => ({
@@ -74,121 +75,11 @@ const allEvents = [...birthdays, ...training, ...leaves];
 
 // Define categories
 const categories = ref({
-<<<<<<< Updated upstream
-    Recent: [
-        {
-        id: 1,
-        title: 'Does drinking coffee make you smarter?',
-        date: '5h ago',
-        commentCount: 5,
-        shareCount: 2,
-        },
-        {
-        id: 2,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-        {
-        id: 3,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-        {
-        id: 4,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-        {
-        id: 5,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-        {
-        id: 6,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-        {
-        id: 6,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-        {
-        id: 6,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-        },
-    ],
-    Popular: [
-        {
-        id: 1,
-        title: 'Is tech making coffee better or worse?',
-        date: 'Jan 7',
-        commentCount: 29,
-        shareCount: 16,
-        },
-        {
-        id: 2,
-        title: 'The most innovative things happening in coffee',
-        date: 'Mar 19',
-        commentCount: 24,
-        shareCount: 12,
-        },
-    ],
-    Trending: [
-        {
-        id: 1,
-        title: 'Ask Me Anything: 10 answers to your questions about coffee',
-        date: '2d ago',
-        commentCount: 9,
-        shareCount: 5,
-        },
-        {
-        id: 2,
-        title: "The worst advice we've ever heard about coffee",
-        date: '4d ago',
-        commentCount: 1,
-        shareCount: 2,
-        },
-    ],
-    New: [
-        {
-        id: 1,
-        title: 'Ask Me Anything: 10 answers to your questions about coffee',
-        date: '2d ago',
-        commentCount: 9,
-        shareCount: 5,
-        },
-        {
-        id: 2,
-        title: "The worst advice we've ever heard about coffee",
-        date: '4d ago',
-        commentCount: 1,
-        shareCount: 2,
-        },
-    ],
-})
-=======
     All: allEvents,
     Birthdays: birthdays,
     Training: training,
     'On Leave': leaves,
 });
->>>>>>> Stashed changes
 </script>
 
 <template>
@@ -221,36 +112,16 @@ const categories = ref({
                     </TabList>
     
                     <TabPanels class="mt-2">
-<<<<<<< Updated upstream
-                        <TabPanel
-                        v-for="(posts, idx) in Object.values(categories)"
-                        :key="idx"
-                        class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700 overflow-auto max-h-96">
-                        <ul>
-                            <li
-                            v-for="post in posts"
-                            :key="post.id"
-                            class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
-                            >
-                            <h3 class="text-sm font-medium leading-5">
-                                {{ post.title }}
-                            </h3>
-    
-                            <ul
-                                class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300"
-                            >
-=======
                         <TabPanel v-for="(posts, idx) in Object.values(categories)" :key="idx" class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700">
                             <ul>
                             <li v-for="post in posts" :key="post.id" class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500">
                                 <h3 class="text-sm font-medium leading-5">{{ post.title }}</h3>
                                 <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300">
->>>>>>> Stashed changes
                                 <li>{{ post.date }}</li>
                                 <li v-if="post.commentCount">&middot;</li>
                                 <li v-if="post.commentCount">{{ post.commentCount }}</li>
                                 <li v-if="post.shareCount">&middot;</li>
-                                <li v-if="post.shareCount">{{ post.shareCount }}</li>
+                                <li v-if="post.shareCount" :class="post.shareCountColor">{{ post.shareCount }}</li>
                                 </ul>
                             </li>
                             </ul>

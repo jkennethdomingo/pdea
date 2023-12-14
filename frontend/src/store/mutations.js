@@ -248,9 +248,6 @@ updatePhotoPreviewUrl(state, url) {
   SET_EMPLOYEE_BIRTHDAYS(state, birthdays) {
     state.employeeBirthdays = birthdays;
   },
-  SET_TRAINING(state, training) {
-    state.training = training;
-  },
   SET_EMPLOYEE_ON_LEAVE(state, onLeave) {
     state.employeeOnLeave = onLeave;
   }

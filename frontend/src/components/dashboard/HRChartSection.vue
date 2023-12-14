@@ -33,7 +33,7 @@ function generateAttributes() {
     const birthdayAttributes = store.state.upcomingEmployeeBirthdays.map(event => ({
     key: `birthday-${event.EmployeeID}`,
     highlight: {
-      color: 'blue',
+      color: 'blue', //TODO: color jd
       fillMode: 'light',
     },
     dates: new Date(event.date_of_birth),
@@ -44,7 +44,7 @@ function generateAttributes() {
 const trainingAttributes = store.state.upcomingTraining.map(event => ({
     key: `training-${event.training_id}`,
     highlight: {
-      color: 'green',
+      color: 'green', //TODO: color jd
       fillMode: 'solid',
     },
     dates: { start: new Date(event.period_from), end: new Date(event.period_to) },
@@ -54,7 +54,7 @@ const trainingAttributes = store.state.upcomingTraining.map(event => ({
   const leaveAttributes = store.state.upcomingEmployeeOnLeave.map(event => ({
     key: `leave-${event.id}`,
     highlight: {
-      color: 'red',
+      color: 'red', //TODO: color jd
       fillMode: 'outline',
     },
     dates: { start: new Date(event.start_date), end: new Date(event.end_date) },
