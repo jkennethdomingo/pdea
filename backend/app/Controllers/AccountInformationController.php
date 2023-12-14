@@ -666,7 +666,7 @@ class AccountInformationController extends ResourceController
             $leaveBalanceData = [
                 'EmployeeID' => $EmployeeID,
                 'LeaveTypeID' => $leaveType['LeaveTypeID'],
-                'NumberOfLeaves' => $leaveType['DefaultLeaveCount']
+                'NumberofLeaves' => $leaveType['DefaultLeaveCount']
             ];
         
             if (!$this->leaveBalanceModel->insert($leaveBalanceData)) {
