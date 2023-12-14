@@ -1,8 +1,10 @@
 <template lang="">
-    <div class="mx-auto bg-white p-8 rounded-md shadow-md text-center" style="width: 80%; height: 95%; background-image: url('last.png'); background-size: cover; background-position: center;">
+    <div class="mx-auto  bg-[#DDE6ED] dark:bg-gray-600 p-8 rounded-md shadow-md text-center" 
+      style="width: 80%; height: 95%; background-image: url('last.png'); 
+      background-size: cover; background-position: center;">
       
       <div class="mb-2 justify-center">
-        <img src="PDEA_seal.svg.png" alt="PDEA Logo" class="mx-auto h-20">
+        <img src="@/assets/logo.png" alt="PDEA Logo" class="mx-auto h-20">
       </div>
   
       <br>
@@ -21,6 +23,8 @@
     </div>
 </template>
 <script>
+
+
 export default {
     
 }

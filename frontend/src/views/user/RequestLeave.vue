@@ -219,10 +219,6 @@ function toggleModal() {
 
 const isDrawerOpen = ref(false);
 
-function openDrawer() {
-  isDrawerOpen.value = true;
-}
-
 function closeDrawer() {
   isDrawerOpen.value = false;
 }
@@ -394,8 +390,9 @@ aria-labelledby="drawer-label">
     :key="category"
     class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700"
   >
-    <div class="loading loading-spinner" v-if="isLoading && category === 'Pending'">
-    </div>
+  <div class="flex justify-center items-center" v-if="isLoading && category === 'Pending'">
+  <div class="loading loading-spinner"></div>
+</div>
     <ul v-else class="max-h-40 overflow-y-auto ">
       <li
         v-for="post in posts"
