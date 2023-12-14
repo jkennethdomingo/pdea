@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import BaseCard from '@/components/ui/BaseCard.vue'
 import Button from '@/components/base/Button.vue'
 import { Icon } from '@iconify/vue'
@@ -12,7 +12,69 @@ onMounted(async () => {
 await store.dispatch('fetchUpcomingCombinedEvents');
 });
 
+const upcomingEmployeeBirthdays = computed(() => store.state.upcomingEmployeeBirthdays);
+const upcomingTraining = computed(() => store.state.upcomingTraining);
+const upcomingEmployeeOnLeave = computed(() => store.state.upcomingEmployeeOnLeave);
+
+// Helper function to format date difference
+function calculateTimeToBirthday(dob) {
+    const today = new Date();
+    const birthDate = new Date(dob);
+    const nextBirthday = new Date(birthDate.setFullYear(today.getFullYear()));
+
+    // Adjust for next year if birthday already passed
+    if (today > nextBirthday) {
+        nextBirthday.setFullYear(today.getFullYear() + 1);
+    }
+
+    const diffTime = Math.abs(nextBirthday - today);
+    const diffSeconds = Math.floor(diffTime / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffMonths = Math.floor(diffDays / 30);
+
+    let timeString = "";
+
+    if (diffMonths > 0) timeString = diffMonths > 1 ? `${diffMonths} months` : "a month";
+    else if (diffWeeks > 0) timeString = diffWeeks > 1 ? `${diffWeeks} weeks` : "a week";
+    else if (diffDays > 0) timeString = diffDays > 1 ? `${diffDays} days` : "a day";
+    else if (diffHours > 0) timeString = diffHours > 1 ? `${diffHours} hours` : "an hour";
+    else if (diffMinutes > 0) timeString = diffMinutes > 1 ? `${diffMinutes} minutes` : "a minute";
+    else timeString = diffSeconds > 1 ? `${diffSeconds} seconds` : "a second";
+
+    return `In ${timeString}`;
+}
+// Transform data into the required formats
+const birthdays = upcomingEmployeeBirthdays.value.map(employee => ({
+    id: employee.EmployeeID,
+    title: `${employee.first_name} ${employee.surname}'s Birthday`,
+    date: calculateTimeToBirthday(employee.date_of_birth),
+}));
+
+const training = upcomingTraining.value.map(train => ({
+    id: train.training_id,
+    title: train.title,
+    date: `${train.period_from} to ${train.period_to}`,
+    commentCount: 'Conducted by ' + train.conducted_by,
+    shareCount: train.participants ? 'Assigned' : 'Unassigned',
+}));
+
+const leaves = upcomingEmployeeOnLeave.value.map(leave => ({
+    id: leave.id,
+    title: `${leave.first_name} ${leave.surname} - ${leave.LeaveTypeName}`,
+    date: `${leave.start_date} to ${leave.end_date}`,
+    commentCount: leave.reason,
+    shareCount: leave.status,
+}));
+
+// Combine categories
+const allEvents = [...birthdays, ...training, ...leaves];
+
+// Define categories
 const categories = ref({
+<<<<<<< Updated upstream
     Recent: [
         {
         id: 1,
@@ -120,6 +182,13 @@ const categories = ref({
         },
     ],
 })
+=======
+    All: allEvents,
+    Birthdays: birthdays,
+    Training: training,
+    'On Leave': leaves,
+});
+>>>>>>> Stashed changes
 </script>
 
 <template>
@@ -152,6 +221,7 @@ const categories = ref({
                     </TabList>
     
                     <TabPanels class="mt-2">
+<<<<<<< Updated upstream
                         <TabPanel
                         v-for="(posts, idx) in Object.values(categories)"
                         :key="idx"
@@ -169,14 +239,21 @@ const categories = ref({
                             <ul
                                 class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300"
                             >
+=======
+                        <TabPanel v-for="(posts, idx) in Object.values(categories)" :key="idx" class="rounded-xl bg-white dark:bg-[#0F172A] p-2 border-2 border-gray-200 dark:border-gray-700">
+                            <ul>
+                            <li v-for="post in posts" :key="post.id" class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500">
+                                <h3 class="text-sm font-medium leading-5">{{ post.title }}</h3>
+                                <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text:gray-700 dark:text-gray-300">
+>>>>>>> Stashed changes
                                 <li>{{ post.date }}</li>
-                                <li>&middot;</li>
-                                <li>{{ post.commentCount }} comments</li>
-                                <li>&middot;</li>
-                                <li>{{ post.shareCount }} shares</li>
-                            </ul>
+                                <li v-if="post.commentCount">&middot;</li>
+                                <li v-if="post.commentCount">{{ post.commentCount }}</li>
+                                <li v-if="post.shareCount">&middot;</li>
+                                <li v-if="post.shareCount">{{ post.shareCount }}</li>
+                                </ul>
                             </li>
-                        </ul>
+                            </ul>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
