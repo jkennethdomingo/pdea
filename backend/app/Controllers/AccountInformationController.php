@@ -660,7 +660,7 @@ class AccountInformationController extends ResourceController
         );
 
         // Initialize leave balance
-        $leaveTypes = $this->leavetypeModel->findAll();
+        $leaveTypes = $this->leavetypeModel->findAll(); //TODO FIXME
 
         foreach ($leaveTypes as $leaveType) {
             $leaveBalanceData = [
