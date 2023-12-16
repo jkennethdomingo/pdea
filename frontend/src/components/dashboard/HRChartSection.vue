@@ -5,6 +5,7 @@ import BaseCard from '@/components/ui/BaseCard.vue'
 import { isDark } from '@/composables';
 import { Icon } from '@iconify/vue'
 import { useStore } from 'vuex';
+import apiService from '@/composables/axios-setup';
 
 const store = useStore();
 const calendar = ref(null);
@@ -12,9 +13,6 @@ const calendar = ref(null);
 // Vuex state
 const activeEmployees = computed(() => store.state.activeEmployees);
 const todayTrainingCount = computed(() => store.state.todayTrainingCount);
-const upcomingEmployeeBirthdays = computed(() => store.state.upcomingEmployeeBirthdays);
-const upcomingTraining = computed(() => store.state.upcomingTraining);
-const upcomingEmployeeOnLeave = computed(() => store.state.upcomingEmployeeOnLeave);
 
 const attributes = ref([]);
 const apiUrl = 'hrDashboard';
@@ -24,90 +22,366 @@ const year = date.getFullYear();
 const month = date.getMonth();
 
 const employeeStatusChartEl = ref(null);
+let employeeStatusChart = null;
+
+const employeeStatusData = ref({
+  activePercentage: 0,
+  onTrainingPercentage: 0,
+  onLeavePercentage: 0,
+}); 
+
+const upcomingEmployeeBirthdays = ref([]);
+const upcomingTraining = ref([]);
+const upcomingEmployeeOnLeave = ref([]);
+
+const fetchUpcomingCombinedEvents = async () => {
+  try {
+    const response = await apiService.post('/hrDashboard/getUpcomingEvents');
+    // Assuming response.data contains the correct structure
+    upcomingEmployeeBirthdays.value = response.data.upcomingEmployeeBirthdays;
+    upcomingTraining.value = response.data.upcomingTraining;
+    upcomingEmployeeOnLeave.value = response.data.upcomingEmployeeOnLeave;
+
+    // Use Vue.nextTick to ensure the DOM updates with the new data
+
+    // Now the reactive variables should have the data
+    console.log("Assigned Data:", upcomingEmployeeOnLeave.value); // Should log the updated data
+  } catch (error) {
+    console.error('Error fetching combined events:', error);
+  }
+};
 
 function moveToday() {
   calendar.value.move(new Date());
 }
 
-function generateAttributes() {
-    const birthdayAttributes = store.state.upcomingEmployeeBirthdays.map(event => ({
+const generateAttributes = () => {
+  const birthdayAttributes = upcomingEmployeeBirthdays.value.map(event => ({
     key: `birthday-${event.EmployeeID}`,
     highlight: {
-      color: 'red', //TODO: color jd
+      color: 'red', //TODO: adjust the color as needed
       fillMode: 'light',
     },
     dates: new Date(event.date_of_birth),
-    popover: { visibility: 'hover', content: () => ` ${event.first_name} ${event.surname}` },
+    popover: { visibility: 'hover', content: () => `${event.first_name} ${event.surname}` },
   }));
+  
+  // Log birthdayAttributes directly, not birthdayAttributes.value
+  console.log('Birthday Attributes:', birthdayAttributes);
 
-
-const trainingAttributes = store.state.upcomingTraining.map(event => ({
+  const trainingAttributes = upcomingTraining.value.map(event => ({
     key: `training-${event.training_id}`,
     highlight: {
-      color: 'green', //TODO: color jd
+      color: 'green', //TODO: adjust the color as needed
       fillMode: 'solid',
     },
     dates: { start: new Date(event.period_from), end: new Date(event.period_to) },
-    popover: { content: () => ` ${event.title}` },
+    popover: { content: () => `${event.title}` },
   }));
 
-  const leaveAttributes = store.state.upcomingEmployeeOnLeave.map(event => ({
+  const leaveAttributes = upcomingEmployeeOnLeave.value.map(event => ({
     key: `leave-${event.id}`,
     highlight: {
-      color: 'orange', //TODO: color jd
+      color: 'orange', //TODO: adjust the color as needed
       fillMode: 'outline',
     },
     dates: { start: new Date(event.start_date), end: new Date(event.end_date) },
     popover: { content: () => `${event.LeaveTypeName}` },
   }));
 
-  attributes.value = [...birthdayAttributes, ...trainingAttributes, ...leaveAttributes];
-}
+  // Combine all attributes into a single array
+  const combinedAttributes = [...birthdayAttributes, ...trainingAttributes, ...leaveAttributes];
 
+  // Log the combinedAttributes for debugging
+  console.log('Combined Attributes:', combinedAttributes);
+
+  return combinedAttributes;
+};
+
+// Watch for changes in the data sources and regenerate attributes accordingly
 watch([upcomingEmployeeBirthdays, upcomingTraining, upcomingEmployeeOnLeave], generateAttributes, { immediate: true });
+
+
+
+const fetchEmployeeStatusData = async () => {
+  try {
+    const response = await apiService.post(`${apiUrl}/getEmployeeStatusPercentages`);
+    const { activePercentage, onTrainingPercentage, onLeavePercentage } = response.data;
+    employeeStatusData.value = { activePercentage, onTrainingPercentage, onLeavePercentage };
+    updateChart();
+  } catch (error) {
+    console.error("Error fetching employee status data:", error);
+  }
+};
+
+const updateChart = () => {
+  if (employeeStatusChart) {
+    employeeStatusChart.destroy();
+  }
+
+  employeeStatusChart = new ApexCharts(employeeStatusChartEl.value, {
+    series: [
+      employeeStatusData.value.activePercentage, // Percentage of active employees
+      employeeStatusData.value.onTrainingPercentage, // Percentage of employees on training
+      employeeStatusData.value.onLeavePercentage // Percentage of employees on leave
+    ],
+    chart: {
+        type: 'donut',
+        toolbar: {
+        show: true,
+        tools: {
+            download: true,
+            selection: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: '<img src="/static/icons/reset.png" width="20">', // Use the actual path to your reset icon
+            customIcons: [] // Include any custom icons here
+        },
+        autoSelected: 'zoom' 
+    },
+        animations: {
+            enabled: true,
+            easing: 'easeinout',
+            speed: 800,
+            animateGradually: {
+                enabled: true,
+                delay: 150
+            },
+            dynamicAnimation: {
+                enabled: true,
+                speed: 350
+            }
+        },
+        dropShadow: {
+            enabled: false,
+            top: 3,
+            left: 0,
+            blur: 5,
+            opacity: 0.5
+        },
+        // other chart configurations...
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '65%',
+                background: 'transparent',
+                labels: {
+                    show: true,
+                    name: {
+                        show: true,
+                        fontSize: '22px',
+                        fontWeight: 600,
+                        color: undefined,
+                        offsetY: -10
+                    },
+                    value: {
+                        show: true,
+                        fontSize: '16px',
+                        fontWeight: 400,
+                        color: undefined,
+                        offsetY: 16,
+                        formatter: function (val) {
+                            return val
+                        }
+                    },
+                    total: {
+                        show: true,
+                        showAlways: false,
+                        label: 'Total',
+                        fontSize: '22px',
+                        fontWeight: 600,
+                        color: '#373d3f',
+                        formatter: function (w) {
+                            return w.globals.seriesTotals.reduce((a, b) => {
+                                return a + b
+                            }, 0)
+                        }
+                    }
+                }
+            },
+            expandOnClick: true,
+            customScale: 1,
+            offsetX: 0,
+            offsetY: 0,
+            dataLabels: {
+                offset: 0,
+                minAngleToShowLabel: 10
+            }
+        }
+    },
+    colors: ['#10e2b8', '#1e90ff', '#ffa700'],
+    dataLabels: {
+        enabled: false,
+        formatter: function (val, opts) {
+            return val + '%'
+        },
+        textAnchor: 'middle',
+        distributed: false,
+        offsetX: 0,
+        offsetY: 0,
+        style: {
+            fontSize: '14px',
+            fontWeight: 'bold',
+            colors: undefined
+        },
+        background: {
+            enabled: false,
+            foreColor: '#fff',
+            padding: 4,
+            borderRadius: 2,
+            borderWidth: 1,
+            borderColor: '#fff',
+            opacity: 0.9,
+            dropShadow: {
+                enabled: false,
+                top: 1,
+                left: 1,
+                blur: 1,
+                color: '#000',
+                opacity: 0.45
+            }
+        },
+        dropShadow: {
+            enabled: false,
+            top: 1,
+            left: 1,
+            blur: 1,
+            color: '#000',
+            opacity: 0.45
+        }
+    },
+    labels: ['Active', 'On Training', 'On Leave'],
+    legend: {
+        show: true,
+        position: 'bottom',
+        horizontalAlign: 'center', 
+        floating: false,
+        fontSize: '14px',
+        fontWeight: 400,
+        formatter: undefined,
+        inverseOrder: false,
+        width: undefined,
+        height: undefined,
+        tooltipHoverFormatter: undefined,
+        customLegendItems: [],
+        offsetX: 0,
+        offsetY: 0,
+        labels: {
+            colors: undefined,
+            useSeriesColors: false
+        },
+        markers: {
+            width: 12,
+            height: 12,
+            strokeWidth: 0,
+            strokeColor: '#fff',
+            fillColors: undefined,
+            radius: 12,
+            customHTML: undefined,
+            onClick: undefined,
+            offsetX: 0,
+            offsetY: 0
+        },
+        itemMargin: {
+            horizontal: 5,
+            vertical: 0
+        },
+        onItemClick: {
+            toggleDataSeries: true
+        },
+        onItemHover: {
+            highlightDataSeries: true
+        }
+    },
+    responsive: [{
+        breakpoint: 480,
+        options: {
+            chart: {
+                width: 300
+            },
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }],
+    title: {
+        text: 'Employee Status Distribution',
+        align: 'center',
+        margin: 10,
+        offsetX: 0,
+        offsetY: 0,
+        floating: false,
+        style: {
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#263238'
+        }
+    },
+    subtitle: {
+        text: 'As of Current Date',
+        align: 'center',
+        margin: 10,
+        offsetX: 0,
+        offsetY: 30,
+        floating: false,
+        style: {
+            fontSize: '14px',
+            fontWeight: 'normal',
+            color: '#90a4ae'
+        }
+    },
+    tooltip: {
+        enabled: true,
+        offsetY: 0,
+        style: {
+            fontSize: '12px',
+        },
+        y: {
+            formatter: function (val) {
+                return val + '%'
+            }
+        }
+    }
+});
+
+
+  employeeStatusChart.render();
+};
+
+
+const activeTab = ref('today');
+
+watch(activeTab, (newTab) => {
+  switch (newTab) {
+    case 'today':
+      // Fetch data relevant to 'today' tab
+      fetchEmployeeStatusData();
+      break;
+    case 'monthly':
+      // Fetch data relevant to 'monthly' tab
+      // fetchMonthlyData(); // Implement this function
+      break;
+    case 'annually':
+      // Fetch data relevant to 'annually' tab
+      // fetchAnnuallyData(); // Implement this function
+      break;
+  }
+});
+
+const setActiveTab = (tab) => {
+  activeTab.value = tab;
+};
 
 
 onMounted(async () => {
 await store.dispatch('fetchChartCountData', apiUrl);
-await store.dispatch('fetchEmployeeStatusPercentages');
-
-const { activePercentage, onTrainingPercentage, onLeavePercentage } = store.state.employeeStatusPercentages;
-
-let employeeStatusChart = new ApexCharts(employeeStatusChartEl.value, {
-series: [activePercentage, onTrainingPercentage, onLeavePercentage],
-chart: {
-    type: 'donut',
-    toolbar: { show: false },
-},
-labels: ['Active', 'On Training', 'On Leave'],
-colors: ['#10e2b8', '#10e2b8', '#ffa700'],
-dataLabels: { enabled: false },
-legend: { show: false },
-stroke: { width: 0 },
-plotOptions: {
-    pie: {
-    donut: {
-        labels: {
-        show: true,
-        total: {
-            show: true,
-            label: 'Total',
-            formatter: () => '100%'
-        }
-        }
-    }
-    }
-}
+await fetchEmployeeStatusData();
+await fetchUpcomingCombinedEvents();
 });
 
-employeeStatusChart.render();
-});
-
-const activeTab = ref('today');
-
-const setActiveTab = (tab) => {
-    activeTab.value = tab;
-};
 </script>
 
 <template>
@@ -179,22 +453,10 @@ const setActiveTab = (tab) => {
                     <a role="tab" class="tab" :class="{ 'tab-active': activeTab === 'monthly' }" @click="setActiveTab('monthly')">Monthly</a>
                     <a role="tab" class="tab" :class="{ 'tab-active': activeTab === 'annually' }" @click="setActiveTab('annually')">Annually</a>
                 </div>
-                <div v-if="activeTab === 'today'"> <!-- Reduced gap and switched to flex for a tighter layout -->
-                    <h4 class="flex justify-center text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
-                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
-                        Today
-                    </p>
-                    <p class="text-base font-medium text-green-400">
-                        +20.5%
-                    </p>
-                    <p class="text-2xl font-medium text-gray-800 dark:text-gray-200">
-                        $5070.80
-                    </p>
-                    <div class="flex w-full h-full items-center justify-center"> 
-                    <div ref="employeeStatusChartEl"></div>
-                    </div>
+                <div v-show="activeTab === 'today'"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                        <div font-sans ref="employeeStatusChartEl"></div>
                 </div>
-                <div v-if="activeTab === 'monthly'"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                <div v-show="activeTab === 'monthly'"> <!-- Reduced gap and switched to flex for a tighter layout -->
                     <h4 class="flex justify-center text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
                     <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
                         Monthly
@@ -206,10 +468,9 @@ const setActiveTab = (tab) => {
                         $5070.80
                     </p>
                     <div class="flex w-full h-full items-center justify-center"> 
-                    <div ref="employeeStatusChartEl"></div>
                     </div>
                 </div>
-                <div v-if="activeTab === 'annually'"> <!-- Reduced gap and switched to flex for a tighter layout -->
+                <div v-show="activeTab === 'annually'"> <!-- Reduced gap and switched to flex for a tighter layout -->
                     <h4 class="flex justify-center text-2xl font-medium text-green-800 dark:text-green-300">Employee Status Distribution</h4>
                     <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
                         Annually
@@ -221,17 +482,14 @@ const setActiveTab = (tab) => {
                         $5070.80
                     </p>
                     <div class="flex w-full h-full items-center justify-center"> 
-                    <div ref="employeeStatusChartEl"></div>
                     </div>
                 </div>
                 
             </BaseCard>
             </div>
 
-            <!-- Bar chart -->
-            <BaseCard
-                title="Calendar of Events"
-            >
+            <!-- Calendar -->
+            <BaseCard title="Calendar of Events">
                 <div class="p-6">
                     <VCalendar 
                         ref="calendar" 
@@ -244,37 +502,38 @@ const setActiveTab = (tab) => {
                     >
                         <!-- day-popover slot to show event details -->
                         <template #day-popover="{ day, dayTitle, attributes }">
-                        <div class="bg-white shadow-lg rounded-lg p-4">
-                            <div class="font-bold mb-2">{{ dayTitle }}</div>
-                            <div v-for="attr in attributes" :key="attr.key" class="mb-1">
-                            <!-- Custom content based on the type of event -->
-                            <div v-if="attr.key.startsWith('birthday-')">
-                                <span class="text-blue-500 font-semibold">Birthday:</span> {{ attr.popover.content() }}
+                            <div class="bg-white shadow-lg rounded-lg p-4">
+                                <div class="font-bold mb-2">{{ dayTitle }}</div>
+                                <div v-for="attr in attributes" :key="attr.key" class="mb-1">
+                                    <!-- Custom content based on the type of event -->
+                                    <div v-if="attr.key.startsWith('birthday-')">
+                                        <span class="text-blue-500 font-semibold">Birthday:</span> {{ attr.popover.content() }}
+                                    </div>
+                                    <div v-else-if="attr.key.startsWith('training-')">
+                                        <span class="text-green-500 font-semibold">Training:</span> {{ attr.popover.content() }}
+                                    </div>
+                                    <div v-else-if="attr.key.startsWith('leave-')">
+                                        <span class="text-red-500 font-semibold">Leave:</span> {{ attr.popover.content() }}
+                                    </div>
+                                </div>
                             </div>
-                            <div v-else-if="attr.key.startsWith('training-')">
-                                <span class="text-green-500 font-semibold">Training:</span> {{ attr.popover.content() }}
-                            </div>
-                            <div v-else-if="attr.key.startsWith('leave-')">
-                                <span class="text-red-500 font-semibold">Leave:</span> {{ attr.popover.content() }}
-                            </div>
-                            </div>
-                        </div>
                         </template>
 
-                        <!-- Existing footer slot -->
+                        <!-- footer slot for additional actions -->
                         <template #footer>
-                        <div class="w-full px-4 pb-3">
-                            <button
-                            class="bg-[#10e2b8] hover:bg-[#57ae9d] text-white font-bold w-full px-3 py-1 rounded-md"
-                            @click="moveToday"
-                            >
-                            Today
-                            </button>
-                        </div>
+                            <div class="w-full px-4 pb-3">
+                                <button
+                                    class="bg-[#10e2b8] hover:bg-[#57ae9d] text-white font-bold w-full px-3 py-1 rounded-md"
+                                    @click="moveToday"
+                                >
+                                    Today
+                                </button>
+                            </div>
                         </template>
                     </VCalendar>
                 </div> 
             </BaseCard>
+
         </div>
     </section>
 </template>
