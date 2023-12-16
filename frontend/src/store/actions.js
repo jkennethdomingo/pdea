@@ -194,7 +194,7 @@ export const actions = {
                 period_to: newEvent.period_to,
                 number_of_hours: newEvent.number_of_hours,
                 conducted_by: newEvent.conducted_by,
-                employees: newEvent.employees || [], // Include an empty array if no employees are assigned
+                employees: newEvent.employee_ids || [], // Include an empty array if no employees are assigned
             };
     
             // Send the new event data to the server

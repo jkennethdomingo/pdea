@@ -286,6 +286,7 @@ const trainingCategories = computed(() => ({
 
 
 const addEvent = async () => {
+  newEvent.value.employee_ids = [...selectedEmployeeIds.value]; 
   await store.dispatch('addEvent', newEvent.value);
   await store.dispatch('getTraining');
   await store.dispatch('fetchTrainingsWithoutEmployees');
@@ -293,6 +294,7 @@ const addEvent = async () => {
   // Reset newEvent here
   resetNewEvent();
   clearAll();
+  closeDrawer();
 };
 
 const editEvent = async () => {
@@ -703,7 +705,7 @@ const closeModal = () => {
                 <!-- Modal footer -->
                 <div class="flex justify-center items-center px-4 py-3">
                   <button @click="postTrainingAssignments" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    Assign <!--TODO Can't directly assign-->
+                    Assign 
                   </button>
                 </div>
               </div>
