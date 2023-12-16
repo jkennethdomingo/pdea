@@ -7,6 +7,7 @@ import bloodTypesData from '@/assets/json/bloodtype.json';
 import addressData from '@/assets/json/address.json';
 import countriesData from '@/assets/json/countries.json';
 import useZipCodes from '@/composables/useZipCodes';
+import { useRouter } from 'vue-router';
 
 const pagIbigTouched = ref(false);
 const philHealthTouched = ref(false);
@@ -159,10 +160,93 @@ const positionsDropdown = computed(() => store.state.dropdownData.positions);
 const sectionsDropdown = computed(() => store.state.dropdownData.sections);
 const divisionsDropdown = computed(() => store.state.dropdownData.divisions);
 
+const router = useRouter();
+
+const goToFamBackground = () => {
+  router.push({ name: 'Family Background' });
+};
+const goToEducBg = () => {
+  router.push({ name: 'Educational Background' });
+};
+const goToCvEligibility = () => {
+  router.push({ name: 'Civil Service Eligibility' });
+};
+const goToWorkExp = () => {
+  router.push({ name: 'Work Experience' });
+};
+const goToVolWork = () => {
+  router.push({ name: 'Voluntary Work' });
+};
+const goToLearnDev = () => {
+  router.push({ name: 'Learning And Development' });
+};
+
 </script>
 
 <template>
   <form>
+    <ol class="items-center w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
+      <li class="flex items-center text-green-600 dark:text-green-500 space-x-2.5 rtl:space-x-reverse cursor-pointer">
+        <span class="flex items-center justify-center w-8 h-8 border border-green-600 rounded-full shrink-0 dark:green-blue-500">
+            S1
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Personal Information</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToFamBackground">
+        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S2
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Family Background</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToEducBg">
+        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S3
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Educational Background</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToCvEligibility">
+        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S4
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Civil Service Eligibility</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToWorkExp">
+        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S5
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Work Experience</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToVolWork">
+        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S6
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Voluntary Work</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToLearnDev">
+        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S7
+        </span>
+        <span>
+            <h3 class="font-semibold leading-tight">Learning And Development</h3>
+        </span>
+    </li>
+  
+</ol>
+
+<hr class="my-3 h-0.5 border-t-0 bg-black opacity-10 dark:bg-white  dark:opacity-10" />
+
     <p class="text-xl text-gray-900 dark:text-white font-bold">Personal Information</p>
 
 <!-- Employee ID -->

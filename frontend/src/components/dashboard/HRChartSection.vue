@@ -189,9 +189,9 @@ const updateChart = () => {
                         show: true,
                         showAlways: false,
                         label: 'Total',
-                        fontSize: '22px',
+                        fontSize: '16px',
                         fontWeight: 600,
-                        color: '#373d3f',
+                        color: '#08fc92',
                         formatter: function (w) {
                             return w.globals.seriesTotals.reduce((a, b) => {
                                 return a + b
@@ -315,7 +315,7 @@ const updateChart = () => {
         style: {
             fontSize: '20px',
             fontWeight: 'bold',
-            color: '#263238'
+            color: '#10e2b8'
         }
     },
     subtitle: {
