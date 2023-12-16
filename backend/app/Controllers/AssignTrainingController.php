@@ -329,28 +329,34 @@ class AssignTrainingController extends ResourceController
     }
 
     public function fetchSortedTrainingSessions()
-    {
-        // Fetch and sort unassigned or pending training sessions
-        $unassignedOrPendingTrainings = $this->buildTrainingQuery('pending')->findAll();
+{
+    // Fetch and sort pending training sessions
+    $pendingTrainings = $this->buildTrainingQuery('pending')->findAll();
 
-        // Fetch and sort upcoming training sessions
-        $upcomingTrainings = $this->buildTrainingQuery('upcoming')->findAll();
+    // Fetch and sort unassigned upcoming training sessions
+    $unassignedUpcomingTrainings = $this->buildTrainingQuery('upcoming_unassigned')->findAll();
 
-        // Fetch and sort finished training sessions
-        $finishedTrainings = $this->buildTrainingQuery('finished')->findAll();
+    // Fetch and sort assigned upcoming training sessions
+    $assignedUpcomingTrainings = $this->buildTrainingQuery('upcoming_assigned')->findAll();
 
-        // Prepare the response
-        $response = [
-            'unassigned_or_pending' => $this->prepareTrainingResponse($unassignedOrPendingTrainings),
-            'upcoming' => $this->prepareTrainingResponse($upcomingTrainings),
-            'finished' => $this->prepareTrainingResponse($finishedTrainings)
-        ];
+    // Fetch and sort finished training sessions
+    $finishedTrainings = $this->buildTrainingQuery('finished')->findAll();
 
-        // Return the response as JSON
-        return $this->response->setJSON($response);
-    }
+    // Prepare the response
+    $response = [
+        'pending' => $this->prepareTrainingResponse($pendingTrainings),
+        'upcoming' => [
+            'assigned' => $this->prepareTrainingResponse($assignedUpcomingTrainings, true),
+            'unassigned' => $this->prepareTrainingResponse($unassignedUpcomingTrainings)
+        ],
+        'finished' => $this->prepareTrainingResponse($finishedTrainings, true)
+    ];
 
-    private function buildTrainingQuery($status)
+    // Return the response as JSON
+    return $this->response->setJSON($response);
+}
+
+private function buildTrainingQuery($status)
 {
     $today = date('Y-m-d');
     $query = $this->trainingModel
@@ -365,32 +371,67 @@ class AssignTrainingController extends ResourceController
             training.updated_at'
         );
 
-    if ($status === 'pending') {
-        // Unassigned or pending trainings that have not started yet
-        $query = $query
-            ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left')
-            ->where('internal_employee_training.internal_training_id IS NULL') // No associated internal_employee_training record means unassigned
-            ->where('training.period_from >', $today); // Excludes past training sessions
-    } elseif ($status === 'upcoming') {
-        // Upcoming trainings that have not finished
-        $query = $query
-            ->where('training.period_to >=', $today)
-            ->orderBy('training.period_from', 'ASC');
-    } elseif ($status === 'finished') {
-        // Finished trainings
-        $query = $query
-            ->where('training.period_to <', $today)
-            ->orderBy('training.period_to', 'DESC');
+    switch ($status) {
+        case 'pending':
+            // Query for pending (unassigned) trainings
+            $query = $query
+                ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left')
+                ->where('internal_employee_training.internal_training_id IS NULL')
+                ->where('training.period_from >', $today);
+            break;
+
+        case 'upcoming_unassigned':
+            // Query for unassigned upcoming trainings
+            $query = $query
+                ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left')
+                ->where('internal_employee_training.internal_training_id IS NULL')
+                ->where('training.period_from >', $today)
+                ->where('training.period_to >=', $today);
+            break;
+
+        case 'upcoming_assigned':
+            // Query for assigned upcoming trainings, including employee information
+            $query = $query
+                ->select('
+                    GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+                    GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
+                    GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+                    GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids',
+                    false
+                )
+                ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'inner')
+                ->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left')
+                ->where('training.period_from >', $today)
+                ->where('training.period_to >=', $today)
+                ->groupBy('training.training_id');
+            break;
+
+        case 'finished':
+            // Query for finished trainings, including employee information
+            $query = $query
+                ->select('
+                    GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+                    GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
+                    GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+                    GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids',
+                    false
+                )
+                ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'inner')
+                ->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left')
+                ->where('training.period_to <', $today)
+                ->groupBy('training.training_id');
+            break;
     }
 
     return $query;
 }
 
 
-    private function prepareTrainingResponse($trainings)
+
+    private function prepareTrainingResponse($trainings, $includeEmployeeInfo = false)
     {
-        return array_map(function ($training) {
-            return [
+        return array_map(function ($training) use ($includeEmployeeInfo) {
+            $response = [
                 'TrainingID' => $training['TrainingID'] ?? 'N/A',
                 'Title' => $training['title'] ?? 'Not Specified',
                 'StartTime' => $training['period_from'] ?? 'N/A',
@@ -399,11 +440,21 @@ class AssignTrainingController extends ResourceController
                 'ConductedBy' => $training['conducted_by'] ?? 'N/A',
                 'CreatedAt' => $training['created_at'] ?? 'N/A',
                 'UpdatedAt' => $training['updated_at'] ?? 'N/A',
-                // Include more fields as needed
             ];
+    
+            if ($includeEmployeeInfo) {
+                $response['EmployeeDetails'] = [
+                    'FirstNames' => array_filter(explode(',', $training['first_names'] ?? '')),
+                    'Surnames' => array_filter(explode(',', $training['surnames'] ?? '')),
+                    'Photos' => array_filter(explode(',', $training['photos'] ?? '')),
+                    'EmployeeIDs' => array_filter(explode(',', $training['employee_ids'] ?? '')),
+                ];
+            }
+    
+            return $response;
         }, $trainings);
     }
-
+    
     
     
 
