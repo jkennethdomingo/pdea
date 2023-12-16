@@ -35,7 +35,7 @@ class AuthController extends ResourceController
 
         // JWT payload
         $payload = [
-            'iss' => 'example.com', // Issuer
+            'iss' => 'pdeabackend.com', // Issuer
             'sub' => $user['EmployeeID'], // Subject, typically the user ID
             'role' => $user['Role'], // User's role
             'exp' => time() + 60*60, // Expiration time (e.g., 60 minutes)
