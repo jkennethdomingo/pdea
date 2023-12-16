@@ -13,6 +13,7 @@ import userAvatar from '@/assets/images/avatar.jpg'
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel, TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { isDark } from '@/composables';
+import apiService from '@/composables/axios-setup';
 
 
 const selectedEmployeeIds = ref([]);
@@ -43,6 +44,7 @@ const selectAll = () => {
 const clearAll = () => {
   console.log('clearAll called');
   selectedEmployeeIds.value = [];
+  console.log(selectedEmployeeIds.value);
 };
 
 const allSelected = computed({
@@ -135,6 +137,7 @@ watch(trainingEvents, (newEvents) => {
     calendarApi.addEventSource(newEvents); // Add new events
   }
 }, { deep: true });
+
 
 // Fetch training data on component mount
 onMounted(async () => {
@@ -232,6 +235,8 @@ watch(trainingbyTitle, (newTraining) => {
   }
 }, { immediate: true });
 
+
+
 const initializeSelectedEmployees = () => {
   if (newEvent.value && newEvent.value.employee_ids) {
     selectedEmployeeIds.value = [...newEvent.value.employee_ids];
@@ -259,22 +264,22 @@ function handleWeekendsToggle() {
   // Handle weekends toggle
 }
 
-
 const trainingCategories = computed(() => ({
-  Unassigned: isLoading.value ? [] : store.state.trainingSessions.unassigned_or_pending.map(session => ({
+  Unassigned: isLoading.value ? [] : store.state.trainingSessions.upcoming.unassigned.map(session => ({
     id: session.TrainingID,
-    title: `${session.Title} training session is pending`,
-    date: session.CreatedAt // Format this date as needed
+    title: session.Title,
+    date: session.StartTime // Format this date as needed
   })),
-  Upcoming: store.state.trainingSessions.upcoming.map(session => ({
+  Upcoming: isLoading.value ? [] : store.state.trainingSessions.upcoming.assigned.map(session => ({
     id: session.TrainingID,
-    title: `${session.Title} training session has no employees assigned`,
-    date: session.PeriodFrom // Assuming you want to show the start date for upcoming sessions
+    title: session.Title,
+    date: session.StartTime // Format this date as needed
   })),
+
   Finished: store.state.trainingSessions.finished.map(session => ({
     id: session.TrainingID,
-    title: `${session.Title} training session has finished`,
-    date: session.PeriodTo // Assuming you want to show the end date for finished sessions
+    title: session.Title,
+    date: session.EndTime // Format this date as needed
   })),
 }));
 
@@ -323,14 +328,20 @@ const isDrawerOpen = ref(false);
 const isEditDrawerOpen = ref(false);
 
 // view details script 
-const isOpin = ref(false);
+const isOpen = ref(false);
 
 function viewTrainingDetails() {
-  isOpin.value = true;
+  isOpen.value = true;
 }
 function viewTrainingDetailsClose() {
-  isOpin.value = false;
+  isOpen.value = false;
 }
+
+watch(isEditDrawerOpen, (newValue, oldValue) => {
+  if (!newValue && oldValue) {
+    clearAll();
+  }
+});
 
 
 // ... your existing setup ...
@@ -363,6 +374,35 @@ const openModal = async () => {
   isModalVisible.value = true;
 };
 
+const postTrainingAssignments = async () => {
+  if (!selectedSessionId.value) {
+    console.log(selectedSessionId.value);
+    console.warn('No training session selected');
+    return;
+  }
+
+  const payload = {
+    training_id: selectedSessionId.value,
+    employees: selectedEmployeeIds.value
+  };
+
+  try {
+    const response = await apiService.post('/manageTraining/assignEmployeesToTraining', payload);
+    console.log('Training assignments updated:', response.data);
+    isModalVisible.value = false; // Close the modal after successful posting
+    // Additional logic based on the response
+    await store.dispatch('getTraining');
+  await store.dispatch('fetchTrainingsWithoutEmployees');
+  await store.dispatch('fetchTrainingSessions');
+  // Reset newEvent here
+  resetNewEvent();
+  clearAll();
+  closeEditRightDrawer();
+  } catch (error) {
+    console.error('Error updating training assignments:', error);
+    // Error handling
+  }
+};
 
 const assignTraining = (sessionId) => {
   selectedSessionId.value = sessionId;
@@ -372,9 +412,6 @@ const assignTraining = (sessionId) => {
 const closeModal = () => {
   isModalVisible.value = false;
 };
-
-
-
 
 </script>
 
@@ -556,7 +593,7 @@ const closeModal = () => {
         </div>
 
         <div class="flex flex-col space-y-2">
-          <button @click="openModal()" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+          <button @click="assignTraining(newEvent.training_id)" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
             Choose Employee
           </button>
           <div v-if="newEvent.employee_ids && newEvent.employee_ids.length > 0" class="relative mt-4 flex gap-2">
@@ -600,7 +637,7 @@ const closeModal = () => {
 
      <!-- Main modal -->
      <TransitionRoot as="template" :show="isModalVisible">
-    <Dialog as="div" class="relative z-50" @close="closeModal">
+    <Dialog v-model="isModalVisible" as="div" class="relative z-50" @close="closeModal">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-black/25" aria-hidden="true"></div>
       </TransitionChild>
@@ -665,7 +702,7 @@ const closeModal = () => {
 
                 <!-- Modal footer -->
                 <div class="flex justify-center items-center px-4 py-3">
-                  <button class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                  <button @click="postTrainingAssignments" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
                     Assign <!--TODO Can't directly assign-->
                   </button>
                 </div>
@@ -732,40 +769,42 @@ const closeModal = () => {
         }"
       >
       <div v-if="isLoading" class="flex justify-center items-center">
-        <div class="loading loading-spinner"></div>
-      </div>
-        <ul v-else class="max-h-40 overflow-y-auto">
-          <li
-            v-for="session in sessions"
-            :key="session.id"
-            class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
-          >
-            <h3 class="text-sm font-medium leading-5">
-              {{ session.title }}
-            </h3>
-            <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
-              <li>{{ session.date }}</li>
-            </ul>
-            <!-- Conditionally render Action button based on category -->
-            <div class="flex justify-end space-x-2 mt-2">
-              <button
-                v-if="category === 'Unassigned'"
-                @click="assignTraining(session.id)"
-                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-              >
-                Assign
-              </button>
-              <button
-                v-else
-                type="button"
-                @click="viewTrainingDetails(session.id)"
-                class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-              >
-                View Details 
-              </button>
-            </div>
-          </li>
-        </ul>
+  <!-- Loading Spinner -->
+  <div class="loading loading-spinner"></div>
+</div>
+
+<ul v-else class="max-h-40 overflow-y-auto">
+  <li
+    v-for="session in sessions"
+    :key="session.id"
+    class="rounded-md p-2 hover:bg-gray-300 dark:hover:bg-green-500"
+  >
+    <!-- Session Details -->
+    <h3 class="text-sm font-medium leading-5">{{ session.title }}</h3>
+    <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-700 dark:text-gray-300">
+      <li>{{ session.date }}</li>
+    </ul>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end space-x-2 mt-2">
+      <button
+        v-if="category === 'Unassigned'"
+        @click="assignTraining(session.id)"
+        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+      >
+        Assign
+      </button>
+      <button
+        v-else
+        type="button"
+        @click="viewTrainingDetails(session.id)"
+        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+      >
+        View Details 
+      </button>
+    </div>
+  </li>
+</ul>
       </TabPanel>
     </TabPanels>
   </TabGroup>
@@ -774,7 +813,7 @@ const closeModal = () => {
 </div>
 
 <!-- View Details Modal -->
-<TransitionRoot :show="isOpin" as="template">
+<TransitionRoot :show="isOpen" as="template">
     <Dialog as="div" @close="viewTrainingDetailsClose" class="relative z-10">
       <TransitionChild
         as="template"
