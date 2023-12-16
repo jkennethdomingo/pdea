@@ -63,7 +63,7 @@ const generateAttributes = () => {
       fillMode: 'light',
     },
     dates: new Date(event.date_of_birth),
-    popover: { visibility: 'hover', content: () => `${event.first_name} ${event.surname}` },
+    popover: { visibility: 'hover', content: () => `${event.first_name} ${event.surname}`},
   }));
   
   // Log birthdayAttributes directly, not birthdayAttributes.value
@@ -83,7 +83,7 @@ const generateAttributes = () => {
     key: `leave-${event.id}`,
     highlight: {
       color: 'orange', //TODO: adjust the color as needed
-      fillMode: 'outline',
+      fillMode: 'solid',
     },
     dates: { start: new Date(event.start_date), end: new Date(event.end_date) },
     popover: { content: () => `${event.LeaveTypeName}` },
@@ -93,13 +93,11 @@ const generateAttributes = () => {
   const combinedAttributes = [...birthdayAttributes, ...trainingAttributes, ...leaveAttributes];
 
   // Log the combinedAttributes for debugging
-  console.log('Combined Attributes:', combinedAttributes);
-
-  return combinedAttributes;
+  attributes.value = combinedAttributes;
 };
 
 // Watch for changes in the data sources and regenerate attributes accordingly
-watch([upcomingEmployeeBirthdays, upcomingTraining, upcomingEmployeeOnLeave], generateAttributes, { immediate: true });
+watch([upcomingEmployeeBirthdays, upcomingTraining, upcomingEmployeeOnLeave], generateAttributes,  { immediate: true });
 
 
 
@@ -502,18 +500,22 @@ await fetchUpcomingCombinedEvents();
                     >
                         <!-- day-popover slot to show event details -->
                         <template #day-popover="{ day, dayTitle, attributes }">
-                            <div class="bg-white shadow-lg rounded-lg p-4">
+                            <div class="bg-white dark:bg-[#1e293b] shadow-lg rounded-lg p-4">
                                 <div class="font-bold mb-2">{{ dayTitle }}</div>
                                 <div v-for="attr in attributes" :key="attr.key" class="mb-1">
                                     <!-- Custom content based on the type of event -->
                                     <div v-if="attr.key.startsWith('birthday-')">
-                                        <span class="text-blue-500 font-semibold">Birthday:</span> {{ attr.popover.content() }}
+                                        <span class="text-blue-500 font-semibold">Birthday:</span> <span class="dark:text-white">{{ attr.popover.content() }}</span>
                                     </div>
                                     <div v-else-if="attr.key.startsWith('training-')">
-                                        <span class="text-green-500 font-semibold">Training:</span> {{ attr.popover.content() }}
+                                        <span class="text-green-500 font-semibold">Training:</span> <span class="dark:text-white">
+                                            {{ attr.popover.content() }}
+                                        </span>
                                     </div>
                                     <div v-else-if="attr.key.startsWith('leave-')">
-                                        <span class="text-red-500 font-semibold">Leave:</span> {{ attr.popover.content() }}
+                                        <span class="text-red-500 font-semibold">Leave:</span> <span class="dark:text-white">
+                                            {{ attr.popover.content() }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
