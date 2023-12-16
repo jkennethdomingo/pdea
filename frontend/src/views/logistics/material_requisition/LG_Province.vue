@@ -1,8 +1,34 @@
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import Button from '@/components/base/Button.vue';
 import { usePhotoUrl } from '@/composables/usePhotoUrl'; // Adjust the path based on your file structure
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue'
+
+const isOpen = ref(false) // Start with the modal closed
+
+function closeModal() {
+  isOpen.value = false
+}
+function openModal() {
+  isOpen.value = true
+}
+
+const isViewModalOpen = ref(false)
+
+function closeViewModal() {
+  isViewModalOpen.value = false
+}
+
+function openViewModal() {
+  isViewModalOpen.value = true
+}
 
 const store = useStore();
 
@@ -29,7 +55,7 @@ onMounted(() => {
                                 </template>
                                 <template v-else>
                                     <!-- Render default icon if agent.Photo is null -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 16 16"><g fill="currentColor"><path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z"/><path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1Zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3V1Z"/></g></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 16 16"><path fill="currentColor" d="M0 16h8V0H0zM5 2h2v2H5zm0 4h2v2H5zm0 4h2v2H5zM1 2h2v2H1zm0 4h2v2H1zm0 4h2v2H1zm8-5h7v1H9zm0 11h2v-4h3v4h2V7H9z"/></svg>
                                 </template>
                             </div>
                             <div class="flex-auto sm:ml-5 mt-8 justify-evenly">
@@ -46,8 +72,132 @@ onMounted(() => {
                                 </div>
                                 <div class="flex pt-2 text-sm text-gray-400">
                                     <!-- Buttons can be updated or used as is -->
-                                    <button data-modal-target="timeline-modal" data-modal-toggle="timeline-modal" class="bg-green-600 hover:bg-green-700 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300">View</button>
-                                    <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="bg-green-600 hover:bg-green-700 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300">Assign</button>
+                                    <button
+                                        @click="openViewModal"
+                                        class="bg-green-600 hover:bg-green-700 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
+                                    >
+                                        View
+                                    </button>
+
+                                    <!--TODO View Modal -->
+                                    <TransitionRoot as="template" :show="isViewModalOpen">
+                                        <Dialog as="div" class="relative z-10" @close="closeViewModal">
+                                            <TransitionChild
+                                            as="template"
+                                            enter="duration-50 ease-out"
+                                            enter-from="opacity-0"
+                                            enter-to="opacity-100"
+                                            leave="duration-100 ease-in"
+                                            leave-from="opacity-100"
+                                            leave-to="opacity-0"
+                                            >
+                                <div class="fixed inset-0 bg-black/5" aria-hidden="true"></div>
+                                </TransitionChild>
+                                        <div class="fixed inset-0 overflow-y-auto">
+                                            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                                            <TransitionChild
+                                            as="template"
+                                            enter="duration-50 ease-out"
+                                            enter-from="opacity-0 scale-95"
+                                            enter-to="opacity-100 scale-100"
+                                            leave="duration-100 ease-in"
+                                            leave-from="opacity-100 scale-100"
+                                            leave-to="opacity-0 scale-95"
+                                            >
+                                                <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
+                                                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
+                                                    View Details
+                                                </DialogTitle>
+                                                <div class="mt-2">
+                                                    <p class="text-sm text-gray-800 dark:text-gray-200">
+                                                    Details about the item...
+                                                    </p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <button
+                                                    type="button"
+                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                                                    @click="closeViewModal"
+                                                    >
+                                                    Close
+                                                    </button>
+                                                </div>
+                                                </DialogPanel>
+                                            </TransitionChild>
+                                            </div>
+                                        </div>
+                                        </Dialog>
+                                    </TransitionRoot>
+
+                                    <!-- Assign button --> 
+                                <button
+                                    @click="openModal"
+                                    class="bg-green-600 hover:bg-green-700 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
+                                >
+                                    Assign
+                                </button>
+
+                                <!-- TODO Assign Modal -->
+                                <TransitionRoot as="template" :show="isOpen">
+                                    <Dialog as="div" class="relative z-10" @close="closeModal">
+                                        <TransitionChild
+                                            as="template"
+                                            enter="duration-50 ease-out"
+                                            enter-from="opacity-0"
+                                            enter-to="opacity-100"
+                                            leave="duration-100 ease-in"
+                                            leave-from="opacity-100"
+                                            leave-to="opacity-0"
+                                            >
+                                <div class="fixed inset-0 bg-black/5" aria-hidden="true"></div>
+                                </TransitionChild>
+                                    <div class="fixed inset-0 overflow-y-auto">
+                                        <div class="flex min-h-full items-center justify-center p-4 text-center">
+                                        <TransitionChild
+                                            as="template"
+                                            enter="duration-50 ease-out"
+                                            enter-from="opacity-0 scale-95"
+                                            enter-to="opacity-100 scale-100"
+                                            leave="duration-100 ease-in"
+                                            leave-from="opacity-100 scale-100"
+                                            leave-to="opacity-0 scale-95"
+                                        >
+                                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
+                                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
+                                                Payment successful
+                                            </DialogTitle>
+                                            <div class="mt-2">
+                                                <p class="text-sm text-gray-800 dark:text-gray-200">
+                                                Assigning
+                                                </p>
+                                            </div>
+                                            <div class="mt-4 flex justify-between">
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                                                    @click="closeModal"
+                                                >
+                                                    Assign
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                                                    @click="closeViewModal"
+                                                >
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                            </DialogPanel>
+                                        </TransitionChild>
+                                        </div>
+                                    </div>
+                                    </Dialog>
+                                </TransitionRoot>
                                 </div>
                             </div>
                         </div>

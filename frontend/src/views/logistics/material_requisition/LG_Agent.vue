@@ -58,7 +58,7 @@ onMounted(() => {
                                 </template>
                                 <template v-else>
                                     <!-- Render default icon if agent.Photo is null -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 4a8 8 0 0 0-6.96 11.947A4.99 4.99 0 0 1 9 14h6a4.99 4.99 0 0 1 3.96 1.947A8 8 0 0 0 12 4Zm7.943 14.076A9.959 9.959 0 0 0 22 12c0-5.523-4.477-10-10-10S2 6.477 2 12a9.958 9.958 0 0 0 2.057 6.076l-.005.018l.355.413A9.98 9.98 0 0 0 12 22a9.947 9.947 0 0 0 5.675-1.765a10.055 10.055 0 0 0 1.918-1.728l.355-.413l-.005-.018ZM12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6Z" clip-rule="evenodd"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 512 512"><path fill="currentColor" d="M332.64 64.58C313.18 43.57 286 32 256 32c-30.16 0-57.43 11.5-76.8 32.38c-19.58 21.11-29.12 49.8-26.88 80.78C156.76 206.28 203.27 256 256 256s99.16-49.71 103.67-110.82c2.27-30.7-7.33-59.33-27.03-80.6M432 480H80a31 31 0 0 1-24.2-11.13c-6.5-7.77-9.12-18.38-7.18-29.11C57.06 392.94 83.4 353.61 124.8 326c36.78-24.51 83.37-38 131.2-38s94.42 13.5 131.2 38c41.4 27.6 67.74 66.93 76.18 113.75c1.94 10.73-.68 21.34-7.18 29.11A31 31 0 0 1 432 480"/></svg>
                                 </template>
                             </div>
                             <div class="flex-auto sm:ml-5 mt-8 justify-evenly">
@@ -66,10 +66,10 @@ onMounted(() => {
                                     <div class="flex items-center">
                                         <div class="flex flex-col">
                                             <!-- Display name and position -->
-                                            <div class="text-xl dark:text-gray-200 text-gray-800 font-bold leading-none">{{ agent.first_name }} {{ agent.surname }}</div>
+                                            <div class="text-lg dark:text-gray-200 text-gray-800 font-bold leading-none">{{ agent.first_name }} {{ agent.surname }}</div>
                                             <div class="text-gray-700 dark:text-gray-400 my-1">
-                                                <!-- Display Employee ID -->
-                                                <span class="mr-1">{{ agent.PositionName }} {{ agent.EmployeeID }}</span>
+                                                <span class="mr-2 text-sm text-green-600 dark:text-green-400">{{ agent.EmployeeID }}</span>
+                                                <span class="text-sm">&middot; {{ agent.PositionName }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -84,15 +84,15 @@ onMounted(() => {
                                         View
                                     </button>
 
-                                    <!-- View Modal -->
+                                    <!--TODO View Modal -->
                                     <TransitionRoot as="template" :show="isViewModalOpen">
                                         <Dialog as="div" class="relative z-10" @close="closeViewModal">
                                             <TransitionChild
                                             as="template"
-                                            enter="duration-300 ease-out"
+                                            enter="duration-50 ease-out"
                                             enter-from="opacity-0"
                                             enter-to="opacity-100"
-                                            leave="duration-200 ease-in"
+                                            leave="duration-100 ease-in"
                                             leave-from="opacity-100"
                                             leave-to="opacity-0"
                                             >
@@ -102,10 +102,10 @@ onMounted(() => {
                                             <div class="flex min-h-full items-center justify-center p-4 text-center">
                                             <TransitionChild
                                             as="template"
-                                            enter="duration-300 ease-out"
+                                            enter="duration-50 ease-out"
                                             enter-from="opacity-0 scale-95"
                                             enter-to="opacity-100 scale-100"
-                                            leave="duration-200 ease-in"
+                                            leave="duration-100 ease-in"
                                             leave-from="opacity-100 scale-100"
                                             leave-to="opacity-0 scale-95"
                                             >
@@ -134,7 +134,7 @@ onMounted(() => {
                                         </Dialog>
                                     </TransitionRoot>
 
-                                    <!-- Assign button -->
+                                    <!-- Assign button --> 
                                 <button
                                     @click="openModal"
                                     class="bg-green-600 hover:bg-green-700 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
@@ -142,15 +142,15 @@ onMounted(() => {
                                     Assign
                                 </button>
 
-                                <!-- Modal -->
+                                <!-- TODO Assign Modal -->
                                 <TransitionRoot as="template" :show="isOpen">
                                     <Dialog as="div" class="relative z-10" @close="closeModal">
                                         <TransitionChild
                                             as="template"
-                                            enter="ease-out duration-300"
+                                            enter="duration-50 ease-out"
                                             enter-from="opacity-0"
                                             enter-to="opacity-100"
-                                            leave="ease-in duration-200"
+                                            leave="duration-100 ease-in"
                                             leave-from="opacity-100"
                                             leave-to="opacity-0"
                                             >
@@ -160,31 +160,43 @@ onMounted(() => {
                                         <div class="flex min-h-full items-center justify-center p-4 text-center">
                                         <TransitionChild
                                             as="template"
-                                            enter="ease-out duration-300"
+                                            enter="duration-50 ease-out"
                                             enter-from="opacity-0 scale-95"
                                             enter-to="opacity-100 scale-100"
-                                            leave="ease-in duration-200"
+                                            leave="duration-100 ease-in"
                                             leave-from="opacity-100 scale-100"
                                             leave-to="opacity-0 scale-95"
                                         >
                                             <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
-                                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
                                                 Payment successful
                                             </DialogTitle>
                                             <div class="mt-2">
                                                 <p class="text-sm text-gray-800 dark:text-gray-200">
-                                                Your payment has been successfully submitted. We’ve sent you an email with all of the details of your order.
+                                                Assigning
                                                 </p>
                                             </div>
-                                            <div class="mt-4">
+                                            <div class="mt-4 flex justify-between">
+                                            <div>
                                                 <button
-                                                type="button"
-                                                class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                                                @click="closeModal"
+                                                    type="button"
+                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                                                    @click="closeModal"
                                                 >
-                                                Assign
+                                                    Assign
                                                 </button>
                                             </div>
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                                                    @click="closeViewModal"
+                                                >
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </div>
+
                                             </DialogPanel>
                                         </TransitionChild>
                                         </div>
