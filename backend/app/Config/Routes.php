@@ -52,6 +52,7 @@ $routes->group('api', function($routes)
         $routes->post('editTraining', 'AssignTrainingController::editTraining');
         $routes->post('fetchUpcomingTrainingsWithoutEmployees', 'AssignTrainingController::fetchUpcomingTrainingsWithoutEmployees');
         $routes->post('fetchSortedTrainingSessions', 'AssignTrainingController::fetchSortedTrainingSessions');
+        $routes->post('assignEmployeesToTraining', 'AssignTrainingController::assignEmployeesToTraining');
     });
 
     $routes->group('manageLeave', function($routes) {

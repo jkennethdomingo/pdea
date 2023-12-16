@@ -455,6 +455,47 @@ private function buildTrainingQuery($status)
         }, $trainings);
     }
     
+    public function assignEmployeesToTraining()
+{
+    // Get the JSON data from the request
+    $json = $this->request->getJSON();
+
+    // Define validation rules
+    $validationRules = [
+        'training_id' => 'required',
+    ];
+
+    if ($this->validate($validationRules)) {
+        $trainingId = $json->training_id;
+
+        // Clear previous employee assignments for the training
+        $this->internalEmployeeTrainingModel->where('training_id', $trainingId)->delete();
+
+        // Assign new employees
+        foreach ($json->employees as $employeeId) {
+            $assignmentData = [
+                'EmployeeID' => $employeeId,
+                'training_id' => $trainingId,
+                // 'attendance_date' is excluded as per your requirement
+            ];
+            // Insert into the 'internal_employee_training' table
+            $this->internalEmployeeTrainingModel->insert($assignmentData);
+        }
+
+        $response = [
+            'status'   => 200,
+            'error'    => null,
+            'messages' => [
+                'success' => 'Employees successfully assigned to the training'
+            ]
+        ];
+        return $this->response->setJSON($response);
+    } else {
+        // Return validation errors if any
+        return $this->fail($this->validator->getErrors());
+    }
+}
+
     
     
 
