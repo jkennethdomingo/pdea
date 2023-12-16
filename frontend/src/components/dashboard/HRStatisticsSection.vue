@@ -10,10 +10,10 @@ const visitsData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13].reverse()
 const ordersData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
 const growthData = [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13]
 
-const trainingParticipants = ref([]);
-const employeesOnLeave = ref([]);
-const pendingLeave = ref([]);
-const unassignedTraining = ref([]);
+const trainingParticipants = ref(0);
+const employeesOnLeave = ref(0);
+const pendingLeave = ref(0);
+const unassignedTraining = ref(0);
 
 
 onMounted(async () => {

@@ -4,19 +4,28 @@ import BaseCard from '@/components/ui/BaseCard.vue'
 import Button from '@/components/base/Button.vue'
 import { Icon } from '@iconify/vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-import { useStore } from 'vuex';
+import apiService from '@/composables/axios-setup';
 
-const store = useStore();
+const upcomingEmployeeBirthdays = ref([]);
+const upcomingTraining = ref([]);
+const upcomingEmployeeOnLeave = ref([]);
+
+const fetchUpcomingCombinedEvents = async () => {
+  try {
+    const response = await apiService.post('/hrDashboard/getUpcomingEvents');
+    upcomingEmployeeBirthdays.value = response.data.upcomingEmployeeBirthdays;
+    upcomingTraining.value = response.data.upcomingTraining;
+    upcomingEmployeeOnLeave.value = response.data.upcomingEmployeeOnLeave;
+  } catch (error) {
+    console.error('Error fetching combined events:', error);
+  }
+};
 
 onMounted(async () => {
-await store.dispatch('fetchUpcomingCombinedEvents');
+  await fetchUpcomingCombinedEvents();
 });
 
-const upcomingEmployeeBirthdays = computed(() => store.state.upcomingEmployeeBirthdays);
-const upcomingTraining = computed(() => store.state.upcomingTraining);
-const upcomingEmployeeOnLeave = computed(() => store.state.upcomingEmployeeOnLeave);
-
-// Helper function to format date difference
+// Existing Helper Function
 function calculateTimeToBirthday(dob) {
     const today = new Date();
     const birthDate = new Date(dob);
@@ -46,41 +55,44 @@ function calculateTimeToBirthday(dob) {
 
     return `In ${timeString}`;
 }
-// Transform data into the required formats
-const birthdays = upcomingEmployeeBirthdays.value.map(employee => ({
+
+// Define computed properties to transform data
+const birthdays = computed(() => upcomingEmployeeBirthdays.value.map(employee => ({
     id: employee.EmployeeID,
     title: `${employee.first_name} ${employee.surname}'s Birthday`,
     date: calculateTimeToBirthday(employee.date_of_birth),
-}));
+})));
 
-const training = upcomingTraining.value.map(train => ({
+const training = computed(() => upcomingTraining.value.map(train => ({
     id: train.training_id,
     title: train.title,
     date: `${train.period_from} to ${train.period_to}`,
     commentCount: 'Conducted by ' + train.conducted_by,
     shareCount: train.participants ? 'Assigned' : 'Unassigned',
     shareCountColor: train.participants ? 'text-green-600 dark:text-green-400' : 'text-red-500'
-}));
+})));
 
-const leaves = upcomingEmployeeOnLeave.value.map(leave => ({
+const leaves = computed(() => upcomingEmployeeOnLeave.value.map(leave => ({
     id: leave.id,
     title: `${leave.first_name} ${leave.surname} - ${leave.LeaveTypeName}`,
     date: `${leave.start_date} to ${leave.end_date}`,
     commentCount: leave.reason,
     shareCount: leave.status,
-}));
+})));
 
 // Combine categories
-const allEvents = [...birthdays, ...training, ...leaves];
+const allEvents = computed(() => [...birthdays.value, ...training.value, ...leaves.value]);
 
 // Define categories
-const categories = ref({
-    All: allEvents,
-    Birthdays: birthdays,
-    Training: training,
-    'On Leave': leaves,
-});
+const categories = computed(() => ({
+    All: allEvents.value,
+    Birthdays: birthdays.value,
+    Training: training.value,
+    'On Leave': leaves.value,
+}));
 </script>
+
+
 
 <template> <!--TODO Bug Upcoming Events-->
     <section class="grid grid-cols-1 gap-6 lg:grid-cols-2">

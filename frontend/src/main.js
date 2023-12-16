@@ -62,7 +62,7 @@ function checkTokenExpiration() {
 }
 
 // Set up polling to check token expiration every 5 minutes
-setInterval(checkTokenExpiration, 5 * 60 * 1000);
+// setInterval(checkTokenExpiration, 5 * 60 * 1000);
 
 app.mount('#app');
 
