@@ -9,6 +9,7 @@ import 'flowbite';
 import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
 import apiService from '@/composables/axios-setup';
+import { jwtDecode } from 'jwt-decode';
 
 const app = createApp(App);
 
@@ -31,6 +32,38 @@ app.use(Toast, {
 
 
 // Dispatch the initializeAuth action to set auth state on app load
-store.dispatch('initializeAuth');
+function getTokenFromStorage() {
+  // Try to get the token from sessionStorage first, then localStorage
+  return sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+}
+
+function checkTokenExpiration() {
+  const token = getTokenFromStorage();
+  if (token) {
+      try {
+          const decodedToken = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+          if (decodedToken.exp <= currentTime) {
+              // Token has expired, take action
+              // Clear the token from both storages
+              sessionStorage.removeItem('authToken');
+              localStorage.removeItem('authToken');
+              // Redirect to login
+              router.push({ name: 'Login' });
+          }
+      } catch (error) {
+          // Handle decoding errors (e.g., token is tampered or malformed)
+          console.error('Token decoding error:', error);
+          sessionStorage.removeItem('authToken');
+          localStorage.removeItem('authToken');
+          router.push({ name: 'Login' });
+      }
+  }
+}
+
+// Set up polling to check token expiration every 5 minutes
+setInterval(checkTokenExpiration, 5 * 60 * 1000);
 
 app.mount('#app');
+
+

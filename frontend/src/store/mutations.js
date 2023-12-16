@@ -3,10 +3,18 @@ export const mutations = {
     state.token = payload.token;
     state.userRole = payload.role;
     state.employeeID = payload.employeeID;
+    // Add expiration and issuedAt to the Vuex state
+    state.tokenExpiration = payload.expiration;
+    state.tokenIssuedAt = payload.issuedAt;
 },
+
     clearAuth(state) {
-        state.token = null;
-        state.userRole = null;
+      state.token = null;
+      state.userRole = null;
+      state.employeeID = null;
+      // Add expiration and issuedAt to the Vuex state
+      state.tokenExpiration = null;
+      state.tokenIssuedAt = null;
     },
     updateFormData(state, { page, data }) {
         state.formData[page] = { ...state.formData[page], ...data };

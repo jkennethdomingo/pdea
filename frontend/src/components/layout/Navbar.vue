@@ -88,8 +88,12 @@ const roleDisplayName = computed(() => {
 const logout = () => {
   // Clear user's auth token from Vuex store and localStorage
   store.commit('clearAuth');
-  localStorage.removeItem('authData');
-  sessionStorage.removeItem('authData');
+  localStorage.removeItem('authToken');
+sessionStorage.removeItem('authToken');
+localStorage.removeItem('authExpiration');
+sessionStorage.removeItem('authExpiration');
+localStorage.removeItem('authIssuedAt');
+sessionStorage.removeItem('authIssuedAt');
 
   // Redirect to the login page
   router.push({ name: 'Login' });

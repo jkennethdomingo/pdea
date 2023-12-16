@@ -1,5 +1,6 @@
 import apiService from '@/composables/axios-setup';
 import { transformFormData, getStoredAuthData } from '@/utils/utils';
+import { jwtDecode } from 'jwt-decode';
 
 export const actions = {
     async login({ commit }, payload) {
@@ -17,8 +18,12 @@ export const actions = {
         try {
             commit('setIsLoggingOut', true);
             // Logout logic here
-            localStorage.removeItem('authData');
-            sessionStorage.removeItem('authData');
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            localStorage.removeItem('authExpiration');
+            sessionStorage.removeItem('authExpiration');
+            localStorage.removeItem('authIssuedAt');
+            sessionStorage.removeItem('authIssuedAt');
             commit('clearAuth');
         } catch (error) {
             console.error('Logout error:', error);
@@ -119,10 +124,45 @@ export const actions = {
         }
     },
     initializeAuth({ commit }) {
-        const authData = getStoredAuthData();
-        if (authData) {
-            commit('setAuth', { token: authData.token, role: authData.role, employeeID: authData.employeeID });
+      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+
+          // Check the token for valid timing and issuer
+          if (decodedToken.exp > currentTime &&
+              decodedToken.iat < currentTime &&
+              decodedToken.iss === 'pdeabackend.com') {
+            commit('setAuth', {
+              token: token,
+              role: decodedToken.role,
+              employeeID: decodedToken.sub,
+              expiration: decodedToken.exp,
+              issuedAt: decodedToken.iat
+            });
+          } else {
+            // Handle the invalid token case, e.g., by removing it from storage
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            localStorage.removeItem('authExpiration');
+            sessionStorage.removeItem('authExpiration');
+            localStorage.removeItem('authIssuedAt');
+            sessionStorage.removeItem('authIssuedAt');
+            // Additional logic for handling token expiration/invalidity
+          }
+        } catch (error) {
+          // Handle any errors in decoding the token, e.g., if the token is not a valid JWT
+          console.error('Error decoding the token:', error);
+          // Potentially clear out invalid tokens from storage
+          localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            localStorage.removeItem('authExpiration');
+            sessionStorage.removeItem('authExpiration');
+            localStorage.removeItem('authIssuedAt');
+            sessionStorage.removeItem('authIssuedAt');
         }
+      }
     },
     clearFormData({ commit }) {
         commit('resetFormData');
