@@ -390,7 +390,6 @@ const postTrainingAssignments = async () => {
 
   try {
     const response = await apiService.post('/manageTraining/assignEmployeesToTraining', payload);
-    console.log('Training assignments updated:', response.data);
     isModalVisible.value = false; // Close the modal after successful posting
     // Additional logic based on the response
     await store.dispatch('getTraining');

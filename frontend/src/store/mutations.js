@@ -258,5 +258,8 @@ updatePhotoPreviewUrl(state, url) {
   },
   SET_EMPLOYEE_ON_LEAVE(state, onLeave) {
     state.employeeOnLeave = onLeave;
+  },
+  setLeaveRequestsNotification(state, leaveRequests) {
+    state.leaveRequestsNotification = leaveRequests;
   }
 };

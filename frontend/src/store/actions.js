@@ -672,6 +672,13 @@ async fetchChartCountData({ commit }) {
     // You may want to add additional error handling or notify the user.
   }
 },
-      
+async fetchLeaveRequestsNotification({ commit }) {
+  try {
+    const response = await apiService.post('/manageLeave/fetchPendingLeaveRequests');
+    commit('setLeaveRequestsNotification', response.data);
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+  }
+}     
       
 };

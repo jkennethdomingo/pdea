@@ -14,62 +14,117 @@ import Logo from '@/components/base/Logo.vue'
 import Dropdown from '@/components/base/Dropdown.vue'
 import DropdownLink from '@/components/base/DropdownLink.vue'
 import DropdownButton from '@/components/base/DropdownButton.vue'
-import userAvatar from '@/assets/images/avatar.jpg'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import apiService from '@/composables/axios-setup';
+import { defaultAvatar } from '@/assets/images/defaultAvatar.js';
+import { usePhotoUrl } from '@/composables/usePhotoUrl';
 
-const categories = ref({
-  all: [
-    {
-      id: 1,
-      title: 'John Smith requesting a leave',
-      date: '5h ago',
-
-    },
-    {
-      id: 2,
-      title: "Samantha Doe requesting a leave",
-      date: '2h ago',
-    },
-    {
-      id: 3,
-      title: "Samantha Doe requesting a leave",
-      date: '2h ago',
-    },
-    {
-      id: 4,
-      title: "Samantha Doe requesting a leave",
-      date: '2h ago',
-    },
-    {
-      id: 5,
-      title: "Samantha Doe requesting a leave",
-      date: '2h ago',
-    },
-  ],
-  unread: [
-    {
-      id: 1,
-      title: '',
-      date: '',
-    },
-    {
-      id: 2,
-      title: '',
-      date: '',
-    },
-  ],
-})
 
 const store = useStore();
 const router = useRouter();
+const { getPhotoUrl } = usePhotoUrl(); 
 
 const authState = computed(() => ({
   token: store.state.token,
-  role: store.state.userRole
+  role: store.state.userRole,
+  employeeID: store.state.employeeID
 }));
+
+const userAvatar = ref(null);
+
+function formatTimeRequested(timeRequested) {
+  const now = new Date();
+  const requestedTime = new Date(timeRequested);
+
+  // Adjust for the 8-hour delay
+  requestedTime.setHours(requestedTime.getHours() + 8);
+
+  const diffTime = Math.abs(now - requestedTime);
+  const diffSeconds = Math.floor(diffTime / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  let timeString = "";
+
+  if (diffDays > 0) timeString = diffDays > 1 ? `${diffDays} days ago` : "a day ago";
+  else if (diffHours > 0) timeString = diffHours > 1 ? `${diffHours} hours ago` : "an hour ago";
+  else if (diffMinutes > 0) timeString = diffMinutes > 1 ? `${diffMinutes} minutes ago` : "a minute ago";
+  else timeString = "just now"; // Replaces previous condition for seconds
+
+  return timeString;
+}
+
+
+const categories = computed(() => {
+  const leaveRequests = store.state.leaveRequestsNotification;
+
+  // Function to format leave requests
+  const formatRequests = (requests) => {
+    return requests.map(request => ({
+      id: request.LeaveID,
+      title: `${request.EmployeeName} requesting a ${request.LeaveTypeName}`,
+      date: `Requested: ${formatTimeRequested(request.TimeRequested)}`
+    }));
+  };
+
+  switch (authState.value.role) {
+    case 'HR_ADMIN':
+      // Logic for HR_ADMIN notifications
+      // Assuming HR_ADMIN should see all leave requests
+      return {
+        all: formatRequests(leaveRequests),
+        // You can add more specific categories for HR_ADMIN here
+      };
+
+    case 'NON_ADMIN':
+      // Logic for NON_ADMIN notifications - Currently leaving blank
+      return {};
+
+    default:
+      // Default notifications for other roles - Also currently blank
+      return {};
+  }
+});
+
+const notificationCount = computed(() => {
+  switch (authState.value.role) {
+    case 'HR_ADMIN':
+      // For HR_ADMIN, count all notifications
+      return categories.value.all ? categories.value.all.length : 0;
+
+    case 'NON_ADMIN':
+      // For NON_ADMIN, count specific notifications if any
+      // Example: count 'myRequests' notifications
+      return 0;
+
+    default:
+      // Default case for other roles
+      // Currently, there are no notifications for other roles
+      return 0;
+  }
+});
+
+
+
+const fetchEmployeePhoto = async () => {
+    const employeeID = authState.value.employeeID; // Get employeeID from authState
+    console.log(employeeID);
+
+    try {
+        const response = await apiService.get(`/auth/getEmployeePhoto/${employeeID}`);
+            
+        // Correctly assigning the photo to userAvatar ref
+        userAvatar.value = response.data.photo; 
+            
+    } catch (error) {
+        console.error('Error fetching employee photo:', error);
+    }
+};
+
 
 const roleDisplayName = computed(() => {
   switch (authState.value.role) {
@@ -101,13 +156,30 @@ sessionStorage.removeItem('authIssuedAt');
 
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
 
+const pollNotifications = async () => {
+  try {
+    await store.dispatch('fetchLeaveRequestsNotification');
+    // Set a timeout for the next poll, e.g., 30 seconds
+    setTimeout(pollNotifications, 30000);
+  } catch (error) {
+    console.error('Error during notification polling:', error);
+  }
+};
+
 onMounted(() => {
     document.addEventListener('scroll', handleScroll)
+    fetchEmployeePhoto();
+    if (authState.value.role === 'HR_ADMIN') {
+    pollNotifications();
+  }
 })
+
 
 onUnmounted(() => {
     document.removeEventListener('scroll', handleScroll)
 })
+
+console.log(notificationCount.value)
 </script>
 
 <template>
@@ -139,10 +211,10 @@ onUnmounted(() => {
              <!-- Notif -->
              <Dropdown align="right" width="48">
                 <template #trigger>
-                    <div
+                    <div v-if="notificationCount > 0"
                         class="absolute bottom-auto left-auto right-0 top-0 z-10 inline-block -translate-y-1/2 translate-x-2/4 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 whitespace-nowrap rounded-full bg-green-700 px-2.5 py-1 text-center align-baseline text-xs font-bold leading-none text-white">
-                        99+
-                    </div> <!--TODO Notification-->
+                        {{ notificationCount > 99 ? '99+' : notificationCount }}
+                    </div> 
                     <Button
                         iconOnly
                         variant="secondary"
@@ -163,69 +235,45 @@ onUnmounted(() => {
 
                 <template #content>
                     <TabGroup>
-                            <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-                            <Tab
-                                v-for="category in Object.keys(categories)"
-                                as="template"
-                                :key="category"
-                                v-slot="{ selected }"
-                            >
-                                <button
-                                    :class="[
-                                        'w-full rounded-lg py-1 text-sm font-medium leading-5', 
-                                        'ring-gray-800 ring-offset-black focus:outline-none focus:ring-2',
-                                        selected
-                                            ? 'bg-green-600 dark:bg-green-600 text-white dark:text-white shadow'
-                                            : 'text-gray-800 dark:text-gray-100 hover:bg-green-400 hover:text-white',
-                                    ]"
-                                >
-                                    {{ category }}
-                                </button>
-                            </Tab>
-                            </TabList>
-                            <TabPanels class="mt-2">
-                    <TabPanel
-                        v-for="(posts, category) in categories"
-                        :key="category"
-                        :class="posts.length > 2 ? 'max-h-56 overflow-y-auto' : ''"
-                        class="rounded-b-lg  bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700"
-                    >
-                        <ul>
-                            <li
-                                v-for="post in posts"
-                                :key="post.id"
-                                class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
-                            >
-                                <h3 class="text-sm font-medium leading-5">
-                                    {{ post.title }}
-                                </h3>
-                                <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                                    <li>{{ post.date }}</li>
-                                </ul>
-                                <!-- Conditionally render Approval and Denial Buttons -->
-                                <div 
-                                    class="flex justify-end space-x-2 mt-2" 
-                                    v-if="category === 'all'"
-                                >
-                                    <button
-                                        @click="approveRequest(post.id)"
-                                        class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
-                                    >
-                                        Approve
-                                    </button>
-                                    <button
-                                        @click="denyRequest(post.id)"
-                                        class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
-                                    >
-                                        Deny
-                                    </button>
-                                </div>
-                            </li>
-                        </ul>
-                    </TabPanel>
-                    </TabPanels>
-                        </TabGroup>
-                </template>
+  <div v-if="notificationCount > 0">
+    <ul class="mt-2 rounded-b-lg bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700">
+      <li
+        v-for="post in categories.all"  
+        :key="post.id"
+        class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+      >
+        <h3 class="text-sm font-medium leading-5">
+          {{ post.title }}
+        </h3>
+        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+          <li>{{ post.date }}</li>
+        </ul>
+        <div 
+          class="flex justify-end space-x-2 mt-2"
+        >
+          <button
+            @click="approveRequest(post.id)"
+            class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
+          >
+            Approve
+          </button>
+          <button
+            @click="denyRequest(post.id)"
+            class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+          >
+            Deny
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div v-else class="text-center text-sm text-gray-500 py-4">
+    No unread notifications
+  </div>
+</TabGroup>
+
+</template>
+
 
             </Dropdown>
             
@@ -265,11 +313,8 @@ onUnmounted(() => {
                     <button
                         class="flex text-sm transition border-2 border-transparent rounded-md focus:outline-none focus:ring focus:ring-gray-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark-eval-1"
                     >
-                        <img
-                            class="object-cover w-8 h-8 rounded-md"
-                            :src="userAvatar"
-                            alt="User Name"
-                        />
+                    <img v-if="userAvatar" class="object-cover w-8 h-8 rounded-md" :src="getPhotoUrl(userAvatar)" alt="User Name" />
+                    <div v-else v-html="defaultAvatar"></div>
                     </button>
                 </template>
                 <template #content>
