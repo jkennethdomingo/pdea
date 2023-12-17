@@ -635,6 +635,9 @@ class ManageLeaveController extends ResourceController
             ];
         }, $leaves);
     }
+
+// The buildLeaveQuery and prepareLeaveResponse methods remain the same as in your current implementation
+
     
     public function fetchPendingLeavesByEmployeeID($employeeID)
     {

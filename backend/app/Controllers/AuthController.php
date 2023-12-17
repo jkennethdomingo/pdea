@@ -93,5 +93,25 @@ class AuthController extends ResourceController
         return $user;
     }
 
+    public function getEmployeePhoto($employeeID)
+{
+    // Select only the 'photo' field
+    $this->personalInformationModel->select('photo');
+
+    // Add a condition to fetch the photo of the specific employee
+    $this->personalInformationModel->where('EmployeeID', $employeeID);
+
+    // Perform the query
+    $query = $this->personalInformationModel->first();
+
+    // Return the photo if found, else return null
+    $photo = $query ? $query['photo'] : null;
+    return $this->respond(['photo' => $photo]);
+}
+
+    
+
+
+
 
 }

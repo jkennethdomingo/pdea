@@ -62,6 +62,7 @@ class HumanResourceDashboardRemasteredController extends ResourceController
         $leaveQuery->join('personal_information', 'employee_leaves.EmployeeID = personal_information.EmployeeID', 'inner');
         $leaveQuery->join('leave_type', 'employee_leaves.leave_type_id = leave_type.LeaveTypeID', 'inner');
         $leaveQuery->where('employee_leaves.start_date >=', $today); // Only get leaves starting today or in the future
+        $leaveQuery->where('employee_leaves.status', 'approved'); // Only get leaves with 'approved' status
         $employeeOnLeave = $leaveQuery->get()->getResult();
 
         // Combine the datasets
@@ -213,5 +214,22 @@ class HumanResourceDashboardRemasteredController extends ResourceController
         $query = $builder->get();
         $result = $query->getRowArray();
         return (int)$result['NumberOfTrainingsToday'];
+    }
+
+    public function fetchRecentlyApprovedLeaves(): ResponseInterface
+    {
+        $approvedLeaves = $this->employeeLeavesModel
+            ->select('personal_information.first_name, personal_information.middle_name, personal_information.surname, personal_information.photo, personal_information.Email, leave_type.LeaveTypeName, employee_leaves.*')
+            ->join('personal_information', 'personal_information.EmployeeID = employee_leaves.EmployeeID')
+            ->join('leave_type', 'leave_type.LeaveTypeID = employee_leaves.leave_type_id')
+            ->where('employee_leaves.status', 'approved')
+            ->orderBy('employee_leaves.updated_at', 'DESC')
+            ->findAll();
+
+        return $this->respond([
+            'status' => ResponseInterface::HTTP_OK,
+            'error' => null,
+            'data' => $approvedLeaves
+        ]);
     }
 }

@@ -393,10 +393,10 @@ private function buildTrainingQuery($status)
             // Query for assigned upcoming trainings, including employee information
             $query = $query
                 ->select('
-                    GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
-                    GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
-                    GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
-                    GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids',
+                    GROUP_CONCAT(personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+                    GROUP_CONCAT(personal_information.surname ORDER BY personal_information.surname) as surnames,
+                    GROUP_CONCAT(personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+                    GROUP_CONCAT(internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids',
                     false
                 )
                 ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'inner')
@@ -410,10 +410,10 @@ private function buildTrainingQuery($status)
             // Query for finished trainings, including employee information
             $query = $query
                 ->select('
-                    GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
-                    GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
-                    GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
-                    GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids',
+                    GROUP_CONCAT(personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+                    GROUP_CONCAT(personal_information.surname ORDER BY personal_information.surname) as surnames,
+                    GROUP_CONCAT(personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+                    GROUP_CONCAT(internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids',
                     false
                 )
                 ->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'inner')
@@ -428,32 +428,47 @@ private function buildTrainingQuery($status)
 
 
 
-    private function prepareTrainingResponse($trainings, $includeEmployeeInfo = false)
-    {
-        return array_map(function ($training) use ($includeEmployeeInfo) {
-            $response = [
-                'TrainingID' => $training['TrainingID'] ?? 'N/A',
-                'Title' => $training['title'] ?? 'Not Specified',
-                'StartTime' => $training['period_from'] ?? 'N/A',
-                'EndTime' => $training['period_to'] ?? 'N/A',
-                'Hours' => $training['number_of_hours'] ?? 'N/A',
-                'ConductedBy' => $training['conducted_by'] ?? 'N/A',
-                'CreatedAt' => $training['created_at'] ?? 'N/A',
-                'UpdatedAt' => $training['updated_at'] ?? 'N/A',
-            ];
-    
-            if ($includeEmployeeInfo) {
-                $response['EmployeeDetails'] = [
-                    'FirstNames' => array_filter(explode(',', $training['first_names'] ?? '')),
-                    'Surnames' => array_filter(explode(',', $training['surnames'] ?? '')),
-                    'Photos' => array_filter(explode(',', $training['photos'] ?? '')),
-                    'EmployeeIDs' => array_filter(explode(',', $training['employee_ids'] ?? '')),
-                ];
+private function prepareTrainingResponse($trainings, $includeEmployeeInfo = false)
+{
+    return array_map(function ($training) use ($includeEmployeeInfo) {
+        $response = [
+            'TrainingID' => $training['TrainingID'] ?? 'N/A',
+            'Title' => $training['title'] ?? 'Not Specified',
+            'StartTime' => $training['period_from'] ?? 'N/A',
+            'EndTime' => $training['period_to'] ?? 'N/A',
+            'Hours' => $training['number_of_hours'] ?? 'N/A',
+            'ConductedBy' => $training['conducted_by'] ?? 'N/A',
+            'CreatedAt' => $training['created_at'] ?? 'N/A',
+            'UpdatedAt' => $training['updated_at'] ?? 'N/A',
+        ];
+
+        if ($includeEmployeeInfo) {
+            $employeeIds = array_filter(explode(',', $training['employee_ids'] ?? ''));
+            $photosRaw = explode(',', $training['photos'] ?? '');
+            $photos = [];
+
+            foreach ($employeeIds as $index => $id) {
+                $photo = $photosRaw[$index] ?? null;
+                if (!empty($photo) && $photo !== 'null' && $photo !== 'undefined') {
+                    $photos[] = $photo;
+                } else {
+                    $photos[] = null;
+                }
             }
-    
-            return $response;
-        }, $trainings);
-    }
+
+
+            $response['EmployeeDetails'] = [
+                'FirstNames' => array_filter(explode(',', $training['first_names'] ?? '')),
+                'Surnames' => array_filter(explode(',', $training['surnames'] ?? '')),
+                'Photos' => $photos,
+                'EmployeeIDs' => array_filter(explode(',', $training['employee_ids'] ?? '')),
+            ];
+        }
+
+        return $response;
+    }, $trainings);
+}
+
     
     public function assignEmployeesToTraining()
 {

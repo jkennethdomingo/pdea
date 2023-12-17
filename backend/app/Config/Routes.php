@@ -11,6 +11,7 @@ $routes->group('api', function($routes)
 {
     $routes->group('auth', function($routes) {
         $routes->post('login', 'AuthController::login');
+        $routes->get('getEmployeePhoto/(:any)', 'AuthController::getEmployeePhoto/$1');
     });
 
     $routes->group('employee', function($routes) {
@@ -107,7 +108,8 @@ $routes->group('api', function($routes)
         $routes->post('getActiveEmployeesCount', 'HumanResourceDashboardRemasteredController::getActiveEmployeesCount'); //Statistics
         $routes->post('getTodayTrainingCount', 'HumanResourceDashboardRemasteredController::getTodayTrainingCount'); //Sales
         $routes->post('getUpcomingEvents', 'HumanResourceDashboardRemasteredController::getUpcomingEvents'); //Calendar Upcoming Events
-        $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardController::getEmployeeStatusPercentages'); // Pie Chart
+        $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardRemasteredController::getEmployeeStatusPercentages'); // Pie Chart
+        $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardRemasteredController::fetchRecentlyApprovedLeaves'); // Recently Approved Leaves Card
     });
 
     $routes->post('insert', 'TestArea::create');
