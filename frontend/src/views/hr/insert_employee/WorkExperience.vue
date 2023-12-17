@@ -3,59 +3,67 @@
     <form @submit.prevent="handleSubmit">
       <ol class="items-center w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
     <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToPersonalInfo">
-        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
             S1
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Personal Information</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Personal Information</h3>
         </span>
     </li>
     <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToFamBackground">
-        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
             S2
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Family Background</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Family Background</h3>
         </span>
     </li>
     <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToEducBg">
-        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
             S3
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Educational Background</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Educational Background</h3>
         </span>
     </li>
     <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToCvEligibility">
-        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
             S4
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Civil Service Eligibility</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Civil Service Eligibility</h3>
         </span>
     </li>
     <li class="flex items-center text-green-600 dark:text-green-500 space-x-2.5 rtl:space-x-reverse cursor-pointer">
-        <span class="flex items-center justify-center w-8 h-8 border border-green-600 rounded-full shrink-0 dark:border-green-500">
+        <span class="flex items-center justify-center w-6 h-6 border border-green-600 rounded-full shrink-0 dark:border-green-500">
             S5
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Work Experience</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Work Experience</h3>
         </span>
     </li>
     <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToVolWork">
-        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
             S6
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Voluntary Work</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Voluntary Work</h3>
         </span>
     </li>
     <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToLearnDev">
-        <span class="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
             S7
         </span>
         <span>
-            <h3 class="font-semibold leading-tight">Learning And Development</h3>
+            <h3 class="font-semibold text-sm  leading-tight">Learning And Development</h3>
+        </span>
+    </li>
+    <li class="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse cursor-pointer" @click="goToOtherInfo">
+        <span class="flex items-center justify-center w-6 h-6 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+            S8
+        </span>
+        <span>
+            <h3 class="font-semibold text-sm  leading-tight">Other Information</h3>
         </span>
     </li>
 </ol>
@@ -110,6 +118,9 @@ const goToVolWork = () => {
 };
 const goToLearnDev = () => {
   router.push({ name: 'Learning And Development' });
+};
+const goToOtherInfo = () => {
+  router.push({ name: 'Other Information' });
 };
 
 const store = useStore();
