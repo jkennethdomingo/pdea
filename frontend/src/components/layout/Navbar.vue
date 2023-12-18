@@ -21,6 +21,7 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import apiService from '@/composables/axios-setup';
 import { defaultAvatar } from '@/assets/images/defaultAvatar.js';
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
+import { logoutUser } from '@/utils/auth';
 
 
 const store = useStore();
@@ -142,16 +143,7 @@ const roleDisplayName = computed(() => {
 
 const logout = () => {
   // Clear user's auth token from Vuex store and localStorage
-  store.commit('clearAuth');
-  localStorage.removeItem('authToken');
-sessionStorage.removeItem('authToken');
-localStorage.removeItem('authExpiration');
-sessionStorage.removeItem('authExpiration');
-localStorage.removeItem('authIssuedAt');
-sessionStorage.removeItem('authIssuedAt');
-
-  // Redirect to the login page
-  router.push({ name: 'Login' });
+  logoutUser(store);
 };
 
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
