@@ -6,6 +6,11 @@ use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use \Firebase\JWT\ExpiredException;
+use \Firebase\JWT\SignatureInvalidException;
+use \Firebase\JWT\BeforeValidException;
+use Config\Services;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthController extends ResourceController  
 {
@@ -14,12 +19,14 @@ class AuthController extends ResourceController
     protected $personalInformationModel;
     protected $employeeAuthRoleModel;
     protected $authRoleModel;
+    protected $jwtBlackListModel;
 
     public function __construct()
     {
         $this->personalInformationModel = new \App\Models\PersonalInformationModel();
         $this->employeeAuthRoleModel = new \App\Models\EmployeeAuthRoleModel();
         $this->authRoleModel = new \App\Models\AuthRoleModel();
+        $this->jwtBlackListModel = Services::JwtBlackListModel();
     }
 
     public function login()
@@ -94,20 +101,104 @@ class AuthController extends ResourceController
     }
 
     public function getEmployeePhoto($employeeID)
+    {
+        // Select only the 'photo' field
+        $this->personalInformationModel->select('photo');
+
+        // Add a condition to fetch the photo of the specific employee
+        $this->personalInformationModel->where('EmployeeID', $employeeID);
+
+        // Perform the query
+        $query = $this->personalInformationModel->first();
+
+        // Return the photo if found, else return null
+        $photo = $query ? $query['photo'] : null;
+        return $this->respond(['photo' => $photo]);
+    }
+
+    public function logout()
 {
-    // Select only the 'photo' field
-    $this->personalInformationModel->select('photo');
+    try {
+        $json = $this->request->getJSON();
+        $token = $json->token ?? null;
 
-    // Add a condition to fetch the photo of the specific employee
-    $this->personalInformationModel->where('EmployeeID', $employeeID);
+        if (!$token) {
+            return $this->failUnauthorized('No token provided');
+        }
 
-    // Perform the query
-    $query = $this->personalInformationModel->first();
+        // Update here: Using Key class for decoding
+        $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
+        $jti = $decoded->jti;
 
-    // Return the photo if found, else return null
-    $photo = $query ? $query['photo'] : null;
-    return $this->respond(['photo' => $photo]);
+        // Insert jti into the blacklist table
+        $this->jwtBlackListModel->insert([
+            'jti' => $jti,
+            'iat' => $decoded->iat,
+            'exp' => $decoded->exp
+        ]);
+
+        return $this->respond(['message' => 'Logout successful']);
+
+    } catch (\Exception $e) {
+        return $this->fail(new \Exception('An error occurred during logout: ' . $e->getMessage()));
+    }
 }
+
+
+
+    /*public function checkTokenBlacklist()
+    {
+        $token = $this->request->getHeaderLine('Authorization');
+        if (!$token) {
+            return $this->failUnauthorized('No token provided');
+        }
+
+        try {
+            $decoded = JWT::decode($token, getenv('JWT_SECRET'), ['HS256']);
+            $jti = $decoded->jti;
+
+            // Check if the token's jti is in the blacklist
+            $isBlacklisted = $this->jwtBlackListModel->where('jti', $jti)->first();
+            if ($isBlacklisted) {
+                return $this->respond(['message' => 'Token is blacklisted'], ResponseInterface::HTTP_OK);
+            } else {
+                return $this->respond(['message' => 'Token is valid'], ResponseInterface::HTTP_OK);
+            }
+        } catch (\Exception $e) {
+            // Handle token decoding errors
+            return $this->failUnauthorized('Invalid token: ' . $e->getMessage());
+        }
+    }*/ // With authorization header
+
+    public function checkTokenBlacklist()
+    {
+        $json = $this->request->getJSON();
+        $token = $json->token ?? null; // Get token from JSON
+    
+        if (!$token) {
+            return $this->failUnauthorized('No token provided');
+        }
+    
+        try {
+            // Update here: Using Key class for decoding
+            $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
+            $jti = $decoded->jti;
+    
+            // Check if the token's jti is in the blacklist
+            $isBlacklisted = $this->jwtBlackListModel->where('jti', $jti)->first();
+            if ($isBlacklisted) {
+                return $this->respond(['message' => 'Token is blacklisted'], ResponseInterface::HTTP_OK);
+            } else {
+                return $this->respond(['message' => 'Token is valid'], ResponseInterface::HTTP_OK);
+            }
+        } catch (\Exception $e) {
+            // Handle token decoding errors
+            return $this->failUnauthorized('Invalid token: ' . $e->getMessage());
+        }
+    }
+    
+
+
 
     
 

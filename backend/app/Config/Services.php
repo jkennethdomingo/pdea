@@ -41,6 +41,7 @@ use App\Models\TrainingModel;
 use App\Models\LeaveRequestNotesModel;
 use App\Models\DivisionModel;
 use App\Models\EmployeeDivisionModel;
+use App\Models\JwtBlackListModel;
 
 /**
  * Services Configuration file.
@@ -454,6 +455,16 @@ class Services extends BaseService
         }
 
         return new EmployeeDivisionModel();
+    }
+
+    public static function JwtBlackListModel($getShared = true)
+    {
+        if ($getShared)
+        {
+            return static::getSharedInstance('JwtBlackListModel');
+        }
+
+        return new JwtBlackListModel();
     }
 
 }

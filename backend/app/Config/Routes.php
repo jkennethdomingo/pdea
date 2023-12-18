@@ -12,6 +12,8 @@ $routes->group('api', function($routes)
     $routes->group('auth', function($routes) {
         $routes->post('login', 'AuthController::login');
         $routes->get('getEmployeePhoto/(:any)', 'AuthController::getEmployeePhoto/$1');
+        $routes->post('checkTokenBlacklist', 'AuthController::checkTokenBlacklist');
+        $routes->post('logout', 'AuthController::logout');
     });
 
     $routes->group('employee', function($routes) {
