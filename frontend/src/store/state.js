@@ -200,4 +200,5 @@ export const state = {
   trainees: [], 
   photoPreviewUrl: `data:image/svg+xml;base64,${svgBase64}`,
   leaveRequestsNotification: [],
+  assetData: {}
 };

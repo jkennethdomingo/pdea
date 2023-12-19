@@ -679,6 +679,14 @@ async fetchLeaveRequestsNotification({ commit }) {
   } catch (error) {
     console.error('Error fetching leave requests:', error);
   }
+},
+async fetchAssetData({ commit }) {
+  try {
+    const response = await apiService.post('/materialRequisition/getPropertyPlantAndEquipmentDropdown');
+    commit('setAssetData', response.data.data); // Assuming 'data' field in the response contains the asset data
+  } catch (error) {
+    console.error('Error fetching asset data:', error);
+  }
 }     
       
 };

@@ -1,45 +1,86 @@
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
-import Button from '@/components/base/Button.vue';
-import { usePhotoUrl } from '@/composables/usePhotoUrl'; // Adjust the path based on your file structure
-import { ref } from 'vue'
+import { usePhotoUrl } from '@/composables/usePhotoUrl';
 import {
   TransitionRoot,
   TransitionChild,
   Dialog,
   DialogPanel,
   DialogTitle,
-} from '@headlessui/vue'
-
-const isOpen = ref(false) // Start with the modal closed
-
-function closeModal() {
-  isOpen.value = false
-}
-function openModal() {
-  isOpen.value = true
-}
-
-const isViewModalOpen = ref(false)
-
-function closeViewModal() {
-  isViewModalOpen.value = false
-}
-
-function openViewModal() {
-  isViewModalOpen.value = true
-}
+} from '@headlessui/vue';
+import apiService from '@/composables/axios-setup';
 
 const store = useStore();
+const isOpen = ref(false);
+const isModalVisible = ref(false);
+const assetInformation = ref(null);
+const assetData = ref({});
+const isViewModalOpen = ref(false);
 const { getPhotoUrl } = usePhotoUrl(); // Using the composable
-
 const agentData = computed(() => store.state.agentData);
+const selectedType = ref(null);
+const selectedDescription = ref(null);
 
-onMounted(() => {
+function closeModal() {
+  isOpen.value = false;
+  isModalVisible.value = false;
+}
+
+function openModal() {
+  isModalVisible.value = true;
+}
+
+async function fetchAssetData() {
+  try {
+    const response = await apiService.post('/materialRequisition/getPropertyPlantAndEquipmentDropdown');
+    assetData.value = response.data.data; // Store the data in local state
+    console.log(assetData.value)
+  } catch (error) {
+    console.error('Error fetching asset data:', error);
+  }
+}
+
+async function openViewModal(id) {
+  isViewModalOpen.value = true;
+  assetInformation.value = null; // Reset the asset information
+
+  try {
+    const response = await apiService.post('/materialRequisition/getAssignedAssetInformation', { EmployeeID: id });
+    if (response && response.data) {
+      if (response.data.data && response.data.data.length > 0) {
+        assetInformation.value = response.data.data;
+      } else {
+        assetInformation.value = response.data.message;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching asset information:', error);
+  }
+}
+
+const assetTypes = computed(() => {
+  return Object.keys(assetData.value);
+});
+
+const assetDescriptions = computed(() => {
+  if (selectedType.value && assetData.value[selectedType.value]) {
+    return assetData.value[selectedType.value].map(asset => asset.description);
+  }
+  return [];
+});
+
+watch(selectedType, () => {
+  selectedDescription.value = null; // Reset description when type changes
+});
+
+
+onMounted(async () => {
   store.dispatch('fetchagentData');
+  await fetchAssetData(); // Await the fetching of asset data
 });
 </script>
+
 
 <template>
 <section class="flex flex-col min-h-3/6 w-full p-1 rounded-lg bg-white dark:bg-gray-900">
@@ -78,61 +119,69 @@ onMounted(() => {
                                     <!-- Buttons can be updated or used as is -->
                                    <!-- View button -->
                                     <button
-                                        @click="openViewModal"
+                                        @click="openViewModal(agent.EmployeeID)"
                                         class="bg-green-600 hover:bg-green-700 mr-1 px-3 py-1 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border border-green-300 hover:border-green-500 text-white rounded-full transition ease-in duration-300"
                                     >
                                         View
                                     </button>
 
                                     <!--TODO View Modal -->
-                                    <TransitionRoot as="template" :show="isViewModalOpen">
-                                        <Dialog as="div" class="relative z-10" @close="closeViewModal">
-                                            <TransitionChild
-                                            as="template"
-                                            enter="duration-50 ease-out"
-                                            enter-from="opacity-0"
-                                            enter-to="opacity-100"
-                                            leave="duration-100 ease-in"
-                                            leave-from="opacity-100"
-                                            leave-to="opacity-0"
-                                            >
-                                <div class="fixed inset-0 bg-black/5" aria-hidden="true"></div>
-                                </TransitionChild>
-                                        <div class="fixed inset-0 overflow-y-auto">
-                                            <div class="flex min-h-full items-center justify-center p-4 text-center">
-                                            <TransitionChild
-                                            as="template"
-                                            enter="duration-50 ease-out"
-                                            enter-from="opacity-0 scale-95"
-                                            enter-to="opacity-100 scale-100"
-                                            leave="duration-100 ease-in"
-                                            leave-from="opacity-100 scale-100"
-                                            leave-to="opacity-0 scale-95"
-                                            >
-                                                <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
-                                                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
-                                                    View Details
-                                                </DialogTitle>
-                                                <div class="mt-2">
-                                                    <p class="text-sm text-gray-800 dark:text-gray-200">
-                                                    Details about the item...
-                                                    </p>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <button
-                                                    type="button"
-                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                                                    @click="closeViewModal"
-                                                    >
-                                                    Close
-                                                    </button>
-                                                </div>
-                                                </DialogPanel>
-                                            </TransitionChild>
-                                            </div>
-                                        </div>
-                                        </Dialog>
-                                    </TransitionRoot>
+                                    <TransitionRoot :show="isViewModalOpen" as="template">
+    <Dialog as="div" class="relative z-50">
+        <TransitionChild
+            as="template"
+            enter="duration-50 ease-out"
+            enter-from="opacity-0"
+            enter-to="opacity-100"
+            leave="duration-40 ease-in"
+            leave-from="opacity-30"
+            leave-to="opacity-0"
+        >
+            <div class="fixed inset-0" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <TransitionChild
+                    as="template"
+                    enter="duration-50 ease-out"
+                    enter-from="opacity-0 scale-95"
+                    enter-to="opacity-30 scale-100"
+                    leave="duration-40 ease-in"
+                    leave-from="opacity-100 scale-100"
+                    leave-to="opacity-0 scale-95"
+                >
+                    <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                        <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                            Assigned Asset Details
+                        </DialogTitle>
+                        <div class="mt-4">
+                            <div v-if="assetInformation == 'No assigned asset information found for the provided Employee ID.'">
+                                <!-- Display the assigned assets here -->
+                                <p>No assigned asset information found for the provided Employee ID.</p>
+                            </div>
+                            <div v-else>
+                                <!-- Display the message if no assets are assigned -->
+                                <div v-for="(asset, index) in assetInformation" :key="index">
+                                    <!-- Format your asset details here -->
+                                    <p>{{ asset.name }} - {{ asset.description }}</p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                @click="closeViewModal"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </DialogPanel>
+                </TransitionChild>
+            </div>
+        </div>
+    </Dialog>
+</TransitionRoot>
+
 
                                     <!-- Assign button --> 
                                 <button
@@ -143,60 +192,59 @@ onMounted(() => {
                                 </button>
 
                                 <!-- TODO Assign Modal -->
-                                <TransitionRoot as="template" :show="isOpen">
-                                    <Dialog as="div" class="relative z-10" @close="closeModal">
-                                        <TransitionChild
-                                            as="template"
-                                            enter="duration-50 ease-out"
-                                            enter-from="opacity-0"
-                                            enter-to="opacity-100"
-                                            leave="duration-100 ease-in"
-                                            leave-from="opacity-100"
-                                            leave-to="opacity-0"
-                                            >
-                                <div class="fixed inset-0 bg-black/5" aria-hidden="true"></div>
-                                </TransitionChild>
+                                <TransitionRoot as="template" :show="isModalVisible">
+                                    <Dialog v-model="isModalVisible" as="div" class="relative z-50">
+                                    <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+                                        <div class="fixed inset-05" aria-hidden="true"></div>
+                                    </TransitionChild>
+
                                     <div class="fixed inset-0 overflow-y-auto">
                                         <div class="flex min-h-full items-center justify-center p-4 text-center">
-                                        <TransitionChild
-                                            as="template"
-                                            enter="duration-50 ease-out"
-                                            enter-from="opacity-0 scale-95"
-                                            enter-to="opacity-100 scale-100"
-                                            leave="duration-100 ease-in"
-                                            leave-from="opacity-100 scale-100"
-                                            leave-to="opacity-0 scale-95"
-                                        >
-                                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle transition-all">
-                                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
-                                                Payment successful
-                                            </DialogTitle>
-                                            <div class="mt-2">
-                                                <p class="text-sm text-gray-800 dark:text-gray-200">
-                                                Assigning
-                                                </p>
+                                        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="ease-in duration-200" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
+                                            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white  dark:bg-gray-700 p-6 text-left align-middle shadow-xl transition-all">
+                                            <!-- Modal header -->
+                                            <div class="flex justify-between items-start p-4 md:p-5 border-b dark:border-gray-600">
+                                                <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                                                Choose Employee
+                                                </DialogTitle>
+                                                <!-- Placeholder for alignment -->
+                                                <div class="w-8 h-8"></div>
                                             </div>
-                                            <div class="mt-4 flex justify-between">
-                                            <div>
-                                                <button
-                                                    type="button"
-                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                                                    @click="closeModal"
-                                                >
-                                                    Assign
-                                                </button>
+                                            
+                                            <!-- Absolute positioned Close button -->
+                                            <button type="button" class="absolute top-4 right-5 text-red-500 bg-transparent hover:bg-red-400 hover:text-red-600 rounded-full text-sm p-1.5 dark:hover:bg-red-500 dark:hover:text-gray-800" @click="closeModal">
+                                                <!-- SVG for Close Icon -->
+                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                </svg>
+                                                <!-- ... SVG Code ... -->
+                                                <span class="sr-only">Close modal</span>
+                                            </button>
+
+                                            <!-- Modal body -->
+                                            <div class="relative p-4 md:p-5 space-y-4 max-h-[500px] overflow-y-auto bg-[#f5f5f7] dark:bg-[#0F172A] border border-gray-600 rounded-b-lg">
+                                                <div class="absolute top-0 right-0 pt-2 pr-4">
                                             </div>
-                                            <div>
-                                                <button
-                                                    type="button"
-                                                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                                                    @click="closeViewModal"
-                                                >
-                                                    Close
-                                                </button>
-                                            </div>
+
+                                        <div class="grid grid-cols-3 gap-4">
+                                            <select v-model="selectedType">
+    <option disabled value="">Select a Type</option>
+    <option v-for="type in assetTypes" :key="type" :value="type">{{ type }}</option>
+  </select>
+
+  <select v-model="selectedDescription" :disabled="!selectedType">
+    <option disabled value="">Select a Description</option>
+    <option v-for="description in assetDescriptions" :key="description" :value="description">{{ description }}</option>
+  </select>
                                         </div>
 
+                                                <!-- Modal footer -->
+                                                <div class="flex justify-center items-center px-4 py-3">
+                                                <button @click="postTrainingAssignments" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                                    Assign 
+                                                </button>
+                                                </div>
+                                            </div>
                                             </DialogPanel>
                                         </TransitionChild>
                                         </div>

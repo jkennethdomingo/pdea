@@ -261,5 +261,9 @@ updatePhotoPreviewUrl(state, url) {
   },
   setLeaveRequestsNotification(state, leaveRequests) {
     state.leaveRequestsNotification = leaveRequests;
+  },
+
+  setAssetData(state, payload) {
+    state.assetData = payload;
   }
 };
