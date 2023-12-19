@@ -51,6 +51,8 @@ $routes->group('api', function($routes)
         $routes->post('getTraining', 'AssignTrainingController::getTraining');
         $routes->get('getTrainingByTitle/(:any)', 'AssignTrainingController::getTrainingbyTitle/$1');
         $routes->get('getTraineesByID/(:any)', 'AssignTrainingController::getTraineesByID/$1');
+        $routes->get('getTrainingbyID/(:any)', 'AssignTrainingController::getTrainingbyID/$1');
+        $routes->get('getFinishedTrainingbyID/(:any)', 'AssignTrainingController::getFinishedTrainingbyID/$1');
         $routes->post('getEmployeeInfo', 'AssignTrainingController::getEmployeeInfo');
         $routes->post('editTraining', 'AssignTrainingController::editTraining');
         $routes->post('fetchUpcomingTrainingsWithoutEmployees', 'AssignTrainingController::fetchUpcomingTrainingsWithoutEmployees');
@@ -73,6 +75,7 @@ $routes->group('api', function($routes)
         $routes->post('fetchSortedLeaveRequests', 'ManageLeaveController::fetchSortedLeaveRequests');
         $routes->post('fetchPendingLeavesByEmployeeID/(:any)', 'ManageLeaveController::fetchPendingLeavesByEmployeeID/$1');
         $routes->post('rejectLeave', 'ManageLeaveController::rejectLeave');
+        $routes->post('fetchRejectedLeaveDetails', 'ManageLeaveController::fetchRejectedLeaveDetails');
         $routes->post('fetchSortedLeaveRequestsByEmployeeID/(:any)', 'ManageLeaveController::fetchSortedLeaveRequestsByEmployeeID/$1');
         $routes->post('deleteLeaveRequest/(:num)', 'ManageLeaveController::deleteLeaveRequest/$1');
     });

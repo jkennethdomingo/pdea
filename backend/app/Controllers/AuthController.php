@@ -33,36 +33,38 @@ class AuthController extends ResourceController
     {
         $email = $this->request->getVar('email');
         $password = $this->request->getVar('password');
-
+        $remember = $this->request->getVar('remember'); // Get the 'remember' parameter from the request
+    
         $user = $this->loginUser($email, $password);
-
+    
         if (!$user) {
             return $this->failUnauthorized('Invalid credentials');
         }
-
+    
+        // Set the expiration time based on the 'remember' parameter
+        $expirationTime = time() + ($remember ? (60 * 60 * 24 * 7) : (60 * 60 * 24)); // 1 week if remember is true, otherwise 1 day
+    
         // JWT payload
         $payload = [
             'iss' => 'pdeabackend.com', // Issuer
             'sub' => $user['EmployeeID'], // Subject, typically the user ID
             'role' => $user['Role'], // User's role
-            'exp' => time() + 60*60, // Expiration time (e.g., 60 minutes)
+            'exp' => $expirationTime, // Expiration time
             'iat' => time(), // Issued at
             'jti' => base64_encode(random_bytes(16)) // JWT ID
         ];
-
+    
         // Generate JWT using HS256 (HMAC with SHA-256)
         $secretKey = getenv('JWT_SECRET'); // Get the secret key from your .env file or environment variable
         $token = JWT::encode($payload, $secretKey, 'HS256');
-
-        // You can return the token in the response body or set it as a cookie
-        // If setting as a cookie, ensure to use HttpOnly and Secure flags for production
-
+    
         // Return success response (without sending the role in the payload)
         return $this->respond([
             'message' => 'Login successful',
             'token' => $token // Optionally send the token in the response
         ]);
     }
+    
 
     public function loginUser($email, $password)
     {
@@ -115,34 +117,43 @@ class AuthController extends ResourceController
         $photo = $query ? $query['photo'] : null;
         return $this->respond(['photo' => $photo]);
     }
-
+    
     public function logout()
-{
-    try {
-        $json = $this->request->getJSON();
-        $token = $json->token ?? null;
-
-        if (!$token) {
-            return $this->failUnauthorized('No token provided');
+    {
+        try {
+            $json = $this->request->getJSON();
+            $token = $json->token ?? null;
+    
+            if (!$token) {
+                return $this->failUnauthorized('No token provided');
+            }
+    
+            // Decode the token
+            $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
+            $jti = $decoded->jti;
+    
+            // Check if jti already exists in the blacklist
+            $existingJti = $this->jwtBlackListModel->where('jti', $jti)->first();
+    
+            if (!$existingJti) {
+                // Insert jti into the blacklist table only if it doesn't exist
+                $this->jwtBlackListModel->insert([
+                    'jti' => $jti,
+                    'iat' => $decoded->iat,
+                    'exp' => $decoded->exp
+                ]);
+            } else {
+                // Optionally handle the case where the jti already exists
+                // e.g., log this event or return a specific response
+            }
+    
+            return $this->respond(['message' => 'Logout successful']);
+    
+        } catch (\Exception $e) {
+            return $this->fail(new \Exception('An error occurred during logout: ' . $e->getMessage()));
         }
-
-        // Update here: Using Key class for decoding
-        $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
-        $jti = $decoded->jti;
-
-        // Insert jti into the blacklist table
-        $this->jwtBlackListModel->insert([
-            'jti' => $jti,
-            'iat' => $decoded->iat,
-            'exp' => $decoded->exp
-        ]);
-
-        return $this->respond(['message' => 'Logout successful']);
-
-    } catch (\Exception $e) {
-        return $this->fail(new \Exception('An error occurred during logout: ' . $e->getMessage()));
     }
-}
+    
 
 
 

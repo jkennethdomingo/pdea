@@ -218,9 +218,9 @@ class AssignTrainingController extends ResourceController
         // Specify the columns you want to select
         $builder->select('
             training.*,
-            GROUP_CONCAT(DISTINCT personal_information.first_name ORDER BY personal_information.first_name) as first_names,
-            GROUP_CONCAT(DISTINCT personal_information.surname ORDER BY personal_information.surname) as surnames,
-            GROUP_CONCAT(DISTINCT personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+            GROUP_CONCAT(personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+            GROUP_CONCAT(personal_information.surname ORDER BY personal_information.surname) as surnames,
+            GROUP_CONCAT(personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
             GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids
         ', false);
         
@@ -255,6 +255,63 @@ class AssignTrainingController extends ResourceController
     
         return $this->respond($data);
     }
+
+    public function getFinishedTrainingbyID($id)
+{
+    // First, fetch the Regional Director's information in a separate query
+    $rdBuilder = $this->personalInformationModel->builder();
+    $rdBuilder->select('first_name, surname, middle_name, name_extension');
+    $rdBuilder->join('employee_position', 'personal_information.EmployeeID = employee_position.EmployeeID');
+    $rdBuilder->where('employee_position.PositionID', 1); // Assuming 1 is the ID for Regional Director
+    $rdQuery = $rdBuilder->get();
+    $rdData = $rdQuery->getRowArray(); // Get a single row as an array
+
+    // Start building the query for training information
+    $builder = $this->trainingModel->builder();
+    
+    // Specify the columns you want to select
+    $builder->select('
+        training.*,
+        GROUP_CONCAT(personal_information.first_name ORDER BY personal_information.first_name) as first_names,
+        GROUP_CONCAT(personal_information.surname ORDER BY personal_information.surname) as surnames,
+        GROUP_CONCAT(personal_information.photo ORDER BY personal_information.EmployeeID) as photos,
+        GROUP_CONCAT(DISTINCT internal_employee_training.EmployeeID ORDER BY internal_employee_training.EmployeeID) as employee_ids
+    ', false);
+    
+    // Join with the internal_employee_training table and personal_information table
+    $builder->join('internal_employee_training', 'training.training_id = internal_employee_training.training_id', 'left');
+    $builder->join('personal_information', 'internal_employee_training.EmployeeID = personal_information.EmployeeID', 'left');
+
+    // Add a where clause for the training ID
+    $builder->where('training.training_id', $id);
+    
+    // Add a group by clause to consolidate the results by training ID
+    $builder->groupBy('training.training_id');
+    
+    // Execute the query and get the result
+    $query = $builder->get();
+    $trainingData = $query->getResultArray();
+
+    // Process the training data
+    foreach ($trainingData as &$training) {
+        // Split the concatenated strings into arrays
+        $training['first_names'] = array_filter(explode(',', $training['first_names']));
+        $training['surnames'] = array_filter(explode(',', $training['surnames']));
+        $training['photos'] = array_filter(explode(',', $training['photos']));
+        $training['employee_ids'] = array_filter(explode(',', $training['employee_ids']));
+    }
+    unset($training); // Break the reference with the last element
+
+    // Now merge the RD data with the training data
+    $data = [
+        'training' => $trainingData,
+        'regional_director' => $rdData // Include RD data
+    ];
+
+    return $this->respond($data);
+}
+
+
 
     public function getTraineesByID($id)
     {

@@ -704,6 +704,64 @@ class ManageLeaveController extends ResourceController
         return $this->respondDeleted(['message' => 'Leave request deleted successfully.']);
     }
 
+    public function getRejectedLeaveDetailsWithNotes($leaveId)
+{
+    // Fetch the leave details
+    $leave = $this->employeeLeavesModel->find($leaveId);
+    
+    if ($leave && $leave['status'] === 'rejected') {
+        // Fetch the note related to the leave
+        $note = $this->leaveRequestNotesModel->where('LeaveRequestID', $leaveId)->first();
+        $leave['Note'] = $note['Note'] ?? null;
+        
+        // Fetch the leave type name
+        $leaveType = $this->leavetypeModel->find($leave['leave_type_id']);
+        $leave['leaveTypeName'] = $leaveType['LeaveTypeName'] ?? 'Unknown';
+
+        // Fetch all leave balances for the employee
+        $balances = $this->leaveBalanceModel
+                         ->where('EmployeeID', $leave['EmployeeID'])
+                         ->findAll();
+        
+        $leave['Balances'] = [];
+        foreach ($balances as $balance) {
+            $leaveType = $this->leavetypeModel->find($balance['LeaveTypeID']);
+            $leave['Balances'][$leaveType['LeaveTypeName']] = $balance['NumberofLeaves'];
+        }
+        $leave['RemainingLeaves'] = $balances[0]['NumberofLeaves'] ?? null; // Assuming the first balance is the one in question
+        
+        return $leave;
+    }
+    
+    return null; // or you can throw an exception or return a specific error
+}
+
+
+    public function fetchRejectedLeaveDetails()
+    {
+        // Retrieve the JSON POST data
+        $json = $this->request->getJSON();
+        $leaveId = $json->leave_id ?? null;
+
+        if (!$leaveId) {
+            return $this->response->setStatusCode(400)->setJSON(['error' => 'No leave ID provided.']);
+        }
+
+        try {
+            $details = $this->getRejectedLeaveDetailsWithNotes($leaveId);
+
+            if (!$details) {
+                return $this->response->setStatusCode(404)->setJSON(['error' => 'Leave details not found or the leave is not rejected.']);
+            }
+
+            // Return the leave details with notes and remaining leaves as JSON
+            return $this->response->setStatusCode(200)->setJSON($details);
+        } catch (\Exception $e) {
+            // Handle exception, log if needed, and return an error message
+            return $this->response->setStatusCode(500)->setJSON(['error' => 'An error occurred while fetching the leave details.']);
+        }
+    }
+
 
     
 
