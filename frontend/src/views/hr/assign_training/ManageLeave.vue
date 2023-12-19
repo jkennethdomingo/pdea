@@ -29,12 +29,14 @@ function moveToday() {
   
   const isOpen = ref(false)
   const isOpenDeny = ref(false)
+  const isModalOpen = ref(false)
   const currentDenyId = ref(null);
 
 
   function closeModal() {
     isOpen.value = false
     isOpenDeny.value = false
+    isModalOpen.value = false
   }
 
   function openModalDeny(id) {
@@ -198,22 +200,53 @@ const calendarOptions = ref({
   contentHeight: 'auto', // or set a specific numeric value
 });
 
+function formatTimeRequested(timeRequested) {
+  const now = new Date();
+  const requestedTime = new Date(timeRequested);
+
+  // Adjust for the 8-hour delay
+  requestedTime.setHours(requestedTime.getHours() + 8);
+
+  const diffTime = Math.abs(now - requestedTime);
+  const diffSeconds = Math.floor(diffTime / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  let timeString = "";
+
+  if (diffDays > 0) {
+    timeString = diffDays > 1 ? `${diffDays} days ago` : "a day ago";
+  } else if (diffHours > 0) {
+    timeString = diffHours > 1 ? `${diffHours} hours ago` : "an hour ago";
+  } else if (diffMinutes > 0) {
+    timeString = diffMinutes > 1 ? `${diffMinutes} minutes ago` : "a minute ago";
+  } else if (diffSeconds > 1) {
+    timeString = `${diffSeconds} seconds ago`;
+  } else {
+    timeString = "just now";
+  }
+
+  return timeString;
+}
+
+
 
 const categories = computed(() => ({
   Pending: isLoading.value ? [] : store.state.leaveRequests.pending.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName} requesting a leave`,
-    date: request.TimeRequested // Format this date as needed
+    date: formatTimeRequested(request.TimeRequested) // Format this date as needed
   })),
   Approved: store.state.leaveRequests.approved.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName}'s leave request approved`,
-    date: request.TimeRequested // Format this date as needed
+    date: formatTimeRequested(request.TimeRequested) // Format this date as needed
   })),
   Rejected: store.state.leaveRequests.rejected.map(request => ({
     id: request.LeaveID,
     title: `${request.EmployeeName}'s leave request rejected`,
-    date: request.TimeRequested // Format this date as needed
+    date: formatTimeRequested(request.TimeRequested) // Format this date as needed
   })),
 }));
 
@@ -311,6 +344,40 @@ function openAddEventDialog() {
   // Open the right drawer
   openDrawer();
 }
+
+const viewReason = async (leaveId) => {
+  try {
+    // The leaveId should be sent in the request body as JSON
+    const response = await apiService.post('/manageLeave/fetchRejectedLeaveDetails', { leave_id: leaveId });
+    if (response.data) {
+      // Assuming you have a reactive variable to hold the fetched leave details
+      selectedLeaveRequest.value = response.data;
+      
+      // Assuming you have a method to open the modal
+      isModalOpen.value = true
+    }
+  } catch (error) {
+    console.error('Error fetching leave details:', error);
+    // Optionally, you can handle the error, such as displaying a notification to the user
+  }
+};
+
+const calculateRemainingBalance = () => {
+  if (!selectedLeaveRequest.value.StartDate || !selectedLeaveRequest.value.EndDate || !selectedLeaveRequest.value.RemainingBalance) {
+    return 'N/A';
+  }
+  
+  const startDate = new Date(selectedLeaveRequest.value.StartDate);
+  const endDate = new Date(selectedLeaveRequest.value.EndDate);
+  const days = (endDate - startDate) / (1000 * 3600 * 24) + 1; // +1 because both start and end dates are inclusive
+
+  return selectedLeaveRequest.value.RemainingBalance - days;
+};
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('en-US', options);
+};
 
 
 </script>
@@ -492,10 +559,10 @@ function openAddEventDialog() {
         <!-- Conditionally render Approval and Denial Buttons -->
         <div 
           class="flex justify-end space-x-2 mt-2" 
-          v-if="category === 'Pending'"
         >
 
       <button
+      v-if="category === 'Pending'"
         type="button"
         @click="approveRequest(post.id)"
         class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
@@ -503,7 +570,30 @@ function openAddEventDialog() {
         View
       </button>
 
-      <TransitionRoot appear :show="isOpen" as="template">
+      <button
+  v-else-if="category === 'Rejected'"
+  type="button"
+  @click="viewReason(post.id)"
+  class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+>
+  View
+</button>
+
+
+      
+
+
+    <!-- New Deny Button -->
+    <button
+    v-if="category === 'Pending'"
+      type="button"
+      @click="openModalDeny(post.id)"
+      class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+    >
+      Deny
+    </button>
+
+    <TransitionRoot appear :show="isOpen" as="template">
   <Dialog as="div" @close="closeModal" class="relative z-10">
     <TransitionChild
       as="template"
@@ -520,51 +610,45 @@ function openAddEventDialog() {
     <div class="fixed inset-0 overflow-y-auto">
       <div class="flex min-h-full items-center justify-center p-4 text-center">
         <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0 scale-95"
-          enter-to="opacity-100 scale-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100 scale-100"
-          leave-to="opacity-0 scale-95"
-        >
-          <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
-            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
-              {{ selectedLeaveRequest.EmployeeName }} requesting a leave
-            </DialogTitle>
-            <div class="mt-2">
-              <p class="text-sm text-gray-800 dark:text-gray-200">
-                Reason for leave: {{ selectedLeaveRequest.Reason }}
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
+                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
+                  {{ selectedLeaveRequest.EmployeeName }} requesting a leave
+                </DialogTitle>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-800 dark:text-gray-200">
+                    Reason for leave: {{ selectedLeaveRequest.Reason }}<br>
+                    Leave Type: {{ selectedLeaveRequest.LeaveTypeName }}<br>
+                    Current Balance: {{ selectedLeaveRequest.RemainingBalance }}<br>
+                    Start Date: {{ formatDate(selectedLeaveRequest.StartDate) }}<br>
+                    End Date: {{ formatDate(selectedLeaveRequest.EndDate) }}<br>
+                    Remaining Balance upon Accepting: {{ calculateRemainingBalance() }}
+                  </p>
+                </div>
 
-                <!-- Include other relevant details here -->
-              </p>
-            </div>
+                <div class="mt-4">
+                  <button
+                    type="button"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                    @click="approveAndCloseModal(selectedLeaveRequest.LeaveID)"
+                  >
+                    Approve
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
 
-            <div class="mt-4">
-              <button
-                type="button"
-                class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                @click="approveAndCloseModal(selectedLeaveRequest.LeaveID)"
-              >
-                Approve
-              </button>
-            </div>
-          </DialogPanel>
-        </TransitionChild>
       </div>
     </div>
   </Dialog>
 </TransitionRoot>
-
-
-    <!-- New Deny Button -->
-    <button
-      type="button"
-      @click="openModalDeny(post.id)"
-      class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
-    >
-      Deny
-    </button>
 
   <TransitionRoot appear :show="isOpenDeny" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
@@ -635,6 +719,66 @@ function openAddEventDialog() {
       </TabGroup>
     </div>
   </div>
+
+  <TransitionRoot as="template" :show="isModalOpen" @close="closeModal">
+    <Dialog as="div" class="relative z-10" @close="closeModal">
+      <!-- Overlay -->
+      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+
+      <!-- Modal panel -->
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
+          <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="ease-in duration-200" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
+            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <!-- Title -->
+              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                Leave Request Rejection Reason
+              </DialogTitle>
+
+              <!-- Content -->
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Employee ID: {{ selectedLeaveRequest.EmployeeID }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Leave Type: {{ selectedLeaveRequest.leaveTypeName }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Start Date: {{ formatDate(selectedLeaveRequest.start_date) }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  End Date: {{ formatDate(selectedLeaveRequest.end_date) }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Status: {{ selectedLeaveRequest.status }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Reason for Rejection: {{ selectedLeaveRequest.Note }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Remaining Leaves: 
+                  <ul>
+                    <li v-for="(value, key) in selectedLeaveRequest.Balances" :key="key">
+                      {{ key }}: {{ value }}
+                    </li>
+                  </ul>
+                </p>
+              </div>
+
+              <!-- Actions -->
+              <div class="mt-4">
+                <button type="button" class="inline-flex justify-center rounded-md border border-transparent bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2" @click="closeModal">
+                  Close
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 
   <!-- Main content area for FullCalendar -->
   <div class="w-full lg:w-3/4 px-2"> <!-- Main content takes 3/4 of the width on large screens -->

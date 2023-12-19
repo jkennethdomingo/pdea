@@ -3,7 +3,7 @@ import apiService from '@/composables/axios-setup';
 
 export function useAuth(router, store) {
     const performLogin = async (email, password, remember) => {
-        const response = await apiService.post('/auth/login', { email, password });
+        const response = await apiService.post('/auth/login', { email, password, remember });
         const decodedToken = jwtDecode(response.data.token);
 
         // Check for valid issuer

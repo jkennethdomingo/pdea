@@ -56,6 +56,11 @@ function calculateTimeToBirthday(dob) {
     return `In ${timeString}`;
 }
 
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('en-US', options);
+};
+
 // Define computed properties to transform data
 const birthdays = computed(() => upcomingEmployeeBirthdays.value.map(employee => ({
     id: employee.EmployeeID,
@@ -66,7 +71,7 @@ const birthdays = computed(() => upcomingEmployeeBirthdays.value.map(employee =>
 const training = computed(() => upcomingTraining.value.map(train => ({
     id: train.training_id,
     title: train.title,
-    date: `${train.period_from} to ${train.period_to}`,
+    date: `${formatDate(train.period_from)} to ${formatDate(train.period_to)}`,
     commentCount: 'Conducted by ' + train.conducted_by,
     shareCount: train.participants ? 'Assigned' : 'Unassigned',
     shareCountColor: train.participants ? 'text-green-600 dark:text-green-400' : 'text-red-500'
@@ -75,7 +80,7 @@ const training = computed(() => upcomingTraining.value.map(train => ({
 const leaves = computed(() => upcomingEmployeeOnLeave.value.map(leave => ({
     id: leave.id,
     title: `${leave.first_name} ${leave.surname} - ${leave.LeaveTypeName}`,
-    date: `${leave.start_date} to ${leave.end_date}`,
+    date: `${formatDate(leave.start_date)} to ${formatDate(leave.end_date)}`,
     commentCount: leave.reason,
     shareCount: leave.status,
 })));

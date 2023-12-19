@@ -32,6 +32,6 @@ app.use(Toast, {
 // Set up polling to check token expiration and blacklist status
 setInterval(() => {
   checkToken(store);
-}, 3000);
+}, 30000);
 
 app.mount('#app');

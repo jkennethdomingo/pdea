@@ -18,6 +18,7 @@ import apiService from '@/composables/axios-setup';
 
 const selectedEmployeeIds = ref([]);
 const isModalVisible = ref(false);
+const isCertificateOpen = ref(false);
 const selectedSessionId = ref(null);
 
 const selectEmployee = (employeeId) => {
@@ -268,18 +269,18 @@ const trainingCategories = computed(() => ({
   Unassigned: isLoading.value ? [] : store.state.trainingSessions.upcoming.unassigned.map(session => ({
     id: session.TrainingID,
     title: session.Title,
-    date: session.StartTime // Format this date as needed
+    date: formatDate(session.StartTime) // Format this date as needed
   })),
   Upcoming: isLoading.value ? [] : store.state.trainingSessions.upcoming.assigned.map(session => ({
     id: session.TrainingID,
     title: session.Title,
-    date: session.StartTime // Format this date as needed
+    date: formatDate(session.StartTime) // Format this date as needed
   })),
 
   Finished: store.state.trainingSessions.finished.map(session => ({
     id: session.TrainingID,
     title: session.Title,
-    date: session.EndTime // Format this date as needed
+    date: formatDate(session.EndTime) // Format this date as needed
   })),
 }));
 
@@ -332,11 +333,32 @@ const isEditDrawerOpen = ref(false);
 // view details script 
 const isOpen = ref(false);
 
-function viewTrainingDetails() {
-  isOpen.value = true;
+const trainingDetails = ref([]);
+
+function viewTrainingDetails(id) {
+  isOpen.value = true; // Open the modal
+
+  // Call the API endpoint to get training details by ID
+  apiService.get(`/manageTraining/getTrainingbyID/${id}`)
+    .then(response => {
+      // Store the training details in the reactive variable
+      trainingDetails.value = response.data.training;
+      console.log('Training Details:', response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching training details:', error);
+      // Handle errors, such as by showing an error message to the user
+    });
 }
 function viewTrainingDetailsClose() {
   isOpen.value = false;
+}
+
+function viewCertificate() {
+  isCertificateOpen.value = true;
+}
+function closeCertificateModal() {
+  isCertificateOpen.value = false;
 }
 
 watch(isEditDrawerOpen, (newValue, oldValue) => {
@@ -347,6 +369,10 @@ watch(isEditDrawerOpen, (newValue, oldValue) => {
 
 
 // ... your existing setup ...
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('en-US', options);
+};
 
 function openDrawer() {
   isDrawerOpen.value = true;
@@ -786,24 +812,31 @@ const closeModal = () => {
       <li>{{ session.date }}</li>
     </ul>
 
-    <!-- Action Buttons -->
-    <div class="flex justify-end space-x-2 mt-2">
-      <button
-        v-if="category === 'Unassigned'"
-        @click="assignTraining(session.id)"
-        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-      >
-        Assign
-      </button>
-      <button
-        v-else
-        type="button"
-        @click="viewTrainingDetails(session.id)"
-        class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
-      >
-        View Details 
-      </button>
-    </div>
+   <!-- Action Buttons -->
+<div class="flex justify-end space-x-2 mt-2">
+  <button
+    v-if="category === 'Unassigned'"
+    @click="assignTraining(session.id)"
+    class="text-white bg-green-600 hover:bg-green-800 rounded-lg text-xs px-4 py-1"
+  >
+    Assign
+  </button>
+  <button
+    v-else-if="category === 'Upcoming'"
+    @click="viewTrainingDetails(session.id)"
+    class="text-white bg-blue-600 hover:bg-blue-800 rounded-lg text-xs px-4 py-1"
+  >
+    View Details
+  </button>
+  <button
+    v-else-if="category === 'Finished'"
+    @click="viewCertificate(session.id)"
+    class="text-white bg-yellow-600 hover:bg-yellow-800 rounded-lg text-xs px-4 py-1"
+  >
+    View Certificate
+  </button>
+</div>
+
   </li>
 </ul>
       </TabPanel>
@@ -815,7 +848,62 @@ const closeModal = () => {
 
 <!-- View Details Modal -->
 <TransitionRoot :show="isOpen" as="template">
-    <Dialog as="div" @close="viewTrainingDetailsClose" class="relative z-10">
+  <Dialog as="div" @close="viewTrainingDetailsClose" class="relative z-10">
+    <TransitionChild
+      as="template"
+      enter="duration-300 ease-out"
+      enter-from="opacity-0"
+      enter-to="opacity-100"
+      leave="duration-200 ease-in"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
+      <div class="fixed inset-0 bg-black/25" />
+    </TransitionChild>
+
+    <div class="fixed inset-0 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4 text-center">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0 scale-95"
+          enter-to="opacity-100 scale-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100 scale-100"
+          leave-to="opacity-0 scale-95"
+        >
+          <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+              Training Details
+            </DialogTitle>
+            <div v-for="training in trainingDetails" :key="training.training_id" class="mt-2">
+              <p class="text-sm text-gray-500">
+                Title: {{ training.title }}<br>
+                Period: {{ training.period_from }} to {{ training.period_to }}<br>
+                Number of Hours: {{ training.number_of_hours }}<br>
+                Conducted by: {{ training.conducted_by }}<br>
+                Participants: <span v-for="(name, index) in training.first_names" :key="index">{{ name }} {{ training.surnames[index] }}, </span>
+              </p>
+            </div>
+            <div class="mt-4">
+              <button
+                type="button"
+                class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                @click="viewTrainingDetailsClose"
+              >
+                Close
+              </button>
+            </div>
+          </DialogPanel>
+        </TransitionChild>
+      </div>
+    </div>
+  </Dialog>
+</TransitionRoot>
+
+
+<TransitionRoot :show="isCertificateOpen" as="template">
+    <Dialog as="div" @close="closeCertificateModal" class="relative z-10">
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"
@@ -829,9 +917,7 @@ const closeModal = () => {
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
-        <div
-          class="flex min-h-full items-center justify-center p-4 text-center"
-        >
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
           <TransitionChild
             as="template"
             enter="duration-300 ease-out"
@@ -841,30 +927,35 @@ const closeModal = () => {
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
-            >
-              <DialogTitle
-                as="h3"
-                class="text-lg font-medium leading-6 text-gray-900"
-              >
-                Payment successful
+            <DialogPanel class="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                Certificate
               </DialogTitle>
               <div class="mt-2">
-                <p class="text-sm text-gray-500">
-                  Your payment has been successfully submitted. We’ve sent you
-                  an email with all of the details of your order.
-                </p>
-              </div>
+                <!-- Certificate Content -->
+                <div id="certificate" class="mx-auto bg-[#DDE6ED] dark:bg-gray-600 p-8 rounded-md shadow-md text-center w-full h-[95%] bg-cover bg-center bg-no-repeat"
+                     style="background-image: url('last.png');">
+                  <!-- Certificate Details -->
+                  <div class="mb-2 flex justify-center">
+      <img src="@/assets/logo.png" alt="PDEA Logo" class="h-20">
+                      </div>
 
-              <div class="mt-4">
-                <button
-                  type="button"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  @click="viewTrainingDetailsClose"
-                >
-                  Got it, thanks! <!--TODO static modal They are connected with Finished and Upcoming-->
-                </button>
+                      <h3 class="italic text-lg mb-4">This</h3>
+                      <h1 class="text-4xl mb-4" contenteditable="true">Certificate of Achievement</h1>
+                      <h3 class="italic text-lg mb-4">is presented to</h3>
+                      <h3 class="text-4xl font-bold mb-6 underline" contenteditable="true">SHIELA MARIE C. CHAY</h3>
+                      <h3 class="text-lg" contenteditable="true">for her active participation during the conduct of <br>
+                        <span class="font-semibold" contenteditable="true">Mental Health Awareness Lecture</span>.</h3>
+                      <h3 class="text-lg mb-6">held on <span class="underline" contenteditable="true">October 10, 2023, at PDEA Conference Room, Sta. Isabel, Calapan City, Oriental Mindoro</span></h3>
+                      <h3 class="text-lg mb-12" contenteditable="true">Given this 10<sup>th</sup> day of <span class="underline" contenteditable="true">October, 2023</span></h3>
+
+                      <h2 class="text-lg font-bold underline" contenteditable="true">DIR III GIL CESARIO P. CASTRO</h2>
+                      <h2 contenteditable="true">Regional Director</h2>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-end space-x-2">
+                <!-- Print and Save Image Buttons -->
+                <!-- ... (same content as provided) -->
               </div>
             </DialogPanel>
           </TransitionChild>

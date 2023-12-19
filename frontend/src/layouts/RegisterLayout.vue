@@ -22,7 +22,7 @@ onMounted(() => {
       <!-- Optional: Add a button to trigger logFormData -->
       <!-- <button @click="logFormData">Log Form Data</button> -->
     </template>
-    <BaseCard class="h-[72vh] overflow-y-scroll">
+    <BaseCard class="min-h-[100vh]">
       <router-view />
     </BaseCard>
   </PageWrapNew>

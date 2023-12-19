@@ -17,16 +17,29 @@ import DropdownButton from '@/components/base/DropdownButton.vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import apiService from '@/composables/axios-setup';
 import { defaultAvatar } from '@/assets/images/defaultAvatar.js';
 import { usePhotoUrl } from '@/composables/usePhotoUrl';
-import { logoutUser } from '@/utils/auth';
+import { logoutUser, isLoggedIn } from '@/utils/auth';
+import { TabGroup } from '@headlessui/vue';
+import {
+    TransitionRoot,
+    TransitionChild,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+  } from '@headlessui/vue'
 
 
 const store = useStore();
 const router = useRouter();
 const { getPhotoUrl } = usePhotoUrl(); 
+const rejectionReason = ref('');
+const EmployeeID = computed(() => store.state.employeeID);
+const isOpenDeny = ref(false);
+const isOpen = ref(false);
+const currentDenyId = ref(null);
+const selectedLeaveRequest = ref({});
 
 const authState = computed(() => ({
   token: store.state.token,
@@ -51,13 +64,21 @@ function formatTimeRequested(timeRequested) {
 
   let timeString = "";
 
-  if (diffDays > 0) timeString = diffDays > 1 ? `${diffDays} days ago` : "a day ago";
-  else if (diffHours > 0) timeString = diffHours > 1 ? `${diffHours} hours ago` : "an hour ago";
-  else if (diffMinutes > 0) timeString = diffMinutes > 1 ? `${diffMinutes} minutes ago` : "a minute ago";
-  else timeString = "just now"; // Replaces previous condition for seconds
+  if (diffDays > 0) {
+    timeString = diffDays > 1 ? `${diffDays} days ago` : "a day ago";
+  } else if (diffHours > 0) {
+    timeString = diffHours > 1 ? `${diffHours} hours ago` : "an hour ago";
+  } else if (diffMinutes > 0) {
+    timeString = diffMinutes > 1 ? `${diffMinutes} minutes ago` : "a minute ago";
+  } else if (diffSeconds > 1) {
+    timeString = `${diffSeconds} seconds ago`;
+  } else {
+    timeString = "just now";
+  }
 
   return timeString;
 }
+
 
 
 const categories = computed(() => {
@@ -149,14 +170,26 @@ const logout = () => {
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
 
 const pollNotifications = async () => {
+  // Check if user is logged in
+  if (!isLoggedIn()) {
+    console.log("User is not logged in. Stopping notification polling.");
+    return;
+  }
+
   try {
+    // Perform the actual polling task
     await store.dispatch('fetchLeaveRequestsNotification');
-    // Set a timeout for the next poll, e.g., 30 seconds
-    setTimeout(pollNotifications, 30000);
   } catch (error) {
     console.error('Error during notification polling:', error);
+    // Adjust the retry interval in case of an error, e.g., 60 seconds
+    setTimeout(pollNotifications, 60000);
+    return;
   }
+
+  // Set a timeout for the next poll, e.g., 30 seconds
+  setTimeout(pollNotifications, 30000);
 };
+
 
 onMounted(() => {
     document.addEventListener('scroll', handleScroll)
@@ -171,7 +204,58 @@ onUnmounted(() => {
     document.removeEventListener('scroll', handleScroll)
 })
 
-console.log(notificationCount.value)
+const openDenyModal = (denyId) => {
+  console.log(isOpenDeny.value)
+  currentDenyId.value = denyId; // Set the current deny ID
+  isOpenDeny.value = true;
+};
+
+// Method to close the modal
+const closeModal = () => {
+  isOpenDeny.value = false;
+  isOpen.value = false;
+  currentDenyId.value = null; // Reset the ID on close
+  rejectionReason.value = ''; // Optionally reset the rejection reason
+};
+
+// Method to handle the deny action
+const denyRequest = async () => {
+  if (currentDenyId.value != null) {
+    const payload = {
+      leaveRequestId: currentDenyId.value,
+      employeeId: EmployeeID.value,
+      rejectionReason: rejectionReason.value
+    };
+    await store.dispatch('rejectLeave', payload);
+    await store.dispatch('getEmployeeOnLeave');
+    await store.dispatch('fetchLeaveRequests');
+    closeModal();
+    pollNotifications();
+  }
+};
+
+const approveRequest = async (id) => {
+  try {
+    const leaveRequest = store.state.leaveRequestsNotification.find(request => request.LeaveID === id);
+    if (leaveRequest) {
+      selectedLeaveRequest.value = leaveRequest;
+      // Then dispatch your Vuex action
+      await store.dispatch('approveLeaveRequest', id);
+      isOpen.value = true;
+    }
+  } catch (error) {
+    console.error('Error approving leave request:', error);
+  }
+};
+
+const approveAndCloseModal = async (id) => {
+  await store.dispatch('validateAndDeductLeave', id);
+  await store.dispatch('getEmployeeOnLeave'); 
+  await store.dispatch('fetchLeaveRequests');
+  isOpen.value = false;
+  pollNotifications();
+}
+
 </script>
 
 <template>
@@ -227,44 +311,44 @@ console.log(notificationCount.value)
 
                 <template #content>
                     <TabGroup>
-  <div v-if="notificationCount > 0">
-    <ul class="mt-2 rounded-b-lg bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700">
-      <li
-        v-for="post in categories.all"  
-        :key="post.id"
-        class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
-      >
-        <h3 class="text-sm font-medium leading-5">
-          {{ post.title }}
-        </h3>
-        <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-          <li>{{ post.date }}</li>
-        </ul>
-        <div 
-          class="flex justify-end space-x-2 mt-2"
-        >
-          <button
-            @click="approveRequest(post.id)"
-            class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
-          >
-            Approve
-          </button>
-          <button
-            @click="denyRequest(post.id)"
-            class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
-          >
-            Deny
-          </button>
-        </div>
-      </li>
-    </ul>
-  </div>
-  <div v-else class="text-center text-sm text-gray-500 py-4">
-    No unread notifications
-  </div>
-</TabGroup>
+                        <div v-if="notificationCount > 0">
+                          <ul class="mt-2 rounded-b-lg bg-white dark:bg-dark-bg p-2 border-2 border-gray-400 dark:border-gray-700">
+                            <li
+                              v-for="post in categories.all"  
+                              :key="post.id"
+                              class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-green-500"
+                            >
+                              <h3 class="text-sm font-medium leading-5">
+                                {{ post.title }}
+                              </h3>
+                              <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+                                <li>{{ post.date }}</li>
+                              </ul>
+                              <div 
+                                class="flex justify-end space-x-2 mt-2"
+                              >
+                                <button
+                                  @click.stop="approveRequest(post.id)"
+                                  class="text-white bg-green-600 hover:bg-green-700 rounded-lg text-xs px-4 py-1"
+                                >
+                                  Review
+                                </button>
+                                <button
+                                  @click="openDenyModal(post.id)"
+                                  class="text-white bg-red-600 hover:bg-red-700 rounded-lg text-xs px-4 py-1"
+                                >
+                                  Deny
+                                </button>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                        <div v-else class="text-center text-sm text-gray-500 py-4">
+                          No unread notifications
+                        </div>
+                      </TabGroup>
 
-</template>
+            </template>
 
 
             </Dropdown>
@@ -316,6 +400,66 @@ console.log(notificationCount.value)
             </Dropdown>
         </div>
     </nav>
+
+    <TransitionRoot appear :show="isOpenDeny" as="template">
+      <Dialog as="div" @close="closeModal" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+          <DialogPanel
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-lg font-medium leading-6 text-green-800 dark:text-green-200"
+              >
+                Reason for Rejection...
+              </DialogTitle>
+              <div class="mt-2">
+                <textarea v-model="rejectionReason"
+                  class="textarea textarea-success w-full border border-green-500 p-2 rounded-md focus:ring focus:ring-green-300 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700" 
+                  placeholder="Let us know what's on your mind..."
+                ></textarea>
+              </div>
+
+              <div class="mt-4">
+                <button
+                  type="button"
+                  class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  @click="denyRequest"
+                >
+                  Save
+                </button>
+              </div>
+            </DialogPanel>
+
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
     
 
     <!-- Mobile bottom bar -->
@@ -347,4 +491,60 @@ console.log(notificationCount.value)
             <Icon icon="mdi:window-close" v-show="sidebarState.isOpen" aria-hidden="true" :class="iconSizeClasses" />
         </Button>
     </div>
+
+    
+    <TransitionRoot appear :show="isOpen" as="template">
+      <Dialog as="div" @close="closeModal" class="relative z-10">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#DDE6ED] dark:bg-gray-600 p-6 text-left align-middle shadow-xl transition-all">
+                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-800 dark:text-green-200">
+                  {{ selectedLeaveRequest.EmployeeName }} requesting a leave
+                </DialogTitle>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-800 dark:text-gray-200">
+                    Reason for leave: {{ selectedLeaveRequest.Reason }}
+
+                    <!-- Include other relevant details here -->
+                  </p>
+                </div>
+
+                <div class="mt-4">
+                  <button
+                    type="button"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-green-600 hover:bg-green-800 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                    @click="approveAndCloseModal(selectedLeaveRequest.LeaveID)"
+                  >
+                    Approve
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    
 </template>
