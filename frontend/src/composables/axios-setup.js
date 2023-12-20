@@ -7,7 +7,7 @@ function getTokenFromStorage() {
 
 // Set up a service instance for your API
 const apiService = axios.create({
-    baseURL: "https://pdea-mimaropa.online/api/" // Adjust this to your actual backend URL
+    baseURL: "https://pdea-mimaropa.online/pdeamimaropa/api/" // Adjust this to your actual backend URL
 });
 
 // Add a request interceptor
