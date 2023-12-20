@@ -21,14 +21,21 @@ const { getPhotoUrl } = usePhotoUrl(); // Using the composable
 const agentData = computed(() => store.state.agentData);
 const selectedType = ref(null);
 const selectedDescription = ref(null);
+const selectedEmployeeId = ref(null);
+
+
+function closeViewModal() {
+    isViewModalOpen.value = false;
+}
 
 function closeModal() {
   isOpen.value = false;
   isModalVisible.value = false;
 }
 
-function openModal() {
+function openModal(employeeId) {
   isModalVisible.value = true;
+  selectedEmployeeId.value = employeeId;
 }
 
 async function fetchAssetData() {
@@ -65,10 +72,34 @@ const assetTypes = computed(() => {
 
 const assetDescriptions = computed(() => {
   if (selectedType.value && assetData.value[selectedType.value]) {
-    return assetData.value[selectedType.value].map(asset => asset.description);
+    return assetData.value[selectedType.value].map(asset => {
+      return { id: asset.asset_id, description: asset.description };
+    });
   }
   return [];
 });
+
+async function postAssetAssignments() {
+  // Assuming you want to use the selected description ID for some API call or logic
+  const selectedAssetId = selectedDescription.value;
+  const selectedEmployeeId = selectedEmployeeId.value;
+
+  if (!selectedAssetId) {
+    console.error('No asset selected');
+    return;
+  }
+
+  // Example of using the selected asset ID in an API call
+  try {
+    const response = await apiService.post('/your/api/endpoint', { assetId: selectedAssetId });
+    // Handle the response
+    console.log('Response:', response);
+  } catch (error) {
+    console.error('Error in posting training assignments:', error);
+  }
+}
+
+
 
 watch(selectedType, () => {
   selectedDescription.value = null; // Reset description when type changes
@@ -233,14 +264,14 @@ onMounted(async () => {
   </select>
 
   <select v-model="selectedDescription" :disabled="!selectedType">
-    <option disabled value="">Select a Description</option>
-    <option v-for="description in assetDescriptions" :key="description" :value="description">{{ description }}</option>
-  </select>
+  <option disabled value="">Select a Description</option>
+  <option v-for="item in assetDescriptions" :key="item.id" :value="item.id">{{ item.description }}</option>
+</select>
                                         </div>
 
                                                 <!-- Modal footer -->
                                                 <div class="flex justify-center items-center px-4 py-3">
-                                                <button @click="postTrainingAssignments" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                                <button @click="postAssetAssignments()" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-1/2 md:w-32 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
                                                     Assign 
                                                 </button>
                                                 </div>
