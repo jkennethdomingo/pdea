@@ -26,7 +26,7 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'auth-db1153.hstgr.io',
+        'hostname'     => 'localhost',
         'username'     => 'u262559041_pdea',
         'password'     => 'Capstonepdea123',
         'database'     => 'u262559041_mainappdev',
