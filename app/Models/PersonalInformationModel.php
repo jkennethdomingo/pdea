@@ -80,4 +80,7 @@ class PersonalInformationModel extends Model
         // Execute the query and return the result
         return $query->get()->getResultArray();
     }
+    
+    
+    
 }

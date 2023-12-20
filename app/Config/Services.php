@@ -43,7 +43,6 @@ use App\Models\DivisionModel;
 use App\Models\EmployeeDivisionModel;
 use App\Models\JwtBlackListModel;
 
-
 /**
  * Services Configuration file.
  *
@@ -69,7 +68,6 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
-
     public static function personalInformationModel($getShared = true)
     {
         if ($getShared) {
@@ -468,4 +466,5 @@ class Services extends BaseService
 
         return new JwtBlackListModel();
     }
+
 }
