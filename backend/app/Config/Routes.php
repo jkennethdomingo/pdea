@@ -30,6 +30,8 @@ $routes->group('api', function($routes)
         $routes->post('getDepartmentData', 'MaterialRequisitionController::getDepartmentData');
         $routes->post('getProvinceData', 'MaterialRequisitionController::getProvinceData');
         $routes->post('getRegionData', 'MaterialRequisitionController::getRegionData');
+        $routes->post('getAssignedAssetInformation', 'MaterialRequisitionController::getAssignedAssetInformation');
+        $routes->post('getPropertyPlantAndEquipmentDropdown', 'MaterialRequisitionController::getPropertyPlantAndEquipmentDropdown');
     });
 
     $routes->group('manageInventory', function($routes) {

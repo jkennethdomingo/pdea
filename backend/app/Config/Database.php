@@ -26,10 +26,10 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'pdea',
-        'password'     => 'capstonepdea',
-        'database'     => 'mainappdev',
+        'hostname'     => 'auth-db1153.hstgr.io',
+        'username'     => 'u262559041_pdea',
+        'password'     => 'Capstonepdea123',
+        'database'     => 'u262559041_mainappdev',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,

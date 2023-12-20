@@ -198,6 +198,97 @@ class MaterialRequisitionController extends ResourceController
         return $this->respond($data);
     }
 
+    public function getAssignedAssetInformation()
+    {
+        // Get JSON payload
+        $json = $this->request->getJSON();
+    
+        // Check if EmployeeID is provided
+        if (!isset($json->EmployeeID) || empty($json->EmployeeID)) {
+            return $this->failValidationErrors('Employee ID is required.');
+        }
+    
+        $employeeId = $json->EmployeeID;
+    
+        try {
+            $builder = $this->assetLocationModel->builder();
+            $builder->select('
+                asset.*, 
+                asset_audit.audit_date, 
+                asset_status.qty_per_property_card, 
+                asset_status.physical_count, 
+                asset_status.shortage_overage_qty, 
+                asset_status.status'
+            );
+            $builder->join('asset', 'asset.asset_id = asset_location.asset_id', 'left');
+            $builder->join('asset_audit', 'asset_audit.asset_id = asset.asset_id', 'left');
+            $builder->join('asset_status', 'asset_status.asset_id = asset.asset_id', 'left');
+            $builder->where('asset_location.EmployeeID', $employeeId);
+            $query = $builder->get();
+    
+            $assetInfo = $query->getResultArray();
+    
+            // If no asset information is found, return an empty array or a message instead of an error
+            if (!$assetInfo) {
+                return $this->respond([
+                    'message' => 'No assigned asset information found for the provided Employee ID.',
+                    'data' => []  // Return an empty array to indicate no data found
+                ]);
+            }
+    
+            // Return both message and data for consistency
+            return $this->respond([
+                'message' => 'Assigned asset information retrieved successfully.',
+                'data' => $assetInfo  // Return the fetched data
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', $e->getMessage());
+            return $this->failServerError('An error occurred while fetching assigned asset information.');
+        }
+    }
+
+    public function getPropertyPlantAndEquipmentDropdown()
+{
+    try {
+        // Fetch only active assets
+        $assets = $this->assetModel
+            ->select('asset.*, asset_type.type_name as asset_type_name, asset_location.remarks_whereabouts, asset_audit.audit_date')
+            ->join('asset_type', 'asset_type.asset_type_id = asset.asset_type_id', 'left')
+            ->join('asset_location', 'asset_location.asset_id = asset.asset_id', 'left')
+            ->join('asset_audit', 'asset_audit.asset_id = asset.asset_id', 'left')
+            ->where('asset.item_status', 'Active') // Filter to get only active assets
+            ->findAll();
+
+        $activeAssets = [];
+
+        foreach ($assets as $asset) {
+            $typeKey = $asset['asset_type_name'];
+
+            // Initialize the array if not already set
+            if (!isset($activeAssets[$typeKey])) {
+                $activeAssets[$typeKey] = [];
+            }
+
+            array_push($activeAssets[$typeKey], $asset);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $activeAssets // Return only active assets
+        ]);
+    } catch (\Exception $e) {
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Exception caught: ' . $e->getMessage()
+        ]);
+    }
+}
+
+
+    
+    
+
+
 
 
 
