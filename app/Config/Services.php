@@ -3,6 +3,46 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Models\SectionModel;
+use App\Models\DesignationModel;
+use App\Models\PositionModel;
+use App\Models\EmployeeAuthRoleModel;
+use App\Models\EmployeePositionModel;
+use App\Models\EmployeeDesignationModel;
+use App\Models\EmployeeSectionModel;
+use App\Models\LeavetypeModel;
+use App\Models\LeaveBalanceModel;
+use App\Models\FamilyBackgroundModel;
+use App\Models\ChildrenModel;
+use App\Models\EducationalBackgroundModel;
+use App\Models\CivilServiceEligibilityModel;
+use App\Models\WorkExperienceModel;
+use App\Models\VoluntaryWorkModel;
+use App\Models\TrainingProgramsModel;
+use App\Models\OtherInformationModel;
+use App\Models\PdSheetQuestionsModel;
+use App\Models\ReferencesTblModel;
+use App\Models\GovernmentIssuedIDsModel;
+use App\Models\AddressModel;
+use App\Models\EmployeeAddressModel;
+use App\Models\AssetAuditModel;
+use App\Models\AssetLocationModel;
+use App\Models\AssetModel;
+use App\Models\AssetStatusModel;
+use App\Models\AssetTypeModel;
+use App\Models\ProvincialOfficeModel;
+use App\Models\RegionalOfficeModel;
+use App\Models\DepartmentModel;
+use App\Models\ProcurementModel;
+use App\Models\ProcurementStatusModel;
+use App\Models\EmployeeLeavesModel;
+use App\Models\InternalEmployeeTrainingModel;
+use App\Models\TrainingModel;
+use App\Models\LeaveRequestNotesModel;
+use App\Models\DivisionModel;
+use App\Models\EmployeeDivisionModel;
+use App\Models\JwtBlackListModel;
+
 
 /**
  * Services Configuration file.
