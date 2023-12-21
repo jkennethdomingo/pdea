@@ -116,9 +116,13 @@ $routes->group('api', function($routes)
         $routes->post('getTodayTrainingCount', 'HumanResourceDashboardRemasteredController::getTodayTrainingCount'); //Sales
         $routes->post('getUpcomingEvents', 'HumanResourceDashboardRemasteredController::getUpcomingEvents'); //Calendar Upcoming Events
         $routes->post('getEmployeeStatusPercentages', 'HumanResourceDashboardRemasteredController::getEmployeeStatusPercentages'); // Pie Chart
+        $routes->post('getEmployeeStatusPercentagesForThisMonth', 'HumanResourceDashboardRemasteredController::getEmployeeStatusPercentagesForThisMonth'); // Pie Chart Month
+        $routes->post('getEmployeeStatusPercentagesForThisYear', 'HumanResourceDashboardRemasteredController::getEmployeeStatusPercentagesForThisYear'); // Pie Chart Annual
         $routes->post('fetchRecentlyApprovedLeaves', 'HumanResourceDashboardRemasteredController::fetchRecentlyApprovedLeaves'); // Recently Approved Leaves Card
+        $routes->post('fetchUpcomingTrainingsWithNoAssignedEmployees', 'HumanResourceDashboardRemasteredController::fetchUpcomingTrainingsWithNoAssignedEmployees'); // Unassigned Training card
     });
 
     $routes->post('insert', 'TestArea::create');
 
 });
+

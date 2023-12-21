@@ -232,4 +232,27 @@ class HumanResourceDashboardRemasteredController extends ResourceController
             'data' => $approvedLeaves
         ]);
     }
+
+    public function fetchUpcomingTrainingsWithNoAssignedEmployees(): ResponseInterface
+    {
+        $today = date('Y-m-d'); // Get the current date in 'Y-m-d' format.
+
+        $upcomingTrainingsWithNoEmployees = $this->trainingModel
+            ->select('training.*')
+            ->where('training.period_from >=', $today)
+            ->groupBy('training.training_id') // Group by training ID to avoid duplicates.
+            ->whereNotIn('training.training_id', function($builder) {
+                return $builder->select('training_id')
+                               ->from('internal_employee_training');
+            })
+            ->orderBy('training.period_from', 'ASC') // Order by date, closest first.
+            ->findAll();
+
+        return $this->respond([
+            'status' => ResponseInterface::HTTP_OK,
+            'error' => null,
+            'data' => $upcomingTrainingsWithNoEmployees
+        ]);
+    }
+    
 }
